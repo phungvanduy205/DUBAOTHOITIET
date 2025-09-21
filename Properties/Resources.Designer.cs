@@ -63,6 +63,16 @@ namespace THOITIET.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap may_day_dem {
+            get {
+                object obj = ResourceManager.GetObject("may_day_dem", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap nen_troi_quang {
             get {
                 object obj = ResourceManager.GetObject("nen_troi_quang", resourceCulture);

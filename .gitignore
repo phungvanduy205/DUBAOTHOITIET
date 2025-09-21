@@ -1,25 +1,30 @@
-# Visual Studio
-.vs/
+# API Keys - KHÔNG COMMIT
+.env
+.env.local
+.env.production
+.env.development
+*.env
+
+# API Key files
+api_keys.txt
+secrets.txt
+config.ini
+
+# Build outputs
 bin/
 obj/
 *.user
-*.suo
-*.cache
-*.pdb
-*.exe
-*.dll
 
-# .NET
+# Visual Studio
+.vs/
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
 *.log
+logs/
+
+# Temporary files
 *.tmp
 *.temp
-
-# History files
-.history/
-
-# Resources (nếu không muốn commit)
-# Resources/
-
-# OS
-Thumbs.db
-.DS_Store
