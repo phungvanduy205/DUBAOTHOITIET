@@ -65,9 +65,9 @@ namespace THOITIET
         private Button? btnF;
         
         // Lưu địa điểm
-        private List<string> savedLocationNames = new List<string>();
+        private List<string> savedLocations = new List<string>();
         private int currentLocationIndex = 0;
-        private string defaultLocationName = "Hanoi";
+        private string defaultLocation = "Hanoi";
         private string locationsFilePath = "saved_locations.json";
 
         public Form1()
@@ -1074,139 +1074,6 @@ namespace THOITIET
             {
                 // Nếu không thể tạo region, bỏ qua
             }
-        }
-
-        /// <summary>
-        /// Load danh sách địa điểm đã lưu
-        /// </summary>
-        private void LoadSavedLocations()
-        {
-            try
-            {
-                if (File.Exists(locationsFilePath))
-                {
-                    var json = File.ReadAllText(locationsFilePath);
-                    var data = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
-                    if (data?.locations != null)
-                    {
-                        savedLocationNames = data.locations.ToObject<List<string>>();
-                    }
-                    if (data?.defaultLocation != null)
-                    {
-                        defaultLocationName = data.defaultLocation.ToString();
-                    }
-                }
-                
-                // Nếu chưa có địa điểm nào, thêm mặc định
-                if (savedLocationNames.Count == 0)
-                {
-                    savedLocationNames.Add("Hanoi");
-                    savedLocationNames.Add("Ho Chi Minh City");
-                    savedLocationNames.Add("Da Nang");
-                }
-                
-                // Tìm index của địa điểm mặc định
-                currentLocationIndex = savedLocationNames.IndexOf(defaultLocationName);
-                if (currentLocationIndex == -1) currentLocationIndex = 0;
-                
-                // Load thời tiết cho địa điểm mặc định
-                if (!string.IsNullOrEmpty(defaultLocationName))
-                {
-                    oTimKiemDiaDiem.Text = defaultLocationName;
-                    _ = CapNhatThoiTiet();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi load địa điểm: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Lưu danh sách địa điểm
-        /// </summary>
-        private void SaveLocationList()
-        {
-            try
-            {
-                var data = new
-                {
-                    locations = savedLocationNames,
-                    defaultLocation = savedLocationNames.Count > currentLocationIndex ? savedLocationNames[currentLocationIndex] : defaultLocationName
-                };
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
-                File.WriteAllText(locationsFilePath, json);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi lưu địa điểm: {ex.Message}");
-            }
-        }
-
-
-        /// <summary>
-        /// Lưu địa điểm hiện tại
-        /// </summary>
-        private void nutLuuDiaDiem_Click(object sender, EventArgs e)
-        {
-            var currentLocation = oTimKiemDiaDiem.Text.Trim();
-            if (string.IsNullOrEmpty(currentLocation))
-            {
-                MessageBox.Show("Vui lòng nhập địa điểm trước khi lưu!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            
-            if (savedLocationNames.Contains(currentLocation))
-            {
-                MessageBox.Show("Địa điểm này đã được lưu rồi!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            
-            savedLocationNames.Add(currentLocation);
-            SaveLocationList();
-            
-            MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thành công", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        /// <summary>
-        /// Chuyển đổi địa điểm - hiện dropdown để chọn
-        /// </summary>
-        private void nutChuyenDoiDiaDiem_Click(object sender, EventArgs e)
-        {
-            if (savedLocationNames.Count == 0) 
-            {
-                MessageBox.Show("Chưa có địa điểm nào được lưu. Hãy lưu địa điểm trước!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            
-            // Tạo context menu để chọn địa điểm
-            var contextMenu = new ContextMenuStrip();
-            
-            foreach (var location in savedLocationNames)
-            {
-                var item = new ToolStripMenuItem(location);
-                item.Click += (s, args) => {
-                    oTimKiemDiaDiem.Text = location;
-                    currentLocationIndex = savedLocationNames.IndexOf(location);
-                    _ = CapNhatThoiTiet();
-                    SaveLocationList();
-                };
-                contextMenu.Items.Add(item);
-            }
-            
-            // Hiện menu tại vị trí nút
-            contextMenu.Show(nutChuyenDoiDiaDiem, new Point(0, nutChuyenDoiDiaDiem.Height));
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-            // Lưu địa điểm khi đóng ứng dụng
-            SaveLocationList();
         }
 
         /// <summary>
@@ -2292,6 +2159,28 @@ namespace THOITIET
             SuKienChonDiaDiemDaLuu();
         }
 
+        /// <summary>
+        /// Event handler cho nút lưu địa điểm
+        /// </summary>
+        private void nutLuuDiaDiem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(currentLocation) && currentLat != 0 && currentLon != 0)
+                {
+                    LuuDiaDiem(currentLocation, currentLat, currentLon);
+                    MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Không có địa điểm để lưu. Vui lòng tìm kiếm địa điểm trước.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi lưu địa điểm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         /// <summary>
         /// Tạo background test khi không có file GIF - TO NHẤT VÀ THAY ĐỔI THEO THỜI TIẾT

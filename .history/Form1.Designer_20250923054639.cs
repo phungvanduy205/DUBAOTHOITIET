@@ -31,13 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             thanhTrenCung = new Panel();
             nutChuyenDoiDiaDiem = new Button();
-            nutLuuDiaDiem = new Button();
             NutTimKiem = new Button();
             unitToggle = new THOITIET.Controls.UnitToggle();
             oTimKiemDiaDiem = new TextBox();
             CongTacDonVi = new CheckBox();
             listBoxGoiY = new ListBox();
             listBoxDiaDiemDaLuu = new ListBox();
+            nutLuuDiaDiem = new Button();
             tabDieuKhien = new TabControl();
             tabLichSu = new TabPage();
             NutXuatLichSu = new Button();
@@ -101,27 +101,13 @@
             nutChuyenDoiDiaDiem.FlatAppearance.BorderSize = 0;
             nutChuyenDoiDiaDiem.FlatStyle = FlatStyle.Flat;
             nutChuyenDoiDiaDiem.Font = new Font("Segoe UI", 12F);
-            nutChuyenDoiDiaDiem.Location = new Point(947, 13);
+            nutChuyenDoiDiaDiem.Location = new Point(1016, 5);
             nutChuyenDoiDiaDiem.Name = "nutChuyenDoiDiaDiem";
-            nutChuyenDoiDiaDiem.Size = new Size(57, 34);
+            nutChuyenDoiDiaDiem.Size = new Size(48, 39);
             nutChuyenDoiDiaDiem.TabIndex = 2;
             nutChuyenDoiDiaDiem.Text = "⇄";
             nutChuyenDoiDiaDiem.UseVisualStyleBackColor = false;
             nutChuyenDoiDiaDiem.Click += nutChuyenDoiDiaDiem_Click;
-            // 
-            // nutLuuDiaDiem
-            // 
-            nutLuuDiaDiem.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            nutLuuDiaDiem.BackColor = Color.WhiteSmoke;
-            nutLuuDiaDiem.FlatAppearance.BorderSize = 0;
-            nutLuuDiaDiem.FlatStyle = FlatStyle.Flat;
-            nutLuuDiaDiem.Location = new Point(1010, 13);
-            nutLuuDiaDiem.Name = "nutLuuDiaDiem";
-            nutLuuDiaDiem.Size = new Size(54, 34);
-            nutLuuDiaDiem.TabIndex = 3;
-            nutLuuDiaDiem.Text = "Lưu";
-            nutLuuDiaDiem.UseVisualStyleBackColor = false;
-            nutLuuDiaDiem.Click += nutLuuDiaDiem_Click;
             // 
             // NutTimKiem
             // 
@@ -130,7 +116,7 @@
             NutTimKiem.FlatAppearance.BorderSize = 0;
             NutTimKiem.FlatStyle = FlatStyle.Flat;
             NutTimKiem.Font = new Font("Segoe UI", 12F);
-            NutTimKiem.Location = new Point(886, 13);
+            NutTimKiem.Location = new Point(898, 13);
             NutTimKiem.Name = "NutTimKiem";
             NutTimKiem.Size = new Size(42, 34);
             NutTimKiem.TabIndex = 0;
@@ -158,7 +144,7 @@
             oTimKiemDiaDiem.Multiline = true;
             oTimKiemDiaDiem.Name = "oTimKiemDiaDiem";
             oTimKiemDiaDiem.PlaceholderText = "🔍Tìm kiếm địa điểm...";
-            oTimKiemDiaDiem.Size = new Size(922, 34);
+            oTimKiemDiaDiem.Size = new Size(944, 34);
             oTimKiemDiaDiem.TabIndex = 0;
             oTimKiemDiaDiem.KeyDown += oTimKiemDiaDiem_KeyDown;
             oTimKiemDiaDiem.KeyPress += oTimKiemDiaDiem_KeyPress;
@@ -186,6 +172,16 @@
             listBoxDiaDiemDaLuu.TabIndex = 0;
             listBoxDiaDiemDaLuu.SelectedIndexChanged += listBoxDiaDiemDaLuu_SelectedIndexChanged;
             // 
+            // nutLuuDiaDiem
+            // 
+            nutLuuDiaDiem.Location = new Point(220, 10);
+            nutLuuDiaDiem.Name = "nutLuuDiaDiem";
+            nutLuuDiaDiem.Size = new Size(100, 30);
+            nutLuuDiaDiem.TabIndex = 1;
+            nutLuuDiaDiem.Text = "Lưu địa điểm";
+            nutLuuDiaDiem.UseVisualStyleBackColor = true;
+            nutLuuDiaDiem.Click += nutLuuDiaDiem_Click;
+            // 
             // tabDieuKhien
             // 
             tabDieuKhien.Controls.Add(tabLichSu);
@@ -201,6 +197,7 @@
             tabLichSu.Controls.Add(NutXuatLichSu);
             tabLichSu.Controls.Add(BangLichSu);
             tabLichSu.Controls.Add(listBoxDiaDiemDaLuu);
+            tabLichSu.Controls.Add(nutLuuDiaDiem);
             tabLichSu.Location = new Point(4, 29);
             tabLichSu.Name = "tabLichSu";
             tabLichSu.Padding = new Padding(8);

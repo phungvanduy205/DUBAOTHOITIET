@@ -1143,34 +1143,6 @@ namespace THOITIET
             }
         }
 
-
-        /// <summary>
-        /// Lưu địa điểm hiện tại
-        /// </summary>
-        private void nutLuuDiaDiem_Click(object sender, EventArgs e)
-        {
-            var currentLocation = oTimKiemDiaDiem.Text.Trim();
-            if (string.IsNullOrEmpty(currentLocation))
-            {
-                MessageBox.Show("Vui lòng nhập địa điểm trước khi lưu!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            
-            if (savedLocationNames.Contains(currentLocation))
-            {
-                MessageBox.Show("Địa điểm này đã được lưu rồi!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            
-            savedLocationNames.Add(currentLocation);
-            SaveLocationList();
-            
-            MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thành công", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
         /// <summary>
         /// Chuyển đổi địa điểm - hiện dropdown để chọn
         /// </summary>
@@ -1200,6 +1172,49 @@ namespace THOITIET
             
             // Hiện menu tại vị trí nút
             contextMenu.Show(nutChuyenDoiDiaDiem, new Point(0, nutChuyenDoiDiaDiem.Height));
+        }
+
+        /// <summary>
+        /// Lưu địa điểm hiện tại
+        /// </summary>
+        private void nutLuuDiaDiem_Click(object sender, EventArgs e)
+        {
+            var currentLocation = oTimKiemDiaDiem.Text.Trim();
+            if (string.IsNullOrEmpty(currentLocation))
+            {
+                MessageBox.Show("Vui lòng nhập địa điểm trước khi lưu!", "Thông báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            
+            if (savedLocationNames.Contains(currentLocation))
+            {
+                MessageBox.Show("Địa điểm này đã được lưu rồi!", "Thông báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            
+            savedLocationNames.Add(currentLocation);
+            SaveLocationList();
+            
+            MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thành công", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Lưu địa điểm hiện tại vào danh sách
+        /// </summary>
+        private void SaveCurrentLocation()
+        {
+            var currentLocation = oTimKiemDiaDiem.Text.Trim();
+            if (string.IsNullOrEmpty(currentLocation)) return;
+            
+            // Nếu chưa có trong danh sách, thêm vào
+            if (!savedLocationNames.Contains(currentLocation))
+            {
+                savedLocationNames.Add(currentLocation);
+                SaveLocationList();
+            }
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -1328,6 +1343,7 @@ namespace THOITIET
 
             MessageBox.Show($"Nút tìm kiếm được nhấn: {tuKhoa}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
             await TimKiemDiaDiem(tuKhoa);
+            SaveCurrentLocation(); // Lưu địa điểm khi tìm kiếm
         }
 
         /// <summary>
@@ -2292,6 +2308,28 @@ namespace THOITIET
             SuKienChonDiaDiemDaLuu();
         }
 
+        /// <summary>
+        /// Event handler cho nút lưu địa điểm
+        /// </summary>
+        private void nutLuuDiaDiem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(currentLocation) && currentLat != 0 && currentLon != 0)
+                {
+                    LuuDiaDiem(currentLocation, currentLat, currentLon);
+                    MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Không có địa điểm để lưu. Vui lòng tìm kiếm địa điểm trước.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi lưu địa điểm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         /// <summary>
         /// Tạo background test khi không có file GIF - TO NHẤT VÀ THAY ĐỔI THEO THỜI TIẾT

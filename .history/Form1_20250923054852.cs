@@ -1328,6 +1328,7 @@ namespace THOITIET
 
             MessageBox.Show($"Nút tìm kiếm được nhấn: {tuKhoa}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
             await TimKiemDiaDiem(tuKhoa);
+            SaveCurrentLocation(); // Lưu địa điểm khi tìm kiếm
         }
 
         /// <summary>

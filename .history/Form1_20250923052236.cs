@@ -1143,34 +1143,6 @@ namespace THOITIET
             }
         }
 
-
-        /// <summary>
-        /// Lưu địa điểm hiện tại
-        /// </summary>
-        private void nutLuuDiaDiem_Click(object sender, EventArgs e)
-        {
-            var currentLocation = oTimKiemDiaDiem.Text.Trim();
-            if (string.IsNullOrEmpty(currentLocation))
-            {
-                MessageBox.Show("Vui lòng nhập địa điểm trước khi lưu!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            
-            if (savedLocationNames.Contains(currentLocation))
-            {
-                MessageBox.Show("Địa điểm này đã được lưu rồi!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            
-            savedLocationNames.Add(currentLocation);
-            SaveLocationList();
-            
-            MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thành công", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
         /// <summary>
         /// Chuyển đổi địa điểm - hiện dropdown để chọn
         /// </summary>
@@ -1201,6 +1173,34 @@ namespace THOITIET
             // Hiện menu tại vị trí nút
             contextMenu.Show(nutChuyenDoiDiaDiem, new Point(0, nutChuyenDoiDiaDiem.Height));
         }
+
+        /// <summary>
+        /// Lưu địa điểm hiện tại
+        /// </summary>
+        private void nutLuuDiaDiem_Click(object sender, EventArgs e)
+        {
+            var currentLocation = oTimKiemDiaDiem.Text.Trim();
+            if (string.IsNullOrEmpty(currentLocation))
+            {
+                MessageBox.Show("Vui lòng nhập địa điểm trước khi lưu!", "Thông báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            
+            if (savedLocationNames.Contains(currentLocation))
+            {
+                MessageBox.Show("Địa điểm này đã được lưu rồi!", "Thông báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            
+            savedLocationNames.Add(currentLocation);
+            SaveLocationList();
+            
+            MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thành công", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {

@@ -31,13 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             thanhTrenCung = new Panel();
             nutChuyenDoiDiaDiem = new Button();
-            nutLuuDiaDiem = new Button();
             NutTimKiem = new Button();
             unitToggle = new THOITIET.Controls.UnitToggle();
             oTimKiemDiaDiem = new TextBox();
             CongTacDonVi = new CheckBox();
             listBoxGoiY = new ListBox();
             listBoxDiaDiemDaLuu = new ListBox();
+            nutLuuDiaDiem = new Button();
             tabDieuKhien = new TabControl();
             tabLichSu = new TabPage();
             NutXuatLichSu = new Button();
@@ -81,7 +81,6 @@
             // 
             thanhTrenCung.BackColor = Color.Transparent;
             thanhTrenCung.Controls.Add(nutChuyenDoiDiaDiem);
-            thanhTrenCung.Controls.Add(nutLuuDiaDiem);
             thanhTrenCung.Controls.Add(NutTimKiem);
             thanhTrenCung.Controls.Add(unitToggle);
             thanhTrenCung.Controls.Add(oTimKiemDiaDiem);
@@ -96,32 +95,19 @@
             // nutChuyenDoiDiaDiem
             // 
             nutChuyenDoiDiaDiem.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            nutChuyenDoiDiaDiem.BackColor = Color.WhiteSmoke;
+            nutChuyenDoiDiaDiem.BackColor = Color.White;
             nutChuyenDoiDiaDiem.BackgroundImageLayout = ImageLayout.Stretch;
             nutChuyenDoiDiaDiem.FlatAppearance.BorderSize = 0;
             nutChuyenDoiDiaDiem.FlatStyle = FlatStyle.Flat;
-            nutChuyenDoiDiaDiem.Font = new Font("Segoe UI", 12F);
-            nutChuyenDoiDiaDiem.Location = new Point(947, 13);
+            nutChuyenDoiDiaDiem.Font = new Font("Segoe UI", 16F);
+            nutChuyenDoiDiaDiem.Location = new Point(1018, 11);
             nutChuyenDoiDiaDiem.Name = "nutChuyenDoiDiaDiem";
-            nutChuyenDoiDiaDiem.Size = new Size(57, 34);
+            nutChuyenDoiDiaDiem.Size = new Size(47, 37);
             nutChuyenDoiDiaDiem.TabIndex = 2;
             nutChuyenDoiDiaDiem.Text = "⇄";
+            nutChuyenDoiDiaDiem.UseCompatibleTextRendering = true;
             nutChuyenDoiDiaDiem.UseVisualStyleBackColor = false;
             nutChuyenDoiDiaDiem.Click += nutChuyenDoiDiaDiem_Click;
-            // 
-            // nutLuuDiaDiem
-            // 
-            nutLuuDiaDiem.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            nutLuuDiaDiem.BackColor = Color.WhiteSmoke;
-            nutLuuDiaDiem.FlatAppearance.BorderSize = 0;
-            nutLuuDiaDiem.FlatStyle = FlatStyle.Flat;
-            nutLuuDiaDiem.Location = new Point(1010, 13);
-            nutLuuDiaDiem.Name = "nutLuuDiaDiem";
-            nutLuuDiaDiem.Size = new Size(54, 34);
-            nutLuuDiaDiem.TabIndex = 3;
-            nutLuuDiaDiem.Text = "Lưu";
-            nutLuuDiaDiem.UseVisualStyleBackColor = false;
-            nutLuuDiaDiem.Click += nutLuuDiaDiem_Click;
             // 
             // NutTimKiem
             // 
@@ -130,9 +116,9 @@
             NutTimKiem.FlatAppearance.BorderSize = 0;
             NutTimKiem.FlatStyle = FlatStyle.Flat;
             NutTimKiem.Font = new Font("Segoe UI", 12F);
-            NutTimKiem.Location = new Point(886, 13);
+            NutTimKiem.Location = new Point(938, 12);
             NutTimKiem.Name = "NutTimKiem";
-            NutTimKiem.Size = new Size(42, 34);
+            NutTimKiem.Size = new Size(50, 34);
             NutTimKiem.TabIndex = 0;
             NutTimKiem.Text = "🔍";
             NutTimKiem.UseVisualStyleBackColor = false;
@@ -144,9 +130,9 @@
             unitToggle.BackColor = Color.Transparent;
             unitToggle.Font = new Font("Segoe UI", 10F);
             unitToggle.IsCelsius = true;
-            unitToggle.Location = new Point(1070, 13);
+            unitToggle.Location = new Point(1071, 12);
             unitToggle.Name = "unitToggle";
-            unitToggle.Size = new Size(104, 34);
+            unitToggle.Size = new Size(96, 34);
             unitToggle.TabIndex = 1;
             // 
             // oTimKiemDiaDiem
@@ -154,11 +140,11 @@
             oTimKiemDiaDiem.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             oTimKiemDiaDiem.BorderStyle = BorderStyle.None;
             oTimKiemDiaDiem.Font = new Font("Segoe UI", 12F);
-            oTimKiemDiaDiem.Location = new Point(19, 13);
+            oTimKiemDiaDiem.Location = new Point(19, 12);
             oTimKiemDiaDiem.Multiline = true;
             oTimKiemDiaDiem.Name = "oTimKiemDiaDiem";
-            oTimKiemDiaDiem.PlaceholderText = "🔍Tìm kiếm địa điểm...";
-            oTimKiemDiaDiem.Size = new Size(922, 34);
+            oTimKiemDiaDiem.PlaceholderText = "🔍 Tìm kiếm địa điểm...";
+            oTimKiemDiaDiem.Size = new Size(985, 34);
             oTimKiemDiaDiem.TabIndex = 0;
             oTimKiemDiaDiem.KeyDown += oTimKiemDiaDiem_KeyDown;
             oTimKiemDiaDiem.KeyPress += oTimKiemDiaDiem_KeyPress;
@@ -186,6 +172,16 @@
             listBoxDiaDiemDaLuu.TabIndex = 0;
             listBoxDiaDiemDaLuu.SelectedIndexChanged += listBoxDiaDiemDaLuu_SelectedIndexChanged;
             // 
+            // nutLuuDiaDiem
+            // 
+            nutLuuDiaDiem.Location = new Point(220, 10);
+            nutLuuDiaDiem.Name = "nutLuuDiaDiem";
+            nutLuuDiaDiem.Size = new Size(100, 30);
+            nutLuuDiaDiem.TabIndex = 1;
+            nutLuuDiaDiem.Text = "Lưu địa điểm";
+            nutLuuDiaDiem.UseVisualStyleBackColor = true;
+            nutLuuDiaDiem.Click += nutLuuDiaDiem_Click;
+            // 
             // tabDieuKhien
             // 
             tabDieuKhien.Controls.Add(tabLichSu);
@@ -201,6 +197,7 @@
             tabLichSu.Controls.Add(NutXuatLichSu);
             tabLichSu.Controls.Add(BangLichSu);
             tabLichSu.Controls.Add(listBoxDiaDiemDaLuu);
+            tabLichSu.Controls.Add(nutLuuDiaDiem);
             tabLichSu.Location = new Point(4, 29);
             tabLichSu.Name = "tabLichSu";
             tabLichSu.Padding = new Padding(8);
@@ -315,7 +312,7 @@
             anhIconThoiTiet.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             anhIconThoiTiet.BackColor = Color.Transparent;
             anhIconThoiTiet.BackgroundImageLayout = ImageLayout.Stretch;
-            anhIconThoiTiet.Location = new Point(164, 67);
+            anhIconThoiTiet.Location = new Point(168, 67);
             anhIconThoiTiet.Name = "anhIconThoiTiet";
             anhIconThoiTiet.Size = new Size(74, 67);
             anhIconThoiTiet.SizeMode = PictureBoxSizeMode.Zoom;
@@ -350,7 +347,7 @@
             nhanNhietDoHienTai.AutoSize = true;
             nhanNhietDoHienTai.BackColor = Color.Transparent;
             nhanNhietDoHienTai.Font = new Font("Segoe UI", 40F, FontStyle.Bold);
-            nhanNhietDoHienTai.Location = new Point(8, 67);
+            nhanNhietDoHienTai.Location = new Point(3, 67);
             nhanNhietDoHienTai.Name = "nhanNhietDoHienTai";
             nhanNhietDoHienTai.Size = new Size(159, 89);
             nhanNhietDoHienTai.TabIndex = 1;
@@ -361,7 +358,7 @@
             nhanTrangThai.AutoSize = true;
             nhanTrangThai.BackColor = Color.Transparent;
             nhanTrangThai.Font = new Font("Segoe UI", 14F);
-            nhanTrangThai.Location = new Point(8, 151);
+            nhanTrangThai.Location = new Point(8, 175);
             nhanTrangThai.Name = "nhanTrangThai";
             nhanTrangThai.Size = new Size(135, 32);
             nhanTrangThai.TabIndex = 2;

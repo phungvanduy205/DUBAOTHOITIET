@@ -1144,63 +1144,6 @@ namespace THOITIET
         }
 
 
-        /// <summary>
-        /// Lưu địa điểm hiện tại
-        /// </summary>
-        private void nutLuuDiaDiem_Click(object sender, EventArgs e)
-        {
-            var currentLocation = oTimKiemDiaDiem.Text.Trim();
-            if (string.IsNullOrEmpty(currentLocation))
-            {
-                MessageBox.Show("Vui lòng nhập địa điểm trước khi lưu!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            
-            if (savedLocationNames.Contains(currentLocation))
-            {
-                MessageBox.Show("Địa điểm này đã được lưu rồi!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            
-            savedLocationNames.Add(currentLocation);
-            SaveLocationList();
-            
-            MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thành công", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        /// <summary>
-        /// Chuyển đổi địa điểm - hiện dropdown để chọn
-        /// </summary>
-        private void nutChuyenDoiDiaDiem_Click(object sender, EventArgs e)
-        {
-            if (savedLocationNames.Count == 0) 
-            {
-                MessageBox.Show("Chưa có địa điểm nào được lưu. Hãy lưu địa điểm trước!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            
-            // Tạo context menu để chọn địa điểm
-            var contextMenu = new ContextMenuStrip();
-            
-            foreach (var location in savedLocationNames)
-            {
-                var item = new ToolStripMenuItem(location);
-                item.Click += (s, args) => {
-                    oTimKiemDiaDiem.Text = location;
-                    currentLocationIndex = savedLocationNames.IndexOf(location);
-                    _ = CapNhatThoiTiet();
-                    SaveLocationList();
-                };
-                contextMenu.Items.Add(item);
-            }
-            
-            // Hiện menu tại vị trí nút
-            contextMenu.Show(nutChuyenDoiDiaDiem, new Point(0, nutChuyenDoiDiaDiem.Height));
-        }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {

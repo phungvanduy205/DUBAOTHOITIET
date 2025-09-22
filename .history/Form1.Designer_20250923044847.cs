@@ -30,14 +30,13 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             thanhTrenCung = new Panel();
-            nutChuyenDoiDiaDiem = new Button();
-            nutLuuDiaDiem = new Button();
             NutTimKiem = new Button();
             unitToggle = new THOITIET.Controls.UnitToggle();
             oTimKiemDiaDiem = new TextBox();
             CongTacDonVi = new CheckBox();
             listBoxGoiY = new ListBox();
             listBoxDiaDiemDaLuu = new ListBox();
+            nutLuuDiaDiem = new Button();
             tabDieuKhien = new TabControl();
             tabLichSu = new TabPage();
             NutXuatLichSu = new Button();
@@ -80,8 +79,6 @@
             // thanhTrenCung
             // 
             thanhTrenCung.BackColor = Color.Transparent;
-            thanhTrenCung.Controls.Add(nutChuyenDoiDiaDiem);
-            thanhTrenCung.Controls.Add(nutLuuDiaDiem);
             thanhTrenCung.Controls.Add(NutTimKiem);
             thanhTrenCung.Controls.Add(unitToggle);
             thanhTrenCung.Controls.Add(oTimKiemDiaDiem);
@@ -93,36 +90,6 @@
             thanhTrenCung.TabIndex = 0;
             thanhTrenCung.Paint += thanhTrenCung_Paint;
             // 
-            // nutChuyenDoiDiaDiem
-            // 
-            nutChuyenDoiDiaDiem.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            nutChuyenDoiDiaDiem.BackColor = Color.WhiteSmoke;
-            nutChuyenDoiDiaDiem.BackgroundImageLayout = ImageLayout.Stretch;
-            nutChuyenDoiDiaDiem.FlatAppearance.BorderSize = 0;
-            nutChuyenDoiDiaDiem.FlatStyle = FlatStyle.Flat;
-            nutChuyenDoiDiaDiem.Font = new Font("Segoe UI", 12F);
-            nutChuyenDoiDiaDiem.Location = new Point(947, 13);
-            nutChuyenDoiDiaDiem.Name = "nutChuyenDoiDiaDiem";
-            nutChuyenDoiDiaDiem.Size = new Size(57, 34);
-            nutChuyenDoiDiaDiem.TabIndex = 2;
-            nutChuyenDoiDiaDiem.Text = "⇄";
-            nutChuyenDoiDiaDiem.UseVisualStyleBackColor = false;
-            nutChuyenDoiDiaDiem.Click += nutChuyenDoiDiaDiem_Click;
-            // 
-            // nutLuuDiaDiem
-            // 
-            nutLuuDiaDiem.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            nutLuuDiaDiem.BackColor = Color.WhiteSmoke;
-            nutLuuDiaDiem.FlatAppearance.BorderSize = 0;
-            nutLuuDiaDiem.FlatStyle = FlatStyle.Flat;
-            nutLuuDiaDiem.Location = new Point(1010, 13);
-            nutLuuDiaDiem.Name = "nutLuuDiaDiem";
-            nutLuuDiaDiem.Size = new Size(54, 34);
-            nutLuuDiaDiem.TabIndex = 3;
-            nutLuuDiaDiem.Text = "Lưu";
-            nutLuuDiaDiem.UseVisualStyleBackColor = false;
-            nutLuuDiaDiem.Click += nutLuuDiaDiem_Click;
-            // 
             // NutTimKiem
             // 
             NutTimKiem.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -130,9 +97,9 @@
             NutTimKiem.FlatAppearance.BorderSize = 0;
             NutTimKiem.FlatStyle = FlatStyle.Flat;
             NutTimKiem.Font = new Font("Segoe UI", 12F);
-            NutTimKiem.Location = new Point(886, 13);
+            NutTimKiem.Location = new Point(948, 13);
             NutTimKiem.Name = "NutTimKiem";
-            NutTimKiem.Size = new Size(42, 34);
+            NutTimKiem.Size = new Size(84, 34);
             NutTimKiem.TabIndex = 0;
             NutTimKiem.Text = "🔍";
             NutTimKiem.UseVisualStyleBackColor = false;
@@ -144,9 +111,9 @@
             unitToggle.BackColor = Color.Transparent;
             unitToggle.Font = new Font("Segoe UI", 10F);
             unitToggle.IsCelsius = true;
-            unitToggle.Location = new Point(1070, 13);
+            unitToggle.Location = new Point(1071, 12);
             unitToggle.Name = "unitToggle";
-            unitToggle.Size = new Size(104, 34);
+            unitToggle.Size = new Size(96, 34);
             unitToggle.TabIndex = 1;
             // 
             // oTimKiemDiaDiem
@@ -157,8 +124,8 @@
             oTimKiemDiaDiem.Location = new Point(19, 13);
             oTimKiemDiaDiem.Multiline = true;
             oTimKiemDiaDiem.Name = "oTimKiemDiaDiem";
-            oTimKiemDiaDiem.PlaceholderText = "🔍Tìm kiếm địa điểm...";
-            oTimKiemDiaDiem.Size = new Size(922, 34);
+            oTimKiemDiaDiem.PlaceholderText = "Tìm kiếm địa điểm...";
+            oTimKiemDiaDiem.Size = new Size(1030, 34);
             oTimKiemDiaDiem.TabIndex = 0;
             oTimKiemDiaDiem.KeyDown += oTimKiemDiaDiem_KeyDown;
             oTimKiemDiaDiem.KeyPress += oTimKiemDiaDiem_KeyPress;
@@ -186,6 +153,16 @@
             listBoxDiaDiemDaLuu.TabIndex = 0;
             listBoxDiaDiemDaLuu.SelectedIndexChanged += listBoxDiaDiemDaLuu_SelectedIndexChanged;
             // 
+            // nutLuuDiaDiem
+            // 
+            nutLuuDiaDiem.Location = new Point(220, 10);
+            nutLuuDiaDiem.Name = "nutLuuDiaDiem";
+            nutLuuDiaDiem.Size = new Size(100, 30);
+            nutLuuDiaDiem.TabIndex = 1;
+            nutLuuDiaDiem.Text = "Lưu địa điểm";
+            nutLuuDiaDiem.UseVisualStyleBackColor = true;
+            nutLuuDiaDiem.Click += nutLuuDiaDiem_Click;
+            // 
             // tabDieuKhien
             // 
             tabDieuKhien.Controls.Add(tabLichSu);
@@ -201,6 +178,7 @@
             tabLichSu.Controls.Add(NutXuatLichSu);
             tabLichSu.Controls.Add(BangLichSu);
             tabLichSu.Controls.Add(listBoxDiaDiemDaLuu);
+            tabLichSu.Controls.Add(nutLuuDiaDiem);
             tabLichSu.Location = new Point(4, 29);
             tabLichSu.Name = "tabLichSu";
             tabLichSu.Padding = new Padding(8);
@@ -527,9 +505,8 @@
  		private System.Windows.Forms.CheckBox CongTacDonVi;
  		private System.Windows.Forms.Button NutTimKiem;
  		private System.Windows.Forms.TextBox oTimKiemDiaDiem;
-         private THOITIET.Controls.UnitToggle unitToggle;
-         private System.Windows.Forms.Button nutChuyenDoiDiaDiem;
-         private System.Windows.Forms.ListBox listBoxGoiY;
+        private THOITIET.Controls.UnitToggle unitToggle;
+        private System.Windows.Forms.ListBox listBoxGoiY;
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;
         private System.Windows.Forms.Button nutLuuDiaDiem;
         private TabControl tabDieuKhien;

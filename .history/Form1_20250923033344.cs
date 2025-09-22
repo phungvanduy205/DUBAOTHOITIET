@@ -59,35 +59,12 @@ namespace THOITIET
         private int? lastWeatherId = null;
         private bool? lastIsNight = null;
 
-        // UI segmented runtime (không dùng nữa khi có UnitToggle designer)
-        private Panel? donViSegment;
-        private Button? btnC;
-        private Button? btnF;
-        
-        // Lưu địa điểm
-        private List<string> savedLocationNames = new List<string>();
-        private int currentLocationIndex = 0;
-        private string defaultLocationName = "Hanoi";
-        private string locationsFilePath = "saved_locations.json";
-
         public Form1()
         {
             System.Diagnostics.Debug.WriteLine("=== FORM1 CONSTRUCTOR START ===");
             InitializeComponent();
             CauHinhKhoiTao();
             ApDungStyleGlassmorphism();
-
-            // Không tạo segmented runtime nữa (đã có UnitToggle trong Designer)
-            
-            // Bo tròn thanh tìm kiếm
-            this.Load += (s, e) => {
-                ApplyRoundedCorners(oTimKiemDiaDiem, 10);
-                ApplyRoundedCorners(khung24Gio, 15);
-                ApplyRoundedCorners(khung5Ngay, 15);
-            };
-            
-            // Khởi tạo lưu địa điểm
-            LoadSavedLocations();
 
             // Tạo background động
             InitializeBackgroundPictureBox();
@@ -1056,240 +1033,6 @@ namespace THOITIET
         private static extern System.IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
 
         /// <summary>
-        /// Áp dụng viền bo tròn cho control
-        /// </summary>
-        private void ApplyRoundedCorners(Control control, int radius)
-        {
-            try
-            {
-                var path = new System.Drawing.Drawing2D.GraphicsPath();
-                path.AddArc(0, 0, radius * 2, radius * 2, 180, 90);
-                path.AddArc(control.Width - radius * 2, 0, radius * 2, radius * 2, 270, 90);
-                path.AddArc(control.Width - radius * 2, control.Height - radius * 2, radius * 2, radius * 2, 0, 90);
-                path.AddArc(0, control.Height - radius * 2, radius * 2, radius * 2, 90, 90);
-                path.CloseAllFigures();
-                control.Region = new System.Drawing.Region(path);
-            }
-            catch
-            {
-                // Nếu không thể tạo region, bỏ qua
-            }
-        }
-
-        /// <summary>
-        /// Load danh sách địa điểm đã lưu
-        /// </summary>
-        private void LoadSavedLocations()
-        {
-            try
-            {
-                if (File.Exists(locationsFilePath))
-                {
-                    var json = File.ReadAllText(locationsFilePath);
-                    var data = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
-                    if (data?.locations != null)
-                    {
-                        savedLocationNames = data.locations.ToObject<List<string>>();
-                    }
-                    if (data?.defaultLocation != null)
-                    {
-                        defaultLocationName = data.defaultLocation.ToString();
-                    }
-                }
-                
-                // Nếu chưa có địa điểm nào, thêm mặc định
-                if (savedLocationNames.Count == 0)
-                {
-                    savedLocationNames.Add("Hanoi");
-                    savedLocationNames.Add("Ho Chi Minh City");
-                    savedLocationNames.Add("Da Nang");
-                }
-                
-                // Tìm index của địa điểm mặc định
-                currentLocationIndex = savedLocationNames.IndexOf(defaultLocationName);
-                if (currentLocationIndex == -1) currentLocationIndex = 0;
-                
-                // Load thời tiết cho địa điểm mặc định
-                if (!string.IsNullOrEmpty(defaultLocationName))
-                {
-                    oTimKiemDiaDiem.Text = defaultLocationName;
-                    _ = CapNhatThoiTiet();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi load địa điểm: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Lưu danh sách địa điểm
-        /// </summary>
-        private void SaveLocationList()
-        {
-            try
-            {
-                var data = new
-                {
-                    locations = savedLocationNames,
-                    defaultLocation = savedLocationNames.Count > currentLocationIndex ? savedLocationNames[currentLocationIndex] : defaultLocationName
-                };
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
-                File.WriteAllText(locationsFilePath, json);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi lưu địa điểm: {ex.Message}");
-            }
-        }
-
-
-        /// <summary>
-        /// Lưu địa điểm hiện tại
-        /// </summary>
-        private void nutLuuDiaDiem_Click(object sender, EventArgs e)
-        {
-            var currentLocation = oTimKiemDiaDiem.Text.Trim();
-            if (string.IsNullOrEmpty(currentLocation))
-            {
-                MessageBox.Show("Vui lòng nhập địa điểm trước khi lưu!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            
-            if (savedLocationNames.Contains(currentLocation))
-            {
-                MessageBox.Show("Địa điểm này đã được lưu rồi!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            
-            savedLocationNames.Add(currentLocation);
-            SaveLocationList();
-            
-            MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thành công", 
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        /// <summary>
-        /// Chuyển đổi địa điểm - hiện dropdown để chọn
-        /// </summary>
-        private void nutChuyenDoiDiaDiem_Click(object sender, EventArgs e)
-        {
-            if (savedLocationNames.Count == 0) 
-            {
-                MessageBox.Show("Chưa có địa điểm nào được lưu. Hãy lưu địa điểm trước!", "Thông báo", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            
-            // Tạo context menu để chọn địa điểm
-            var contextMenu = new ContextMenuStrip();
-            
-            foreach (var location in savedLocationNames)
-            {
-                var item = new ToolStripMenuItem(location);
-                item.Click += (s, args) => {
-                    oTimKiemDiaDiem.Text = location;
-                    currentLocationIndex = savedLocationNames.IndexOf(location);
-                    _ = CapNhatThoiTiet();
-                    SaveLocationList();
-                };
-                contextMenu.Items.Add(item);
-            }
-            
-            // Hiện menu tại vị trí nút
-            contextMenu.Show(nutChuyenDoiDiaDiem, new Point(0, nutChuyenDoiDiaDiem.Height));
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-            // Lưu địa điểm khi đóng ứng dụng
-            SaveLocationList();
-        }
-
-        /// <summary>
-        /// Segmented toggle °C/°F đơn giản: nhấn để chuyển sang °F (ưu tiên phần độ F)
-        /// </summary>
-        private void TaoSegmentDonViChiF()
-        {
-            try
-            {
-                // Ẩn checkbox cũ nếu có
-                if (CongTacDonVi != null) CongTacDonVi.Visible = false;
-
-                if (boCucChinh == null) return;
-
-                donViSegment = new Panel
-                {
-                    Size = new Size(96, 34),
-                    BackColor = Color.FromArgb(170, 255, 255, 255),
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                    Location = new Point(boCucChinh.Width - 96 - 12, 12)
-                };
-                donViSegment.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, donViSegment.Width, donViSegment.Height, 16, 16));
-
-                btnC = new Button
-                {
-                    Text = "°C",
-                    FlatStyle = FlatStyle.Flat,
-                    Size = new Size(48, 30),
-                    Location = new Point(2, 2),
-                    TabStop = false
-                };
-                btnC.FlatAppearance.BorderSize = 0;
-
-                btnF = new Button
-                {
-                    Text = "°F",
-                    FlatStyle = FlatStyle.Flat,
-                    Size = new Size(48, 30),
-                    Location = new Point(46, 2),
-                    TabStop = false
-                };
-                btnF.FlatAppearance.BorderSize = 0;
-
-                // Áp style: bên đang chọn nền sáng, chữ xanh; bên còn lại chữ trắng
-                void CapNhatUI()
-                {
-                    if (btnC == null || btnF == null) return;
-                    if (donViCelsius)
-                    {
-                        btnC.BackColor = Color.FromArgb(230, 255, 255, 255);
-                        btnC.ForeColor = Color.FromArgb(33, 150, 243);
-                        btnF.BackColor = Color.Transparent;
-                        btnF.ForeColor = Color.White;
-                    }
-                    else
-                    {
-                        btnF.BackColor = Color.FromArgb(230, 255, 255, 255);
-                        btnF.ForeColor = Color.FromArgb(33, 150, 243);
-                        btnC.BackColor = Color.Transparent;
-                        btnC.ForeColor = Color.White;
-                    }
-                }
-
-                btnC.Click += async (s, e) => { if (!donViCelsius) { donViCelsius = true; CapNhatUI(); await CapNhatThoiTiet(); } };
-                btnF.Click += async (s, e) => { if (donViCelsius) { donViCelsius = false; CapNhatUI(); await CapNhatThoiTiet(); } };
-
-                donViSegment.Controls.AddRange(new Control[] { btnC, btnF });
-                boCucChinh.Controls.Add(donViSegment);
-                boCucChinh.Resize += (s, e) =>
-                {
-                    if (donViSegment != null)
-                        donViSegment.Location = new Point(boCucChinh.Width - donViSegment.Width - 12, 12);
-                };
-
-                CapNhatUI();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi tạo segmented °C/°F: {ex.Message}");
-            }
-        }
-
-        /// <summary>
         /// Tạo nút đóng form
         /// </summary>
         private void TaoNutDongForm()
@@ -1469,7 +1212,14 @@ namespace THOITIET
                 }
 
                 // Cập nhật bình minh (không có trong HourlyWeather, giữ nguyên)
-                // Đã xóa sunrisePanel
+                if (sunrisePanel != null)
+                {
+                    var sunriseLabel = sunrisePanel.Controls.OfType<Label>().FirstOrDefault();
+                    if (sunriseLabel != null)
+                    {
+                        sunriseLabel.Text = $"Bình minh\n--:--";
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -1535,7 +1285,14 @@ namespace THOITIET
                 }
 
                 // Cập nhật bình minh (không có trong DailyWeather, giữ nguyên)
-                // Đã xóa sunrisePanel
+                if (sunrisePanel != null)
+                {
+                    var sunriseLabel = sunrisePanel.Controls.OfType<Label>().FirstOrDefault();
+                    if (sunriseLabel != null)
+                    {
+                        sunriseLabel.Text = $"Bình minh\n--:--";
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -1585,7 +1342,18 @@ namespace THOITIET
                 TaoPanelChiTiet(pressurePanel, "📊", "Áp suất", $"{current.Pressure} hPa");
                 TaoPanelChiTiet(visibilityPanel, "👁️", "Tầm nhìn", $"{current.Visibility / 1000.0:0.0} km");
 
-                // Đã xóa sunrisePanel
+                // Mọc/lặn - lấy từ dữ liệu daily nếu có
+                if (weatherData?.Daily?.Length > 0)
+                {
+                    var daily = weatherData.Daily[0];
+                    var sunrise = DateTimeOffset.FromUnixTimeSeconds(daily.Sunrise).ToString("HH:mm");
+                    var sunset = DateTimeOffset.FromUnixTimeSeconds(daily.Sunset).ToString("HH:mm");
+                    TaoPanelChiTiet(sunrisePanel, "🌅", "Mọc/Lặn", $"{sunrise}/{sunset}");
+                }
+                else
+                {
+                    TaoPanelChiTiet(sunrisePanel, "🌅", "Mọc/Lặn", "--:--/--:--");
+                }
             }
             catch (Exception ex)
             {
@@ -2292,6 +2060,28 @@ namespace THOITIET
             SuKienChonDiaDiemDaLuu();
         }
 
+        /// <summary>
+        /// Event handler cho nút lưu địa điểm
+        /// </summary>
+        private void nutLuuDiaDiem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(currentLocation) && currentLat != 0 && currentLon != 0)
+                {
+                    LuuDiaDiem(currentLocation, currentLat, currentLon);
+                    MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Không có địa điểm để lưu. Vui lòng tìm kiếm địa điểm trước.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi lưu địa điểm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         /// <summary>
         /// Tạo background test khi không có file GIF - TO NHẤT VÀ THAY ĐỔI THEO THỜI TIẾT
@@ -2534,7 +2324,8 @@ namespace THOITIET
                 // Panel tầm nhìn
                 TaoPanelChiTiet(visibilityPanel, "👁️", "Tầm nhìn", "--");
 
-                // Đã xóa sunrisePanel
+                // Panel mặt trời mọc
+                TaoPanelChiTiet(sunrisePanel, "🌅", "Mọc/Lặn", "--");
             }
             catch (Exception ex)
             {
@@ -2550,9 +2341,6 @@ namespace THOITIET
             try
             {
                 panel.Controls.Clear();
-                
-                // Bo tròn viền cho panel
-                ApplyRoundedCorners(panel, 15);
 
                 // Label icon
                 var iconLabel = new Label
@@ -2620,7 +2408,10 @@ namespace THOITIET
                 // Panel tầm nhìn
                 TaoPanelChiTiet(visibilityPanel, "👁️", "Tầm nhìn", $"{hienTai.TamNhin / 1000.0:0.0} km");
 
-                // Đã xóa sunrisePanel
+                // Panel mặt trời mọc/lặn
+                var sunrise = UnixToLocal(hienTai.MatTroiMoc).ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+                var sunset = UnixToLocal(hienTai.MatTroiLan).ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+                TaoPanelChiTiet(sunrisePanel, "🌅", "Mọc/Lặn", $"{sunrise}/{sunset}");
             }
             catch (Exception ex)
             {
