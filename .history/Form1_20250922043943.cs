@@ -313,7 +313,7 @@ namespace THOITIET
                 if (boCucChinh != null)
                 {
                     boCucChinh.BackgroundImage = null;
-                    boCucChinh.BackColor = Color.Transparent;
+                    boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
                 }
             }
         }
@@ -355,7 +355,7 @@ namespace THOITIET
                 System.Diagnostics.Debug.WriteLine($"Resources path: {resourcesPath}");
                 System.Diagnostics.Debug.WriteLine($"Weather main: '{weatherMain}', WeatherId: {weatherId}, IsNight: {isNight}");
                 System.Diagnostics.Debug.WriteLine($"Current weather data: {weatherData?.Current?.Weather?[0]?.Main ?? "NULL"}");
-                System.Diagnostics.Debug.WriteLine($"Current weather ID: {(weatherData?.Current?.Weather?[0]?.Id ?? 0).ToString()}");
+                System.Diagnostics.Debug.WriteLine($"Current weather ID: {weatherData?.Current?.Weather?[0]?.Id?.ToString() ?? "NULL"}");
                 System.Diagnostics.Debug.WriteLine($"WeatherId parameter: {weatherId}");
                 
                 // Kiểm tra thư mục Resources có tồn tại không
@@ -459,12 +459,12 @@ namespace THOITIET
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Lỗi thiết lập nền: {ex.Message}");
-                   // Fallback - tạo background gradient đơn giản cho boCucChinh
-                   if (boCucChinh != null)
-                   {
-                       boCucChinh.BackgroundImage = null;
-                       boCucChinh.BackColor = Color.Transparent;
-                   }
+                // Fallback - tạo background gradient đơn giản cho boCucChinh
+                if (boCucChinh != null)
+                {
+                    boCucChinh.BackgroundImage = null;
+                    boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
+                }
             }
         }
 
@@ -669,7 +669,7 @@ namespace THOITIET
                             {
                                 // Nếu không có file, dùng màu nền đơn giản
                                 boCucChinh.BackgroundImage = null;
-                                boCucChinh.BackColor = Color.Transparent;
+                                boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
                                 System.Diagnostics.Debug.WriteLine("Fallback: Không tìm thấy nen_ban_ngay.gif, dùng màu nền");
                             }
                         }
@@ -677,7 +677,7 @@ namespace THOITIET
                         {
                             System.Diagnostics.Debug.WriteLine($"Fallback background error: {ex.Message}");
                             boCucChinh.BackgroundImage = null;
-                            boCucChinh.BackColor = Color.Transparent;
+                            boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
                         }
                     }
                 }

@@ -677,7 +677,7 @@ namespace THOITIET
                         {
                             System.Diagnostics.Debug.WriteLine($"Fallback background error: {ex.Message}");
                             boCucChinh.BackgroundImage = null;
-                            boCucChinh.BackColor = Color.Transparent;
+                            boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
                         }
                     }
                 }

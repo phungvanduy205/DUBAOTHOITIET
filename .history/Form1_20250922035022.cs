@@ -57,7 +57,6 @@ namespace THOITIET
 
         public Form1()
         {
-            System.Diagnostics.Debug.WriteLine("=== FORM1 CONSTRUCTOR START ===");
             InitializeComponent();
             CauHinhKhoiTao();
             ApDungStyleGlassmorphism();
@@ -66,7 +65,6 @@ namespace THOITIET
             InitializeBackgroundPictureBox();
             
             // Set background mặc định ngay khi khởi động dựa trên thời gian hiện tại
-            System.Diagnostics.Debug.WriteLine("Calling SetDefaultBackgroundOnStartup...");
             SetDefaultBackgroundOnStartup();
 
             // Tạo nội dung cho các panel chi tiết
@@ -84,23 +82,18 @@ namespace THOITIET
             // Không đặt địa điểm mặc định - để trống cho đến khi API load
 
             // Xóa gợi ý tìm kiếm
-            System.Diagnostics.Debug.WriteLine("=== FORM1 CONSTRUCTOR END ===");
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("=== FORM1_LOAD START ===");
             // Khởi tạo dữ liệu ban đầu
             CapNhatThoiGian();
             
             // Test background ngay lập tức
-            System.Diagnostics.Debug.WriteLine("Calling TestBackground...");
             TestBackground();
             
             // Force set background ngay trong Form1_Load
-            System.Diagnostics.Debug.WriteLine("Calling ForceSetBackgroundInLoad...");
             ForceSetBackgroundInLoad();
-            System.Diagnostics.Debug.WriteLine("=== FORM1_LOAD END ===");
         }
         
         /// <summary>
@@ -124,8 +117,8 @@ namespace THOITIET
                 
                 System.Diagnostics.Debug.WriteLine($"ForceSetBackground: Thời gian {DateTime.Now:HH:mm}, IsNight: {isNight}");
 
-                   // Đường dẫn đến thư mục Resources trong bin/Debug
-                   string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
+                // Đường dẫn đến thư mục Resources
+                string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
                 
                 if (!Directory.Exists(resourcesPath))
                 {
@@ -135,16 +128,16 @@ namespace THOITIET
 
                 Image backgroundImage;
                 
-                   if (isNight)
-                   {
-                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
-                       System.Diagnostics.Debug.WriteLine("ForceSetBackground: Chọn nền ban đêm");
-                   }
-                   else
-                   {
-                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
-                       System.Diagnostics.Debug.WriteLine("ForceSetBackground: Chọn nền ban ngày");
-                   }
+                if (isNight)
+                {
+                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                    System.Diagnostics.Debug.WriteLine("ForceSetBackground: Chọn nền ban đêm");
+                }
+                else
+                {
+                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_ngay.gif"));
+                    System.Diagnostics.Debug.WriteLine("ForceSetBackground: Chọn nền ban ngày");
+                }
 
                 // Force set background với nhiều cách
                 boCucChinh.BackgroundImage = backgroundImage;
@@ -264,36 +257,29 @@ namespace THOITIET
                 
                 System.Diagnostics.Debug.WriteLine($"Thời gian hiện tại: {DateTime.Now:HH:mm}, IsNight: {isNight}");
 
-                   // Đường dẫn đến thư mục Resources trong bin/Debug
-                   string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-                
-                System.Diagnostics.Debug.WriteLine($"Resources path: {resourcesPath}");
-                System.Diagnostics.Debug.WriteLine($"Directory exists: {Directory.Exists(resourcesPath)}");
+                // Đường dẫn đến thư mục Resources
+                string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
                 
                 if (!Directory.Exists(resourcesPath))
                 {
                     System.Diagnostics.Debug.WriteLine($"Thư mục Resources không tồn tại: {resourcesPath}");
                     return;
                 }
-                
-                // Liệt kê các file trong thư mục Resources
-                var files = Directory.GetFiles(resourcesPath);
-                System.Diagnostics.Debug.WriteLine($"Các file trong Resources: {string.Join(", ", files.Select(Path.GetFileName))}");
 
                 Image backgroundImage;
                 
-                   if (isNight)
-                   {
-                       // Ban đêm - dùng nền ban đêm mặc định
-                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
-                       System.Diagnostics.Debug.WriteLine("SetDefaultBackground: Chọn nền ban đêm mặc định");
-                   }
-                   else
-                   {
-                       // Ban ngày - dùng nền ban ngày mặc định
-                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
-                       System.Diagnostics.Debug.WriteLine("SetDefaultBackground: Chọn nền ban ngày mặc định");
-                   }
+                if (isNight)
+                {
+                    // Ban đêm - dùng nền ban đêm mặc định
+                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                    System.Diagnostics.Debug.WriteLine("SetDefaultBackground: Chọn nền ban đêm mặc định");
+                }
+                else
+                {
+                    // Ban ngày - dùng nền ban ngày mặc định
+                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_ngay.gif"));
+                    System.Diagnostics.Debug.WriteLine("SetDefaultBackground: Chọn nền ban ngày mặc định");
+                }
 
                 // Set background cho boCucChinh
                 boCucChinh.BackgroundImage = backgroundImage;
@@ -313,7 +299,7 @@ namespace THOITIET
                 if (boCucChinh != null)
                 {
                     boCucChinh.BackgroundImage = null;
-                    boCucChinh.BackColor = Color.Transparent;
+                    boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
                 }
             }
         }
@@ -321,11 +307,11 @@ namespace THOITIET
         /// <summary>
         /// Thiết lập nền theo thời gian và thời tiết
         /// </summary>
-        private void SetBackground(string weatherMain = "Clear", int weatherId = 800)
+        private void SetBackground(string weatherMain = "Clear")
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"=== SetBackground được gọi với weatherMain: {weatherMain}, weatherId: {weatherId} ===");
+                System.Diagnostics.Debug.WriteLine($"=== SetBackground được gọi với weatherMain: {weatherMain} ===");
                 
                 if (boCucChinh == null)
                 {
@@ -349,14 +335,11 @@ namespace THOITIET
                 
                 bool isNight = currentHour >= 18 || currentHour < 6;
 
-                // Đường dẫn đến thư mục Resources trong bin/Debug
+                // Đường dẫn đến thư mục Resources
                 string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
                 
                 System.Diagnostics.Debug.WriteLine($"Resources path: {resourcesPath}");
-                System.Diagnostics.Debug.WriteLine($"Weather main: '{weatherMain}', WeatherId: {weatherId}, IsNight: {isNight}");
-                System.Diagnostics.Debug.WriteLine($"Current weather data: {weatherData?.Current?.Weather?[0]?.Main ?? "NULL"}");
-                System.Diagnostics.Debug.WriteLine($"Current weather ID: {(weatherData?.Current?.Weather?[0]?.Id ?? 0).ToString()}");
-                System.Diagnostics.Debug.WriteLine($"WeatherId parameter: {weatherId}");
+                System.Diagnostics.Debug.WriteLine($"Weather main: {weatherMain}, IsNight: {isNight}");
                 
                 // Kiểm tra thư mục Resources có tồn tại không
                 if (!Directory.Exists(resourcesPath))
@@ -369,70 +352,86 @@ namespace THOITIET
                 var files = Directory.GetFiles(resourcesPath);
                 System.Diagnostics.Debug.WriteLine($"Các file trong Resources: {string.Join(", ", files.Select(Path.GetFileName))}");
 
-                // Chọn background dựa trên mã thời tiết từ OpenWeatherMap API
-                if (weatherId >= 200 && weatherId <= 232)
+                // Chọn background dựa trên thời tiết và thời gian
+                switch (weatherMain.ToLower())
                 {
-                    // Thunderstorm (dông, sấm chớp) => nen_giong_bao
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_giong_bao.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_giong_bao.gif (thunderstorm - {weatherId})");
-                }
-                else if (weatherId >= 300 && weatherId <= 321)
-                {
-                    // Drizzle (mưa phùn) => nen_mua_rao
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_mua_rao.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_mua_rao.gif (drizzle - {weatherId})");
-                }
-                else if (weatherId >= 500 && weatherId <= 531)
-                {
-                    // Rain (mưa) => nen_mua
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_mua.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_mua.gif (rain - {weatherId})");
-                }
-                else if (weatherId >= 600 && weatherId <= 622)
-                {
-                    // Snow (tuyết) => nen_tuyet
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_tuyet.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_tuyet.gif (snow - {weatherId})");
-                }
-                else if (weatherId >= 701 && weatherId <= 781)
-                {
-                    // Atmosphere (sương mù, bụi, khói…) => nen_suong_mu
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_suong_mu.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_suong_mu.gif (atmosphere - {weatherId})");
-                }
-                else if (weatherId == 800)
-                {
-                    // Clear (trời quang) => nen_troi_quang
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_troi_quang.gif (clear - {weatherId})");
-                }
-                else if (weatherId >= 801 && weatherId <= 804)
-                {
-                    // Clouds (mây) => nen_ban_ngay hoặc nen_ban_dem
-                    if (isNight)
-                    {
-                        backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
-                        System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_ban_dem.gif (clouds đêm - {weatherId})");
-                    }
-                    else
-                    {
-                        backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_ngay.jpg"));
-                        System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_ban_ngay.jpg (clouds ngày - {weatherId})");
-                    }
-                }
-                else
-                {
-                    // Mặc định - dùng nền theo thời gian
-                    if (isNight)
-                    {
-                        backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
-                        System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_ban_dem.gif (mặc định đêm - {weatherId})");
-                    }
-                    else
-                    {
-                        backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
-                        System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_troi_quang.gif (mặc định ngày - {weatherId})");
-                    }
+                    case "snow":
+                        if (isNight)
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_tuyet.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_tuyet.gif (tuyết đêm)");
+                        }
+                        else
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_tuyet.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_tuyet.gif (tuyết ngày)");
+                        }
+                        break;
+                    case "rain":
+                    case "drizzle":
+                        if (isNight)
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_mua.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_mua.gif (mưa đêm)");
+                        }
+                        else
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_mua.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_mua.gif (mưa ngày)");
+                        }
+                        break;
+                    case "thunderstorm":
+                        if (isNight)
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_giong_bao.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_giong_bao.gif (bão đêm)");
+                        }
+                        else
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_giong_bao.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_giong_bao.gif (bão ngày)");
+                        }
+                        break;
+                    case "mist":
+                    case "fog":
+                    case "haze":
+                        if (isNight)
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_ban_dem.gif (sương mù đêm - mặc định)");
+                        }
+                        else
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_suong_mu.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_suong_mu.gif (sương mù ngày)");
+                        }
+                        break;
+                    case "clouds":
+                        if (isNight)
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_ban_dem.gif (mây đêm - mặc định)");
+                        }
+                        else
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_may_day.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_may_day.gif (mây ngày)");
+                        }
+                        break;
+                    case "clear":
+                    default:
+                        if (isNight)
+                        {
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_ban_dem.gif (trời quang đêm - mặc định)");
+                        }
+                        else
+                        {
+                            // Ban ngày trời quang - dùng nền ban ngày mặc định
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_ngay.gif"));
+                            System.Diagnostics.Debug.WriteLine("Chọn nền: nen_ban_ngay.gif (trời quang ngày)");
+                        }
+                        break;
                 }
 
                 // Set background cho boCucChinh thay vì PictureBox riêng biệt
@@ -459,12 +458,12 @@ namespace THOITIET
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Lỗi thiết lập nền: {ex.Message}");
-                   // Fallback - tạo background gradient đơn giản cho boCucChinh
-                   if (boCucChinh != null)
-                   {
-                       boCucChinh.BackgroundImage = null;
-                       boCucChinh.BackColor = Color.Transparent;
-                   }
+                // Fallback - tạo background gradient đơn giản cho boCucChinh
+                if (boCucChinh != null)
+                {
+                    boCucChinh.BackgroundImage = null;
+                    boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
+                }
             }
         }
 
@@ -639,15 +638,7 @@ namespace THOITIET
                 // Cập nhật background theo thời tiết hiện tại (nếu có dữ liệu)
                 if (weatherData?.Current?.Weather?.Length > 0)
                 {
-                    var weather = weatherData.Current.Weather[0];
-                    System.Diagnostics.Debug.WriteLine($"=== API WEATHER DATA ===");
-                    System.Diagnostics.Debug.WriteLine($"Weather Main: {weather.Main}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Description: {weather.Description}");
-                    System.Diagnostics.Debug.WriteLine($"Weather ID: {weather.Id}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Icon: {weather.Icon}");
-                    System.Diagnostics.Debug.WriteLine($"=== END API WEATHER DATA ===");
-                    
-                    SetBackground(weather.Main ?? "Clear", weather.Id);
+                    SetBackground(weatherData.Current.Weather[0].Main ?? "Clear");
                 }
                 else
                 {
@@ -657,7 +648,7 @@ namespace THOITIET
                         try
                         {
                             string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-                            string fallbackFile = Path.Combine(resourcesPath, "nen_ban_ngay.jpg");
+                            string fallbackFile = Path.Combine(resourcesPath, "nen_ban_ngay.gif");
                             
                             if (File.Exists(fallbackFile))
                             {
@@ -669,7 +660,7 @@ namespace THOITIET
                             {
                                 // Nếu không có file, dùng màu nền đơn giản
                                 boCucChinh.BackgroundImage = null;
-                                boCucChinh.BackColor = Color.Transparent;
+                                boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
                                 System.Diagnostics.Debug.WriteLine("Fallback: Không tìm thấy nen_ban_ngay.gif, dùng màu nền");
                             }
                         }
@@ -677,7 +668,7 @@ namespace THOITIET
                         {
                             System.Diagnostics.Debug.WriteLine($"Fallback background error: {ex.Message}");
                             boCucChinh.BackgroundImage = null;
-                            boCucChinh.BackColor = Color.Transparent;
+                            boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
                         }
                     }
                 }
@@ -746,22 +737,7 @@ namespace THOITIET
                 CapNhatPanelChiTietFromApi(weather.Current, kyHieuNhietDo);
 
                 // Cập nhật background theo thời tiết
-                if (weather.Current.Weather?.Length > 0)
-                {
-                    var currentWeather = weather.Current.Weather[0];
-                    System.Diagnostics.Debug.WriteLine($"=== HienThiThongTin WEATHER DATA ===");
-                    System.Diagnostics.Debug.WriteLine($"Weather Main: {currentWeather.Main}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Description: {currentWeather.Description}");
-                    System.Diagnostics.Debug.WriteLine($"Weather ID: {currentWeather.Id}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Icon: {currentWeather.Icon}");
-                    System.Diagnostics.Debug.WriteLine($"=== END HienThiThongTin WEATHER DATA ===");
-                    
-                    SetBackground(currentWeather.Main ?? "Clear", currentWeather.Id);
-                }
-                else
-                {
-                    SetBackground("Clear", 800);
-                }
+                SetBackground(weather.Current.Weather?[0]?.Main ?? "Clear");
 
                 // Cập nhật dự báo 24 giờ
                 if (weather.Hourly != null && weather.Hourly.Length > 0)
@@ -1092,7 +1068,7 @@ namespace THOITIET
                     CapNhatPanelChiTietFromApi(current, kyHieuNhietDo);
 
                     // Cập nhật background theo thời tiết
-                    SetBackground(current.Weather?[0]?.Main ?? "Clear", current.Weather?[0]?.Id ?? 800);
+                    SetBackground(current.Weather?[0]?.Main ?? "Clear");
                 }
 
                 // Cập nhật dự báo 24 giờ
@@ -2684,7 +2660,7 @@ namespace THOITIET
                     CapNhatPanelChiTietFromHourlyApi(hour, kyHieu);
 
                     // Cập nhật background theo thời tiết
-                    SetBackground(hour.Weather?[0]?.Main ?? "Clear", hour.Weather?[0]?.Id ?? 800);
+                    SetBackground(hour.Weather?[0]?.Main ?? "Clear");
                 };
 
                 return panel;

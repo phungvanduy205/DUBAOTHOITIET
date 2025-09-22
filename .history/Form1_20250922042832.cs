@@ -313,7 +313,7 @@ namespace THOITIET
                 if (boCucChinh != null)
                 {
                     boCucChinh.BackgroundImage = null;
-                    boCucChinh.BackColor = Color.Transparent;
+                    boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
                 }
             }
         }
@@ -355,8 +355,6 @@ namespace THOITIET
                 System.Diagnostics.Debug.WriteLine($"Resources path: {resourcesPath}");
                 System.Diagnostics.Debug.WriteLine($"Weather main: '{weatherMain}', WeatherId: {weatherId}, IsNight: {isNight}");
                 System.Diagnostics.Debug.WriteLine($"Current weather data: {weatherData?.Current?.Weather?[0]?.Main ?? "NULL"}");
-                System.Diagnostics.Debug.WriteLine($"Current weather ID: {(weatherData?.Current?.Weather?[0]?.Id ?? 0).ToString()}");
-                System.Diagnostics.Debug.WriteLine($"WeatherId parameter: {weatherId}");
                 
                 // Kiểm tra thư mục Resources có tồn tại không
                 if (!Directory.Exists(resourcesPath))
@@ -459,12 +457,12 @@ namespace THOITIET
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Lỗi thiết lập nền: {ex.Message}");
-                   // Fallback - tạo background gradient đơn giản cho boCucChinh
-                   if (boCucChinh != null)
-                   {
-                       boCucChinh.BackgroundImage = null;
-                       boCucChinh.BackColor = Color.Transparent;
-                   }
+                // Fallback - tạo background gradient đơn giản cho boCucChinh
+                if (boCucChinh != null)
+                {
+                    boCucChinh.BackgroundImage = null;
+                    boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
+                }
             }
         }
 
@@ -639,15 +637,7 @@ namespace THOITIET
                 // Cập nhật background theo thời tiết hiện tại (nếu có dữ liệu)
                 if (weatherData?.Current?.Weather?.Length > 0)
                 {
-                    var weather = weatherData.Current.Weather[0];
-                    System.Diagnostics.Debug.WriteLine($"=== API WEATHER DATA ===");
-                    System.Diagnostics.Debug.WriteLine($"Weather Main: {weather.Main}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Description: {weather.Description}");
-                    System.Diagnostics.Debug.WriteLine($"Weather ID: {weather.Id}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Icon: {weather.Icon}");
-                    System.Diagnostics.Debug.WriteLine($"=== END API WEATHER DATA ===");
-                    
-                    SetBackground(weather.Main ?? "Clear", weather.Id);
+                    SetBackground(weatherData.Current.Weather[0].Main ?? "Clear", weatherData.Current.Weather[0].Id);
                 }
                 else
                 {
@@ -669,7 +659,7 @@ namespace THOITIET
                             {
                                 // Nếu không có file, dùng màu nền đơn giản
                                 boCucChinh.BackgroundImage = null;
-                                boCucChinh.BackColor = Color.Transparent;
+                                boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
                                 System.Diagnostics.Debug.WriteLine("Fallback: Không tìm thấy nen_ban_ngay.gif, dùng màu nền");
                             }
                         }
@@ -677,7 +667,7 @@ namespace THOITIET
                         {
                             System.Diagnostics.Debug.WriteLine($"Fallback background error: {ex.Message}");
                             boCucChinh.BackgroundImage = null;
-                            boCucChinh.BackColor = Color.Transparent;
+                            boCucChinh.BackColor = Color.FromArgb(135, 206, 250);
                         }
                     }
                 }
@@ -746,22 +736,7 @@ namespace THOITIET
                 CapNhatPanelChiTietFromApi(weather.Current, kyHieuNhietDo);
 
                 // Cập nhật background theo thời tiết
-                if (weather.Current.Weather?.Length > 0)
-                {
-                    var currentWeather = weather.Current.Weather[0];
-                    System.Diagnostics.Debug.WriteLine($"=== HienThiThongTin WEATHER DATA ===");
-                    System.Diagnostics.Debug.WriteLine($"Weather Main: {currentWeather.Main}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Description: {currentWeather.Description}");
-                    System.Diagnostics.Debug.WriteLine($"Weather ID: {currentWeather.Id}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Icon: {currentWeather.Icon}");
-                    System.Diagnostics.Debug.WriteLine($"=== END HienThiThongTin WEATHER DATA ===");
-                    
-                    SetBackground(currentWeather.Main ?? "Clear", currentWeather.Id);
-                }
-                else
-                {
-                    SetBackground("Clear", 800);
-                }
+                SetBackground(weather.Current.Weather?[0]?.Main ?? "Clear", weather.Current.Weather?[0]?.Id ?? 800);
 
                 // Cập nhật dự báo 24 giờ
                 if (weather.Hourly != null && weather.Hourly.Length > 0)
@@ -2684,7 +2659,7 @@ namespace THOITIET
                     CapNhatPanelChiTietFromHourlyApi(hour, kyHieu);
 
                     // Cập nhật background theo thời tiết
-                    SetBackground(hour.Weather?[0]?.Main ?? "Clear", hour.Weather?[0]?.Id ?? 800);
+                    SetBackground(hour.Weather?[0]?.Main ?? "Clear");
                 };
 
                 return panel;

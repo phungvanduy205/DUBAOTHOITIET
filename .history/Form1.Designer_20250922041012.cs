@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             thanhTrenCung = new Panel();
             CongTacDonVi = new CheckBox();
             NutTimKiem = new Button();
@@ -474,7 +473,6 @@
             ClientSize = new Size(1200, 700);
             Controls.Add(boCucChinh);
             Controls.Add(thanhTrenCung);
-            Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(1000, 600);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;

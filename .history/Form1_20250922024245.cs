@@ -17,6 +17,18 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace THOITIET
 {
+    // Class để quản lý địa điểm yêu thích
+    public class FavoriteLocation
+    {
+        public string Name { get; set; } = "";
+        public string Country { get; set; } = "";
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public bool IsDefault { get; set; } = false;
+        public DateTime AddedDate { get; set; } = DateTime.Now;
+    }
+
+
     /// <summary>
     /// Form chính: xử lý sự kiện, gọi dịch vụ, cập nhật giao diện
     /// </summary>
@@ -57,17 +69,12 @@ namespace THOITIET
 
         public Form1()
         {
-            System.Diagnostics.Debug.WriteLine("=== FORM1 CONSTRUCTOR START ===");
             InitializeComponent();
             CauHinhKhoiTao();
             ApDungStyleGlassmorphism();
 
             // Tạo background động
-            InitializeBackgroundPictureBox();
-            
-            // Set background mặc định ngay khi khởi động dựa trên thời gian hiện tại
-            System.Diagnostics.Debug.WriteLine("Calling SetDefaultBackgroundOnStartup...");
-            SetDefaultBackgroundOnStartup();
+            TaoBackgroundDong();
 
             // Tạo nội dung cho các panel chi tiết
             TaoNoiDungPanelChiTiet();
@@ -75,264 +82,27 @@ namespace THOITIET
             // Tải dữ liệu thời tiết ban đầu từ địa điểm hiện tại
             _ = LoadInitialWeatherData();
 
-            // Load địa điểm yêu thích và mặc định
-            _ = LoadDefaultLocationOnStartup();
-
             // Tạo file icon thật
             TaoFileIconThuc();
 
             // Không đặt địa điểm mặc định - để trống cho đến khi API load
 
             // Xóa gợi ý tìm kiếm
-            System.Diagnostics.Debug.WriteLine("=== FORM1 CONSTRUCTOR END ===");
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("=== FORM1_LOAD START ===");
             // Khởi tạo dữ liệu ban đầu
             CapNhatThoiGian();
-            
-            // Test background ngay lập tức
-            System.Diagnostics.Debug.WriteLine("Calling TestBackground...");
-            TestBackground();
-            
-            // Force set background ngay trong Form1_Load
-            System.Diagnostics.Debug.WriteLine("Calling ForceSetBackgroundInLoad...");
-            ForceSetBackgroundInLoad();
-            System.Diagnostics.Debug.WriteLine("=== FORM1_LOAD END ===");
         }
-        
+
         /// <summary>
-        /// Force set background trong Form1_Load để đảm bảo hiển thị
+        /// Tạo background động cho form dựa trên thời tiết và thời gian
         /// </summary>
-        private void ForceSetBackgroundInLoad()
+        private void TaoBackgroundDong(string weatherMain = "Clear")
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("=== ForceSetBackgroundInLoad ===");
-                
-                if (boCucChinh == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("boCucChinh is NULL trong ForceSetBackgroundInLoad!");
-                    return;
-                }
-
-                // Xác định ban đêm hay ban ngày
-                int currentHour = DateTime.Now.Hour;
-                bool isNight = currentHour >= 18 || currentHour < 6;
-                
-                System.Diagnostics.Debug.WriteLine($"ForceSetBackground: Thời gian {DateTime.Now:HH:mm}, IsNight: {isNight}");
-
-                   // Đường dẫn đến thư mục Resources trong bin/Debug
-                   string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-                
-                if (!Directory.Exists(resourcesPath))
-                {
-                    System.Diagnostics.Debug.WriteLine($"ForceSetBackground: Thư mục Resources không tồn tại: {resourcesPath}");
-                    return;
-                }
-
-                Image backgroundImage;
-                
-                   if (isNight)
-                   {
-                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
-                       System.Diagnostics.Debug.WriteLine("ForceSetBackground: Chọn nền ban đêm");
-                   }
-                   else
-                   {
-                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
-                       System.Diagnostics.Debug.WriteLine("ForceSetBackground: Chọn nền ban ngày");
-                   }
-
-                // Force set background với nhiều cách
-                boCucChinh.BackgroundImage = backgroundImage;
-                boCucChinh.BackgroundImageLayout = ImageLayout.Stretch;
-                boCucChinh.BackColor = Color.Transparent;
-                
-                // Force refresh
-                boCucChinh.Invalidate();
-                boCucChinh.Update();
-                boCucChinh.Refresh();
-                
-                System.Diagnostics.Debug.WriteLine($"ForceSetBackground: Đã force set background thành công");
-                System.Diagnostics.Debug.WriteLine($"boCucChinh.BackgroundImage: {boCucChinh.BackgroundImage != null}");
-                System.Diagnostics.Debug.WriteLine($"boCucChinh.Size: {boCucChinh.Size}");
-                System.Diagnostics.Debug.WriteLine("=== End ForceSetBackgroundInLoad ===");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"ForceSetBackgroundInLoad error: {ex.Message}");
-            }
-        }
-        
-        /// <summary>
-        /// Test background để debug
-        /// </summary>
-        private void TestBackground()
-        {
-            try
-            {
-                System.Diagnostics.Debug.WriteLine("=== TEST BACKGROUND ===");
-                
-                // Kiểm tra boCucChinh
-                if (boCucChinh == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("boCucChinh is NULL!");
-                    return;
-                }
-                
-                System.Diagnostics.Debug.WriteLine($"boCucChinh tồn tại: {boCucChinh != null}");
-                System.Diagnostics.Debug.WriteLine($"boCucChinh Size: {boCucChinh.Size}");
-                System.Diagnostics.Debug.WriteLine($"boCucChinh Location: {boCucChinh.Location}");
-                
-                // Test load file trực tiếp
-                string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-                System.Diagnostics.Debug.WriteLine($"Resources path: {resourcesPath}");
-                System.Diagnostics.Debug.WriteLine($"Directory exists: {Directory.Exists(resourcesPath)}");
-                
-                if (Directory.Exists(resourcesPath))
-                {
-                    var files = Directory.GetFiles(resourcesPath, "*.gif");
-                    System.Diagnostics.Debug.WriteLine($"GIF files found: {files.Length}");
-                    foreach (var file in files.Take(5))
-                    {
-                        System.Diagnostics.Debug.WriteLine($"  - {Path.GetFileName(file)}");
-                    }
-                    
-                    // Test load một file cụ thể - nen_ban_ngay.gif
-                    var testFile = Path.Combine(resourcesPath, "nen_ban_ngay.gif");
-                    if (File.Exists(testFile))
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Test file exists: {testFile}");
-                        try
-                        {
-                            var testImage = Image.FromFile(testFile);
-                            boCucChinh.BackgroundImage = testImage;
-                            boCucChinh.BackgroundImageLayout = ImageLayout.Stretch;
-                            System.Diagnostics.Debug.WriteLine($"Test image loaded: {testImage.Width}x{testImage.Height}");
-                            System.Diagnostics.Debug.WriteLine($"boCucChinh after test: Size={boCucChinh.Size}");
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"Error loading test image: {ex.Message}");
-                        }
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Test file NOT exists: {testFile}");
-                    }
-                }
-                
-                System.Diagnostics.Debug.WriteLine("=== END TEST BACKGROUND ===");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Test background error: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Khởi tạo background cho boCucChinh
-        /// </summary>
-        private void InitializeBackgroundPictureBox()
-        {
-            // Không cần tạo PictureBox riêng biệt nữa
-            // Background sẽ được set trực tiếp cho boCucChinh
-            System.Diagnostics.Debug.WriteLine("Đã khởi tạo background system cho boCucChinh");
-        }
-
-        /// <summary>
-        /// Set background mặc định khi khởi động ứng dụng
-        /// </summary>
-        private void SetDefaultBackgroundOnStartup()
-        {
-            try
-            {
-                System.Diagnostics.Debug.WriteLine("=== SetDefaultBackgroundOnStartup ===");
-                
-                if (boCucChinh == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("boCucChinh is NULL trong SetDefaultBackgroundOnStartup!");
-                    return;
-                }
-
-                // Xác định ban đêm hay ban ngày dựa trên thời gian hiện tại
-                int currentHour = DateTime.Now.Hour;
-                bool isNight = currentHour >= 18 || currentHour < 6;
-                
-                System.Diagnostics.Debug.WriteLine($"Thời gian hiện tại: {DateTime.Now:HH:mm}, IsNight: {isNight}");
-
-                   // Đường dẫn đến thư mục Resources trong bin/Debug
-                   string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-                
-                System.Diagnostics.Debug.WriteLine($"Resources path: {resourcesPath}");
-                System.Diagnostics.Debug.WriteLine($"Directory exists: {Directory.Exists(resourcesPath)}");
-                
-                if (!Directory.Exists(resourcesPath))
-                {
-                    System.Diagnostics.Debug.WriteLine($"Thư mục Resources không tồn tại: {resourcesPath}");
-                    return;
-                }
-                
-                // Liệt kê các file trong thư mục Resources
-                var files = Directory.GetFiles(resourcesPath);
-                System.Diagnostics.Debug.WriteLine($"Các file trong Resources: {string.Join(", ", files.Select(Path.GetFileName))}");
-
-                Image backgroundImage;
-                
-                   if (isNight)
-                   {
-                       // Ban đêm - dùng nền ban đêm mặc định
-                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
-                       System.Diagnostics.Debug.WriteLine("SetDefaultBackground: Chọn nền ban đêm mặc định");
-                   }
-                   else
-                   {
-                       // Ban ngày - dùng nền ban ngày mặc định
-                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
-                       System.Diagnostics.Debug.WriteLine("SetDefaultBackground: Chọn nền ban ngày mặc định");
-                   }
-
-                // Set background cho boCucChinh
-                boCucChinh.BackgroundImage = backgroundImage;
-                boCucChinh.BackgroundImageLayout = ImageLayout.Stretch;
-                boCucChinh.BackColor = Color.Transparent; // Đảm bảo BackColor là Transparent
-                
-                System.Diagnostics.Debug.WriteLine($"SetDefaultBackground: Đã set background thành công cho boCucChinh");
-                System.Diagnostics.Debug.WriteLine($"boCucChinh.BackgroundImage: {boCucChinh.BackgroundImage != null}");
-                System.Diagnostics.Debug.WriteLine($"boCucChinh.BackgroundImageLayout: {boCucChinh.BackgroundImageLayout}");
-                System.Diagnostics.Debug.WriteLine($"boCucChinh.BackColor: {boCucChinh.BackColor}");
-                System.Diagnostics.Debug.WriteLine("=== End SetDefaultBackgroundOnStartup ===");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"SetDefaultBackgroundOnStartup error: {ex.Message}");
-                // Fallback - dùng màu nền đơn giản
-                if (boCucChinh != null)
-                {
-                    boCucChinh.BackgroundImage = null;
-                    boCucChinh.BackColor = Color.Transparent;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Thiết lập nền theo thời gian và thời tiết
-        /// </summary>
-        private void SetBackground(string weatherMain = "Clear", int weatherId = 800)
-        {
-            try
-            {
-                System.Diagnostics.Debug.WriteLine($"=== SetBackground được gọi với weatherMain: {weatherMain}, weatherId: {weatherId} ===");
-                
-                if (boCucChinh == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("boCucChinh is NULL trong SetBackground!");
-                    return;
-                }
-
                 Image backgroundImage;
                 
                 // Sử dụng thời gian từ API nếu có, nếu không thì dùng thời gian máy
@@ -349,122 +119,66 @@ namespace THOITIET
                 
                 bool isNight = currentHour >= 18 || currentHour < 6;
 
-                // Đường dẫn đến thư mục Resources trong bin/Debug
-                string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-                
-                System.Diagnostics.Debug.WriteLine($"Resources path: {resourcesPath}");
-                System.Diagnostics.Debug.WriteLine($"Weather main: '{weatherMain}', WeatherId: {weatherId}, IsNight: {isNight}");
-                System.Diagnostics.Debug.WriteLine($"Current weather data: {weatherData?.Current?.Weather?[0]?.Main ?? "NULL"}");
-                System.Diagnostics.Debug.WriteLine($"Current weather ID: {(weatherData?.Current?.Weather?[0]?.Id ?? 0).ToString()}");
-                System.Diagnostics.Debug.WriteLine($"WeatherId parameter: {weatherId}");
-                
-                // Kiểm tra thư mục Resources có tồn tại không
-                if (!Directory.Exists(resourcesPath))
-                {
-                    System.Diagnostics.Debug.WriteLine($"Thư mục Resources không tồn tại: {resourcesPath}");
-                    return;
-                }
-                
-                // Liệt kê các file trong thư mục Resources
-                var files = Directory.GetFiles(resourcesPath);
-                System.Diagnostics.Debug.WriteLine($"Các file trong Resources: {string.Join(", ", files.Select(Path.GetFileName))}");
+                // Đường dẫn đến thư mục Resources
+                string resourcesPath = Path.Combine(Application.StartupPath, "Resources");
 
-                // Chọn background dựa trên mã thời tiết từ OpenWeatherMap API
-                if (weatherId >= 200 && weatherId <= 232)
+                // Chọn background dựa trên thời tiết và thời gian
+                switch (weatherMain.ToLower())
                 {
-                    // Thunderstorm (dông, sấm chớp) => nen_giong_bao
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_giong_bao.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_giong_bao.gif (thunderstorm - {weatherId})");
-                }
-                else if (weatherId >= 300 && weatherId <= 321)
-                {
-                    // Drizzle (mưa phùn) => nen_mua_rao
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_mua_rao.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_mua_rao.gif (drizzle - {weatherId})");
-                }
-                else if (weatherId >= 500 && weatherId <= 531)
-                {
-                    // Rain (mưa) => nen_mua
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_mua.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_mua.gif (rain - {weatherId})");
-                }
-                else if (weatherId >= 600 && weatherId <= 622)
-                {
-                    // Snow (tuyết) => nen_tuyet
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_tuyet.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_tuyet.gif (snow - {weatherId})");
-                }
-                else if (weatherId >= 701 && weatherId <= 781)
-                {
-                    // Atmosphere (sương mù, bụi, khói…) => nen_suong_mu
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_suong_mu.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_suong_mu.gif (atmosphere - {weatherId})");
-                }
-                else if (weatherId == 800)
-                {
-                    // Clear (trời quang) => nen_troi_quang
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_troi_quang.gif (clear - {weatherId})");
-                }
-                else if (weatherId >= 801 && weatherId <= 804)
-                {
-                    // Clouds (mây) => nen_ban_ngay hoặc nen_ban_dem
-                    if (isNight)
-                    {
-                        backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
-                        System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_ban_dem.gif (clouds đêm - {weatherId})");
-                    }
-                    else
-                    {
-                        backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_ngay.jpg"));
-                        System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_ban_ngay.jpg (clouds ngày - {weatherId})");
-                    }
-                }
-                else
-                {
-                    // Mặc định - dùng nền theo thời gian
-                    if (isNight)
-                    {
-                        backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
-                        System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_ban_dem.gif (mặc định đêm - {weatherId})");
-                    }
-                    else
-                    {
-                        backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
-                        System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_troi_quang.gif (mặc định ngày - {weatherId})");
-                    }
+                    case "snow":
+                        if (isNight)
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                        else
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_tuyet.gif"));
+                        break;
+                    case "rain":
+                    case "drizzle":
+                        if (isNight)
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                        else
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_mua.gif"));
+                        break;
+                    case "thunderstorm":
+                        if (isNight)
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                        else
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_giong_bao.gif"));
+                        break;
+                    case "mist":
+                    case "fog":
+                    case "haze":
+                        if (isNight)
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                        else
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_suong_mu.gif"));
+                        break;
+                    case "clouds":
+                        if (isNight)
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                        else
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_may_day.gif"));
+                        break;
+                    case "clear":
+                    default:
+                        if (isNight)
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_ban_dem.gif"));
+                        else
+                            backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_it_may.gif"));
+                        break;
                 }
 
-                // Set background cho boCucChinh thay vì PictureBox riêng biệt
-                if (boCucChinh != null)
-                {
-                    boCucChinh.BackgroundImage = backgroundImage;
-                    boCucChinh.BackgroundImageLayout = ImageLayout.Stretch;
-                    boCucChinh.BackColor = Color.Transparent; // Đảm bảo BackColor là Transparent
-                    System.Diagnostics.Debug.WriteLine($"Đã set background cho boCucChinh: {backgroundImage?.Width}x{backgroundImage?.Height}");
-                    System.Diagnostics.Debug.WriteLine($"boCucChinh Size: {boCucChinh.Size}");
-                    System.Diagnostics.Debug.WriteLine($"boCucChinh Location: {boCucChinh.Location}");
-                    System.Diagnostics.Debug.WriteLine($"boCucChinh.BackgroundImage: {boCucChinh.BackgroundImage != null}");
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("boCucChinh is NULL!");
-                }
+                this.BackgroundImage = backgroundImage;
+                this.BackgroundImageLayout = ImageLayout.Stretch;
 
                 // Cập nhật màu chữ theo thời gian
                 CapNhatMauChuTheoThoiGian(isNight);
-                
-                System.Diagnostics.Debug.WriteLine($"=== SetBackground hoàn thành thành công ===");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi thiết lập nền: {ex.Message}");
-                   // Fallback - tạo background gradient đơn giản cho boCucChinh
-                   if (boCucChinh != null)
-                   {
-                       boCucChinh.BackgroundImage = null;
-                       boCucChinh.BackColor = Color.Transparent;
-                   }
+                System.Diagnostics.Debug.WriteLine($"Lỗi tạo background: {ex.Message}");
+                // Fallback - tạo background gradient đơn giản
+                this.BackgroundImage = null;
+                this.BackColor = Color.FromArgb(135, 206, 250);
             }
         }
 
@@ -639,47 +353,13 @@ namespace THOITIET
                 // Cập nhật background theo thời tiết hiện tại (nếu có dữ liệu)
                 if (weatherData?.Current?.Weather?.Length > 0)
                 {
-                    var weather = weatherData.Current.Weather[0];
-                    System.Diagnostics.Debug.WriteLine($"=== API WEATHER DATA ===");
-                    System.Diagnostics.Debug.WriteLine($"Weather Main: {weather.Main}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Description: {weather.Description}");
-                    System.Diagnostics.Debug.WriteLine($"Weather ID: {weather.Id}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Icon: {weather.Icon}");
-                    System.Diagnostics.Debug.WriteLine($"=== END API WEATHER DATA ===");
-                    
-                    SetBackground(weather.Main ?? "Clear", weather.Id);
+                    TaoBackgroundDong(weatherData.Current.Weather[0].Main ?? "Clear");
                 }
                 else
                 {
-                    // Fallback background cho boCucChinh - dùng nền ban ngày mặc định
-                    if (boCucChinh != null)
-                    {
-                        try
-                        {
-                            string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
-                            string fallbackFile = Path.Combine(resourcesPath, "nen_ban_ngay.jpg");
-                            
-                            if (File.Exists(fallbackFile))
-                            {
-                                boCucChinh.BackgroundImage = Image.FromFile(fallbackFile);
-                                boCucChinh.BackgroundImageLayout = ImageLayout.Stretch;
-                                System.Diagnostics.Debug.WriteLine("Fallback: Đã load nen_ban_ngay.gif");
-                            }
-                            else
-                            {
-                                // Nếu không có file, dùng màu nền đơn giản
-                                boCucChinh.BackgroundImage = null;
-                                boCucChinh.BackColor = Color.Transparent;
-                                System.Diagnostics.Debug.WriteLine("Fallback: Không tìm thấy nen_ban_ngay.gif, dùng màu nền");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"Fallback background error: {ex.Message}");
-                            boCucChinh.BackgroundImage = null;
-                            boCucChinh.BackColor = Color.Transparent;
-                        }
-                    }
+                    // Fallback background
+                    this.BackgroundImage = TaoBackgroundTest("troi_quang");
+                    this.BackgroundImageLayout = ImageLayout.Stretch;
                 }
             }
             catch (Exception ex)
@@ -746,22 +426,7 @@ namespace THOITIET
                 CapNhatPanelChiTietFromApi(weather.Current, kyHieuNhietDo);
 
                 // Cập nhật background theo thời tiết
-                if (weather.Current.Weather?.Length > 0)
-                {
-                    var currentWeather = weather.Current.Weather[0];
-                    System.Diagnostics.Debug.WriteLine($"=== HienThiThongTin WEATHER DATA ===");
-                    System.Diagnostics.Debug.WriteLine($"Weather Main: {currentWeather.Main}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Description: {currentWeather.Description}");
-                    System.Diagnostics.Debug.WriteLine($"Weather ID: {currentWeather.Id}");
-                    System.Diagnostics.Debug.WriteLine($"Weather Icon: {currentWeather.Icon}");
-                    System.Diagnostics.Debug.WriteLine($"=== END HienThiThongTin WEATHER DATA ===");
-                    
-                    SetBackground(currentWeather.Main ?? "Clear", currentWeather.Id);
-                }
-                else
-                {
-                    SetBackground("Clear", 800);
-                }
+                TaoBackgroundDong(weather.Current.Weather?[0]?.Main ?? "Clear");
 
                 // Cập nhật dự báo 24 giờ
                 if (weather.Hourly != null && weather.Hourly.Length > 0)
@@ -777,7 +442,7 @@ namespace THOITIET
                 // Cập nhật dự báo 5 ngày
                 if (weather.Daily != null && weather.Daily.Length > 0)
                 {
-                    LoadForecast5Days(weather.Daily, kyHieuNhietDo);
+                    LoadDuBao5Ngay(weather.Daily, kyHieuNhietDo);
                 }
                 else
                 {
@@ -1092,7 +757,7 @@ namespace THOITIET
                     CapNhatPanelChiTietFromApi(current, kyHieuNhietDo);
 
                     // Cập nhật background theo thời tiết
-                    SetBackground(current.Weather?[0]?.Main ?? "Clear", current.Weather?[0]?.Id ?? 800);
+                    TaoBackgroundDong(current.Weather?[0]?.Main ?? "Clear");
                 }
 
                 // Cập nhật dự báo 24 giờ
@@ -1109,7 +774,7 @@ namespace THOITIET
                 // Cập nhật dự báo 5 ngày
                 if (weatherData.Daily != null && weatherData.Daily.Length > 0)
                 {
-                    LoadForecast5Days(weatherData.Daily, kyHieuNhietDo);
+                    LoadDuBao5Ngay(weatherData.Daily, kyHieuNhietDo);
                 }
                 else
                 {
@@ -2684,7 +2349,7 @@ namespace THOITIET
                     CapNhatPanelChiTietFromHourlyApi(hour, kyHieu);
 
                     // Cập nhật background theo thời tiết
-                    SetBackground(hour.Weather?[0]?.Main ?? "Clear", hour.Weather?[0]?.Id ?? 800);
+                    TaoBackgroundDong(hour.Weather?[0]?.Main ?? "Clear");
                 };
 
                 return panel;
@@ -2790,11 +2455,10 @@ namespace THOITIET
                 {
                     Text = GetVietnameseDayName(daily.Dt),
                     Location = new Point(60, 8),
-                    Size = new Size(150, 20), // Tăng chiều rộng để đủ chỗ cho "Hôm nay"
+                    Size = new Size(120, 20),
                     Font = new Font("Segoe UI", 11F, FontStyle.Bold),
                     ForeColor = Color.White,
-                    BackColor = Color.Transparent,
-                    AutoSize = true // Để text tự động điều chỉnh kích thước
+                    BackColor = Color.Transparent
                 };
 
                 // 3. Mô tả thời tiết (tiếng Việt)
@@ -2805,8 +2469,7 @@ namespace THOITIET
                     Size = new Size(150, 20),
                     Font = new Font("Segoe UI", 9F),
                     ForeColor = Color.LightGray,
-                    BackColor = Color.Transparent,
-                    AutoSize = true // Để text tự động điều chỉnh kích thước
+                    BackColor = Color.Transparent
                 };
 
                 // 4. Nhiệt độ cao/thấp (nổi bật)
@@ -2840,14 +2503,6 @@ namespace THOITIET
                 panel.Controls.Add(lblTemp);
                 panel.Controls.Add(lblRainWind);
 
-                // Thêm click event cho tất cả control con để đảm bảo click được truyền lên panel cha
-                // Sử dụng Tag để lưu reference đến panel cha
-                picIcon.Tag = panel;
-                lblDay.Tag = panel;
-                lblDesc.Tag = panel;
-                lblTemp.Tag = panel;
-                lblRainWind.Tag = panel;
-
                 return panel;
             }
             catch (Exception ex)
@@ -2858,9 +2513,9 @@ namespace THOITIET
         }
 
         /// <summary>
-        /// Load dự báo 5 ngày với click event
+        /// Load dự báo 5 ngày
         /// </summary>
-        private void LoadForecast5Days(DailyWeather[] dailyList, string kyHieu)
+        private void LoadDuBao5Ngay(DailyWeather[] dailyList, string kyHieu)
         {
             try
             {
@@ -2871,27 +2526,9 @@ namespace THOITIET
                     // Lấy 5 ngày đầu tiên
                     var data5Ngay = dailyList.Take(5).ToArray();
 
-                    for (int i = 0; i < data5Ngay.Length; i++)
+                    foreach (var daily in data5Ngay)
                     {
-                        var daily = data5Ngay[i];
                         var card = TaoCardNgay(daily, kyHieu);
-                        
-                        // Thêm click event để chuyển sang biểu đồ 24h
-                        int dayIndex = i; // Capture index để tránh closure issue
-                        card.Click += (sender, e) => OnDayCardClicked(dayIndex, daily);
-                        
-                        // Thêm click event cho tất cả control con
-                        foreach (Control control in card.Controls)
-                        {
-                            control.Click += (s, e) => OnDayCardClicked(dayIndex, daily);
-                            control.Cursor = Cursors.Hand;
-                        }
-                        
-                        // Thêm cursor pointer để hiển thị có thể click
-                        card.Cursor = Cursors.Hand;
-                        
-                        System.Diagnostics.Debug.WriteLine($"Tạo card cho ngày {i}: {GetVietnameseDayName(daily.Dt)}");
-                        
                         BangNhieuNgay.Controls.Add(card);
                     }
                 }
@@ -2900,283 +2537,6 @@ namespace THOITIET
             {
                 System.Diagnostics.Debug.WriteLine($"Lỗi load dự báo 5 ngày: {ex.Message}");
             }
-        }
-
-        /// <summary>
-        /// Xử lý khi click vào card ngày
-        /// </summary>
-        private void OnDayCardClicked(int dayIndex, DailyWeather daily)
-        {
-            try
-            {
-                System.Diagnostics.Debug.WriteLine($"Click vào card ngày {dayIndex}: {GetVietnameseDayName(daily.Dt)}");
-                
-                selectedDayIndex = dayIndex;
-                
-                // Cập nhật biểu đồ 24h cho ngày được chọn
-                Show24hChartForDay(daily);
-                
-                // Highlight card được chọn (optional)
-                HighlightSelectedDayCard(dayIndex);
-                
-                System.Diagnostics.Debug.WriteLine($"Đã cập nhật biểu đồ cho ngày {dayIndex}");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi khi click card ngày: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Highlight card ngày được chọn
-        /// </summary>
-        private void HighlightSelectedDayCard(int dayIndex)
-        {
-            try
-            {
-                if (BangNhieuNgay?.Controls.Count > dayIndex)
-                {
-                    // Reset tất cả cards về màu bình thường
-                    foreach (Control control in BangNhieuNgay.Controls)
-                    {
-                        if (control is Panel panel)
-                        {
-                            panel.BackColor = Color.FromArgb(80, 128, 128, 128);
-                        }
-                    }
-                    
-                    // Highlight card được chọn
-                    var selectedCard = BangNhieuNgay.Controls[dayIndex] as Panel;
-                    if (selectedCard != null)
-                    {
-                        selectedCard.BackColor = Color.FromArgb(120, 255, 255, 255);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi highlight card: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Hiển thị biểu đồ nhiệt độ 24h cho ngày được chọn
-        /// </summary>
-        private void Show24hChartForDay(DailyWeather daily)
-        {
-            try
-            {
-                if (weatherData?.Hourly == null || weatherData.Hourly.Length == 0)
-                {
-                    System.Diagnostics.Debug.WriteLine("Không có dữ liệu hourly để tạo biểu đồ");
-                    return;
-                }
-
-                // Khởi tạo Chart nếu chưa có
-                if (temperatureChart == null)
-                {
-                    InitializeTemperatureChart();
-                }
-
-                // Lấy dữ liệu 24h cho ngày được chọn
-                var dayStart = UnixToLocal(daily.Dt).Date;
-                var dayEnd = dayStart.AddDays(1);
-                
-                System.Diagnostics.Debug.WriteLine($"Tìm dữ liệu hourly cho ngày: {dayStart:yyyy-MM-dd} đến {dayEnd:yyyy-MM-dd}");
-                System.Diagnostics.Debug.WriteLine($"Tổng số hourly data: {weatherData.Hourly.Length}");
-                
-                // Thử filter theo ngày trước
-                var hourlyData = weatherData.Hourly
-                    .Where(h => 
-                    {
-                        var hourTime = UnixToLocal(h.Dt);
-                        var isInRange = hourTime >= dayStart && hourTime < dayEnd;
-                        return isInRange;
-                    })
-                    .Take(24)
-                    .ToArray();
-
-                System.Diagnostics.Debug.WriteLine($"Tìm thấy {hourlyData.Length} điểm dữ liệu hourly sau filter");
-
-                // Nếu không đủ dữ liệu, sử dụng fallback
-                if (hourlyData.Length < 12) // Ít hơn 12 giờ thì không đủ
-                {
-                    System.Diagnostics.Debug.WriteLine($"Không đủ dữ liệu hourly cho ngày {dayStart:yyyy-MM-dd}, sử dụng fallback");
-                    
-                    // Fallback: Lấy 24 giờ đầu tiên từ dữ liệu hourly
-                    hourlyData = weatherData.Hourly.Take(24).ToArray();
-                    System.Diagnostics.Debug.WriteLine($"Sử dụng fallback: {hourlyData.Length} điểm dữ liệu");
-                }
-
-                // Xóa dữ liệu cũ
-                temperatureChart.Series.Clear();
-
-                // Tạo series mới
-                var series = new Series("Nhiệt độ")
-                {
-                    ChartType = SeriesChartType.Line,
-                    Color = Color.Orange,
-                    BorderWidth = 3,
-                    MarkerStyle = MarkerStyle.Circle,
-                    MarkerSize = 8,
-                    MarkerColor = Color.Red
-                };
-
-                // Thêm dữ liệu điểm
-                foreach (var hour in hourlyData)
-                {
-                    var hourTime = UnixToLocal(hour.Dt);
-                    var temperature = donViCelsius ? hour.Temp : ConvertCelsiusToFahrenheit(hour.Temp);
-                    
-                    var pointIndex = series.Points.AddXY(hourTime.Hour, temperature);
-                    var point = series.Points[pointIndex];
-                    point.ToolTip = $"Giờ: {hourTime:HH:mm}\nNhiệt độ: {temperature:F1}°{(donViCelsius ? "C" : "F")}\nTrạng thái: {hour.Weather?[0]?.Description ?? "N/A"}";
-                    
-                    // Thêm icon thời tiết vào điểm
-                    if (hour.Weather?.Length > 0)
-                    {
-                        var iconCode = hour.Weather[0].Icon ?? "01d";
-                        point.Tag = iconCode; // Lưu icon code để có thể sử dụng sau
-                    }
-                }
-
-                temperatureChart.Series.Add(series);
-
-                // Cấu hình trục X
-                temperatureChart.ChartAreas[0].AxisX.Title = "Giờ trong ngày";
-                temperatureChart.ChartAreas[0].AxisX.TitleFont = new Font("Segoe UI", 10, FontStyle.Bold);
-                temperatureChart.ChartAreas[0].AxisX.Minimum = 0;
-                temperatureChart.ChartAreas[0].AxisX.Maximum = 23;
-                temperatureChart.ChartAreas[0].AxisX.Interval = 2;
-                temperatureChart.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Segoe UI", 8);
-
-                // Cấu hình trục Y
-                temperatureChart.ChartAreas[0].AxisY.Title = $"Nhiệt độ (°{(donViCelsius ? "C" : "F")})";
-                temperatureChart.ChartAreas[0].AxisY.TitleFont = new Font("Segoe UI", 10, FontStyle.Bold);
-                temperatureChart.ChartAreas[0].AxisY.LabelStyle.Font = new Font("Segoe UI", 8);
-
-                // Cấu hình tiêu đề
-                temperatureChart.Titles.Clear();
-                temperatureChart.Titles.Add($"Biểu đồ nhiệt độ 24h - {GetVietnameseDayName(daily.Dt)}");
-                temperatureChart.Titles[0].Font = new Font("Segoe UI", 12, FontStyle.Bold);
-                temperatureChart.Titles[0].ForeColor = Color.White;
-
-                // Cấu hình màu nền
-                temperatureChart.BackColor = Color.FromArgb(50, 0, 0, 0);
-                temperatureChart.ChartAreas[0].BackColor = Color.FromArgb(30, 255, 255, 255);
-
-                System.Diagnostics.Debug.WriteLine($"Đã tạo biểu đồ với {hourlyData.Length} điểm dữ liệu");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi tạo biểu đồ: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Khởi tạo Chart nhiệt độ
-        /// </summary>
-        private void InitializeTemperatureChart()
-        {
-            try
-            {
-                temperatureChart = new Chart
-                {
-                    Dock = DockStyle.Fill,
-                    BackColor = Color.FromArgb(50, 0, 0, 0)
-                };
-
-                // Tạo ChartArea
-                var chartArea = new ChartArea("MainArea")
-                {
-                    BackColor = Color.FromArgb(30, 255, 255, 255),
-                    BorderColor = Color.White,
-                    BorderWidth = 1
-                };
-
-                // Cấu hình grid
-                chartArea.AxisX.MajorGrid.LineColor = Color.FromArgb(100, 255, 255, 255);
-                chartArea.AxisY.MajorGrid.LineColor = Color.FromArgb(100, 255, 255, 255);
-                chartArea.AxisX.MajorGrid.Enabled = true;
-                chartArea.AxisY.MajorGrid.Enabled = true;
-
-                // Cấu hình màu chữ
-                chartArea.AxisX.LabelStyle.ForeColor = Color.White;
-                chartArea.AxisY.LabelStyle.ForeColor = Color.White;
-                chartArea.AxisX.TitleForeColor = Color.White;
-                chartArea.AxisY.TitleForeColor = Color.White;
-
-                temperatureChart.ChartAreas.Add(chartArea);
-
-                // Thêm Chart vào tabLichSu (thay thế BangLichSu)
-                if (tabLichSu != null)
-                {
-                    // Xóa BangLichSu và các controls khác
-                    tabLichSu.Controls.Clear();
-                    
-                    // Thêm Chart vào tabLichSu
-                    tabLichSu.Controls.Add(temperatureChart);
-                    
-                    // Thêm lại các button cần thiết
-                    var btnExport = new Button
-                    {
-                        Text = "Xuất biểu đồ",
-                        Location = new Point(334, 182),
-                        Size = new Size(124, 29),
-                        Anchor = AnchorStyles.Bottom | AnchorStyles.Right
-                    };
-                    btnExport.Click += (s, e) => ExportChart();
-                    
-                    tabLichSu.Controls.Add(btnExport);
-                }
-
-                System.Diagnostics.Debug.WriteLine("Đã khởi tạo Chart nhiệt độ");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi khởi tạo Chart: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Xuất biểu đồ ra file hình ảnh
-        /// </summary>
-        private void ExportChart()
-        {
-            try
-            {
-                if (temperatureChart == null)
-                {
-                    MessageBox.Show("Không có biểu đồ để xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                using (var saveDialog = new SaveFileDialog())
-                {
-                    saveDialog.Filter = "PNG Image|*.png|JPEG Image|*.jpg|Bitmap Image|*.bmp";
-                    saveDialog.Title = "Xuất biểu đồ nhiệt độ";
-                    saveDialog.FileName = $"Biểu đồ nhiệt độ {DateTime.Now:yyyy-MM-dd HH-mm-ss}";
-
-                    if (saveDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        temperatureChart.SaveImage(saveDialog.FileName, ChartImageFormat.Png);
-                        MessageBox.Show($"Đã xuất biểu đồ thành công!\nFile: {saveDialog.FileName}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi xuất biểu đồ: {ex.Message}");
-                MessageBox.Show("Có lỗi xảy ra khi xuất biểu đồ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
-        /// Chuyển đổi Celsius sang Fahrenheit
-        /// </summary>
-        private double ConvertCelsiusToFahrenheit(double celsius)
-        {
-            return (celsius * 9.0 / 5.0) + 32.0;
         }
 
         /// <summary>
@@ -3269,7 +2629,7 @@ namespace THOITIET
                 string weatherMain = trangThai.ToLower().Contains("mưa") ? "rain" :
                                    trangThai.ToLower().Contains("nắng") ? "clear" :
                                    trangThai.ToLower().Contains("mây") ? "clouds" : "clear";
-                SetBackground(weatherMain);
+                TaoBackgroundDong(weatherMain);
 
                 // Để trống - chỉ hiển thị khi có dữ liệu thật từ API
             }
@@ -3297,338 +2657,6 @@ namespace THOITIET
             BangNhieuNgay.Controls.Clear();
         }
 
-        #region Quản lý địa điểm yêu thích
-
-        /// <summary>
-        /// Lưu danh sách địa điểm yêu thích vào file JSON
-        /// </summary>
-        private void SaveLocations()
-        {
-            try
-            {
-                var json = JsonConvert.SerializeObject(favoriteLocations, Formatting.Indented);
-                File.WriteAllText("favorite_locations.json", json);
-                System.Diagnostics.Debug.WriteLine($"Đã lưu {favoriteLocations.Count} địa điểm yêu thích");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi lưu địa điểm yêu thích: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Tải danh sách địa điểm yêu thích từ file JSON
-        /// </summary>
-        private void LoadLocations()
-        {
-            try
-            {
-                if (File.Exists("favorite_locations.json"))
-                {
-                    var json = File.ReadAllText("favorite_locations.json");
-                    favoriteLocations = JsonConvert.DeserializeObject<List<FavoriteLocation>>(json) ?? new List<FavoriteLocation>();
-                    
-                    // Tìm địa điểm mặc định
-                    var defaultLoc = favoriteLocations.FirstOrDefault(l => l.IsDefault);
-                    if (defaultLoc != null)
-                    {
-                        defaultLocation = $"{defaultLoc.Name}, {defaultLoc.Country}";
-                    }
-                    
-                    System.Diagnostics.Debug.WriteLine($"Đã tải {favoriteLocations.Count} địa điểm yêu thích");
-                }
-                else
-                {
-                    favoriteLocations = new List<FavoriteLocation>();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi tải địa điểm yêu thích: {ex.Message}");
-                favoriteLocations = new List<FavoriteLocation>();
-            }
-        }
-
-        /// <summary>
-        /// Thêm địa điểm hiện tại vào danh sách yêu thích
-        /// </summary>
-        private void AddCurrentLocationToFavorites()
-        {
-            try
-            {
-                if (weatherData?.Current == null || string.IsNullOrEmpty(currentLocation))
-                {
-                    MessageBox.Show("Không có dữ liệu địa điểm để thêm!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                // Kiểm tra xem địa điểm đã tồn tại chưa
-                var existingLocation = favoriteLocations.FirstOrDefault(l => 
-                    l.Name.Equals(currentLocation.Split(',')[0].Trim(), StringComparison.OrdinalIgnoreCase));
-
-                if (existingLocation != null)
-                {
-                    MessageBox.Show("Địa điểm này đã có trong danh sách yêu thích!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                // Tạo địa điểm mới
-                var newLocation = new FavoriteLocation
-                {
-                    Name = currentLocation.Split(',')[0].Trim(),
-                    Country = currentLocation.Split(',').Length > 1 ? currentLocation.Split(',')[1].Trim() : "",
-                    Latitude = weatherData.Lat,
-                    Longitude = weatherData.Lon,
-                    IsDefault = false,
-                    AddedDate = DateTime.Now
-                };
-
-                favoriteLocations.Add(newLocation);
-                SaveLocations();
-
-                MessageBox.Show($"Đã thêm '{newLocation.Name}' vào danh sách yêu thích!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
-                // Cập nhật ComboBox nếu có
-                UpdateFavoritesComboBox();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi thêm địa điểm yêu thích: {ex.Message}");
-                MessageBox.Show("Có lỗi xảy ra khi thêm địa điểm!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
-        /// Xóa địa điểm khỏi danh sách yêu thích
-        /// </summary>
-        private void RemoveSelectedLocation()
-        {
-            try
-            {
-                // Tìm địa điểm được chọn (có thể từ ComboBox hoặc cách khác)
-                if (favoriteLocations.Count == 0)
-                {
-                    MessageBox.Show("Danh sách yêu thích trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                // Hiển thị dialog chọn địa điểm để xóa
-                var locationNames = favoriteLocations.Select(l => $"{l.Name}, {l.Country}").ToArray();
-                var selectedIndex = -1;
-                
-                // Tạo dialog đơn giản để chọn địa điểm
-                using (var form = new Form())
-                {
-                    form.Text = "Chọn địa điểm để xóa";
-                    form.Size = new Size(400, 300);
-                    form.StartPosition = FormStartPosition.CenterParent;
-
-                    var listBox = new ListBox
-                    {
-                        Dock = DockStyle.Fill,
-                        DataSource = locationNames
-                    };
-
-                    var buttonPanel = new Panel
-                    {
-                        Dock = DockStyle.Bottom,
-                        Height = 50
-                    };
-
-                    var btnOK = new Button
-                    {
-                        Text = "Xóa",
-                        DialogResult = DialogResult.OK,
-                        Location = new Point(200, 10),
-                        Size = new Size(80, 30)
-                    };
-
-                    var btnCancel = new Button
-                    {
-                        Text = "Hủy",
-                        DialogResult = DialogResult.Cancel,
-                        Location = new Point(290, 10),
-                        Size = new Size(80, 30)
-                    };
-
-                    buttonPanel.Controls.Add(btnOK);
-                    buttonPanel.Controls.Add(btnCancel);
-                    form.Controls.Add(listBox);
-                    form.Controls.Add(buttonPanel);
-
-                    if (form.ShowDialog() == DialogResult.OK && listBox.SelectedIndex >= 0)
-                    {
-                        selectedIndex = listBox.SelectedIndex;
-                    }
-                }
-
-                if (selectedIndex >= 0 && selectedIndex < favoriteLocations.Count)
-                {
-                    var locationToRemove = favoriteLocations[selectedIndex];
-                    favoriteLocations.RemoveAt(selectedIndex);
-                    SaveLocations();
-
-                    MessageBox.Show($"Đã xóa '{locationToRemove.Name}' khỏi danh sách yêu thích!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    
-                    // Cập nhật ComboBox nếu có
-                    UpdateFavoritesComboBox();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi xóa địa điểm yêu thích: {ex.Message}");
-                MessageBox.Show("Có lỗi xảy ra khi xóa địa điểm!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
-        /// Đặt địa điểm được chọn làm mặc định
-        /// </summary>
-        private void SetDefaultLocation()
-        {
-            try
-            {
-                if (favoriteLocations.Count == 0)
-                {
-                    MessageBox.Show("Danh sách yêu thích trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                // Hiển thị dialog chọn địa điểm để đặt mặc định
-                var locationNames = favoriteLocations.Select(l => $"{l.Name}, {l.Country}").ToArray();
-                var selectedIndex = -1;
-                
-                // Tạo dialog đơn giản để chọn địa điểm
-                using (var form = new Form())
-                {
-                    form.Text = "Chọn địa điểm mặc định";
-                    form.Size = new Size(400, 300);
-                    form.StartPosition = FormStartPosition.CenterParent;
-
-                    var listBox = new ListBox
-                    {
-                        Dock = DockStyle.Fill,
-                        DataSource = locationNames
-                    };
-
-                    var buttonPanel = new Panel
-                    {
-                        Dock = DockStyle.Bottom,
-                        Height = 50
-                    };
-
-                    var btnOK = new Button
-                    {
-                        Text = "Đặt mặc định",
-                        DialogResult = DialogResult.OK,
-                        Location = new Point(200, 10),
-                        Size = new Size(120, 30)
-                    };
-
-                    var btnCancel = new Button
-                    {
-                        Text = "Hủy",
-                        DialogResult = DialogResult.Cancel,
-                        Location = new Point(330, 10),
-                        Size = new Size(80, 30)
-                    };
-
-                    buttonPanel.Controls.Add(btnOK);
-                    buttonPanel.Controls.Add(btnCancel);
-                    form.Controls.Add(listBox);
-                    form.Controls.Add(buttonPanel);
-
-                    if (form.ShowDialog() == DialogResult.OK && listBox.SelectedIndex >= 0)
-                    {
-                        selectedIndex = listBox.SelectedIndex;
-                    }
-                }
-
-                if (selectedIndex >= 0 && selectedIndex < favoriteLocations.Count)
-                {
-                    // Bỏ mặc định cho tất cả địa điểm
-                    foreach (var location in favoriteLocations)
-                    {
-                        location.IsDefault = false;
-                    }
-
-                    // Đặt mặc định cho địa điểm được chọn
-                    favoriteLocations[selectedIndex].IsDefault = true;
-                    defaultLocation = $"{favoriteLocations[selectedIndex].Name}, {favoriteLocations[selectedIndex].Country}";
-                    
-                    SaveLocations();
-
-                    MessageBox.Show($"Đã đặt '{favoriteLocations[selectedIndex].Name}' làm địa điểm mặc định!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    
-                    // Cập nhật ComboBox nếu có
-                    UpdateFavoritesComboBox();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi đặt địa điểm mặc định: {ex.Message}");
-                MessageBox.Show("Có lỗi xảy ra khi đặt địa điểm mặc định!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /// <summary>
-        /// Cập nhật ComboBox địa điểm yêu thích (nếu có)
-        /// </summary>
-        private void UpdateFavoritesComboBox()
-        {
-            try
-            {
-                // Tìm ComboBox địa điểm yêu thích trong form
-                var comboBox = this.Controls.Find("comboFavorites", true).FirstOrDefault() as ComboBox;
-                if (comboBox != null)
-                {
-                    comboBox.DataSource = null;
-                    comboBox.DataSource = favoriteLocations.Select(l => $"{l.Name}, {l.Country}").ToList();
-                    
-                    // Chọn địa điểm mặc định
-                    var defaultLoc = favoriteLocations.FirstOrDefault(l => l.IsDefault);
-                    if (defaultLoc != null)
-                    {
-                        var defaultText = $"{defaultLoc.Name}, {defaultLoc.Country}";
-                        comboBox.SelectedItem = defaultText;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi cập nhật ComboBox: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Load địa điểm mặc định khi khởi động ứng dụng
-        /// </summary>
-        private async Task LoadDefaultLocationOnStartup()
-        {
-            try
-            {
-                LoadLocations();
-                
-                if (!string.IsNullOrEmpty(defaultLocation))
-                {
-                    // Tìm địa điểm mặc định trong danh sách
-                    var defaultLoc = favoriteLocations.FirstOrDefault(l => l.IsDefault);
-                    if (defaultLoc != null)
-                    {
-                        // Tự động tìm kiếm thời tiết cho địa điểm mặc định
-                        await TimKiemDiaDiem(defaultLoc.Name);
-                        System.Diagnostics.Debug.WriteLine($"Đã load địa điểm mặc định: {defaultLoc.Name}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi load địa điểm mặc định: {ex.Message}");
-            }
-        }
-
-        #endregion
-
         /// <summary>
         /// Lấy tên ngày bằng tiếng Việt
         /// </summary>
@@ -3640,22 +2668,18 @@ namespace THOITIET
             DateTime today;
             if (weatherData?.Current != null && weatherData.TimezoneOffset != 0)
             {
-                var apiTime = DateTimeOffset.FromUnixTimeSeconds(weatherData.Current.Dt + weatherData.TimezoneOffset).DateTime;
-                today = apiTime.Date;
+                today = DateTimeOffset.FromUnixTimeSeconds(weatherData.Current.Dt + weatherData.TimezoneOffset).DateTime.Date;
             }
             else
             {
                 today = DateTime.Now.Date;
             }
 
-            // So sánh ngày với độ chính xác cao hơn
-            var targetDate = date.Date;
-            
-            if (targetDate == today)
+            if (date.Date == today)
             {
                 return "Hôm nay";
             }
-            else if (targetDate == today.AddDays(1))
+            else if (date.Date == today.AddDays(1))
             {
                 return "Ngày mai";
             }
@@ -3788,16 +2812,5 @@ namespace THOITIET
             Lat = lat;
             Lon = lon;
         }
-    }
-
-    // Class để quản lý địa điểm yêu thích
-    public class FavoriteLocation
-    {
-        public string Name { get; set; } = "";
-        public string Country { get; set; } = "";
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public bool IsDefault { get; set; } = false;
-        public DateTime AddedDate { get; set; } = DateTime.Now;
     }
 }
