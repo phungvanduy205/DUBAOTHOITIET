@@ -3486,9 +3486,7 @@ namespace THOITIET
                 temperatureChart = new Chart
                 {
                     Dock = DockStyle.Fill,
-                    BackColor = Color.FromArgb(50, 0, 0, 0),
-                    AntiAliasing = AntiAliasingStyles.All,
-                    TextAntiAliasingQuality = TextAntiAliasingQuality.High
+                    BackColor = Color.FromArgb(50, 0, 0, 0)
                 };
 
                 // Tạo ChartArea

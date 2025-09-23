@@ -3486,9 +3486,7 @@ namespace THOITIET
                 temperatureChart = new Chart
                 {
                     Dock = DockStyle.Fill,
-                    BackColor = Color.FromArgb(50, 0, 0, 0),
-                    AntiAliasing = AntiAliasingStyles.All,
-                    TextAntiAliasingQuality = TextAntiAliasingQuality.High
+                    BackColor = Color.FromArgb(50, 0, 0, 0)
                 };
 
                 // Tạo ChartArea
@@ -3513,19 +3511,9 @@ namespace THOITIET
 
                 temperatureChart.ChartAreas.Add(chartArea);
 
-                // Thêm Chart vào tab "Biểu đồ nhiệt độ" trong GroupBox đẹp như 24h/5 ngày
+                // Thêm Chart vào tab "Biểu đồ nhiệt độ"
                 tabChart.Controls.Clear();
-                var khungBieuDo = new GroupBox
-                {
-                    Dock = DockStyle.Fill,
-                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                    ForeColor = SystemColors.ControlLightLight,
-                    Padding = new Padding(8),
-                    Text = "Biểu đồ 24 giờ"
-                };
-                khungBieuDo.BackColor = Color.FromArgb(40, 255, 255, 255);
-                khungBieuDo.Controls.Add(temperatureChart);
-                tabChart.Controls.Add(khungBieuDo);
+                tabChart.Controls.Add(temperatureChart);
 
                 // Đảm bảo control bản đồ tồn tại và nằm trên tabMap
                 EnsureWindyBrowser();
