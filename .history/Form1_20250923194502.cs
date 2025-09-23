@@ -3378,15 +3378,18 @@ namespace THOITIET
                 // Xóa dữ liệu cũ
                 temperatureChart.Series.Clear();
 
-                // Tạo series cột
+                // Tạo series mới với style đẹp hơn
                 var series = new Series("Nhiệt độ")
                 {
-                    ChartType = SeriesChartType.Column,
-                    Color = Color.FromArgb(200, 100, 200, 255),
-                    BorderWidth = 1,
-                    IsValueShownAsLabel = false
+                    ChartType = SeriesChartType.Spline, // Đường cong mượt mà
+                    Color = Color.FromArgb(255, 100, 200, 255), // Màu xanh dương sáng
+                    BorderWidth = 4,
+                    MarkerStyle = MarkerStyle.Circle,
+                    MarkerSize = 10,
+                    MarkerColor = Color.FromArgb(255, 255, 100, 100), // Màu đỏ cam
+                    MarkerBorderColor = Color.White,
+                    MarkerBorderWidth = 2
                 };
-                series["PointWidth"] = "0.6"; // Độ rộng cột
 
                 // Thêm dữ liệu điểm
                 foreach (var hour in hourlyData)
@@ -3398,26 +3401,13 @@ namespace THOITIET
                     var pointIndex = series.Points.AddXY(hourTime.Hour, temperature);
                     var point = series.Points[pointIndex];
                     point.ToolTip = $"Giờ: {hourTime:HH:mm}\nNhiệt độ: {temperature:F1}°{(donViCelsius ? "C" : "F")}\nTrạng thái: {hour.Weather?[0]?.Description ?? "N/A"}";
-
-                    // Gắn icon thời tiết trên đỉnh cột
-                    try
+                    
+                    // Thêm icon thời tiết vào điểm
+                    if (hour.Weather?.Length > 0)
                     {
-                        var iconCode = hour.Weather?.FirstOrDefault()?.Icon ?? "01d";
-                        var iconPath = GetWeatherIcon(iconCode);
-                        if (!string.IsNullOrEmpty(iconPath) && System.IO.File.Exists(iconPath))
-                        {
-                            var imageName = $"ico_{hour.Dt}";
-                            if (!temperatureChart.Images.Any(img => img.Name == imageName))
-                            {
-                                using var img = Image.FromFile(iconPath);
-                                temperatureChart.Images.Add(new NamedImage(imageName, (Image)img.Clone()));
-                            }
-                            point.MarkerImage = imageName;
-                            point.MarkerStyle = MarkerStyle.None;
-                            point.MarkerSize = 20;
-                        }
+                        var iconCode = hour.Weather[0].Icon ?? "01d";
+                        point.Tag = iconCode; // Lưu icon code để có thể sử dụng sau
                     }
-                    catch { }
                 }
 
                 temperatureChart.Series.Add(series);
@@ -3463,8 +3453,8 @@ namespace THOITIET
                 temperatureChart.Titles[0].ForeColor = Color.White;
 
                 // Cấu hình màu nền
-                temperatureChart.BackColor = Color.FromArgb(40, 20, 40, 60);
-                temperatureChart.ChartAreas[0].BackColor = Color.FromArgb(20, 30, 50, 70);
+                temperatureChart.BackColor = Color.FromArgb(40, 20, 40, 60); // Nền xanh dương đậm
+                temperatureChart.ChartAreas[0].BackColor = Color.FromArgb(20, 30, 50, 70); // Nền xanh dương nhạt
 
                 System.Diagnostics.Debug.WriteLine($"Đã tạo biểu đồ với {hourlyData.Length} điểm dữ liệu");
             }

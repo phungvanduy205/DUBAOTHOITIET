@@ -3463,8 +3463,8 @@ namespace THOITIET
                 temperatureChart.Titles[0].ForeColor = Color.White;
 
                 // Cấu hình màu nền
-                temperatureChart.BackColor = Color.FromArgb(40, 20, 40, 60);
-                temperatureChart.ChartAreas[0].BackColor = Color.FromArgb(20, 30, 50, 70);
+                temperatureChart.BackColor = Color.FromArgb(40, 20, 40, 60); // Nền xanh dương đậm
+                temperatureChart.ChartAreas[0].BackColor = Color.FromArgb(20, 30, 50, 70); // Nền xanh dương nhạt
 
                 System.Diagnostics.Debug.WriteLine($"Đã tạo biểu đồ với {hourlyData.Length} điểm dữ liệu");
             }
