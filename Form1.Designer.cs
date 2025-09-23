@@ -212,10 +212,10 @@
             tabDieuKhien.Controls.Add(tabChart);
             tabDieuKhien.Controls.Add(tabMap);
             tabDieuKhien.Dock = DockStyle.Fill;
-            tabDieuKhien.Location = new Point(801, 437);
+            tabDieuKhien.Location = new Point(735, 401);
             tabDieuKhien.Name = "tabDieuKhien";
             tabDieuKhien.SelectedIndex = 0;
-            tabDieuKhien.Size = new Size(527, 324);
+            tabDieuKhien.Size = new Size(593, 320);
             tabDieuKhien.TabIndex = 3;
             // 
             // tabChart
@@ -223,7 +223,7 @@
             tabChart.Location = new Point(4, 29);
             tabChart.Name = "tabChart";
             tabChart.Padding = new Padding(8);
-            tabChart.Size = new Size(519, 291);
+            tabChart.Size = new Size(585, 287);
             tabChart.TabIndex = 0;
             tabChart.Text = "Biểu đồ nhiệt độ";
             tabChart.UseVisualStyleBackColor = true;
@@ -271,10 +271,10 @@
             khuVucDuoi_24Gio.BackColor = Color.Transparent;
             khuVucDuoi_24Gio.Controls.Add(khung24Gio);
             khuVucDuoi_24Gio.Dock = DockStyle.Fill;
-            khuVucDuoi_24Gio.Location = new Point(3, 437);
+            khuVucDuoi_24Gio.Location = new Point(3, 401);
             khuVucDuoi_24Gio.Name = "khuVucDuoi_24Gio";
             khuVucDuoi_24Gio.Padding = new Padding(8);
-            khuVucDuoi_24Gio.Size = new Size(792, 284);
+            khuVucDuoi_24Gio.Size = new Size(726, 320);
             khuVucDuoi_24Gio.TabIndex = 2;
             // 
             // khung24Gio
@@ -286,7 +286,7 @@
             khung24Gio.Location = new Point(8, 8);
             khung24Gio.Name = "khung24Gio";
             khung24Gio.Padding = new Padding(8);
-            khung24Gio.Size = new Size(776, 268);
+            khung24Gio.Size = new Size(710, 304);
             khung24Gio.TabIndex = 0;
             khung24Gio.TabStop = false;
             khung24Gio.Text = "Dự báo 24 giờ";
@@ -300,7 +300,7 @@
             BangTheoGio.Location = new Point(8, 31);
             BangTheoGio.Name = "BangTheoGio";
             BangTheoGio.Padding = new Padding(4);
-            BangTheoGio.Size = new Size(760, 229);
+            BangTheoGio.Size = new Size(694, 265);
             BangTheoGio.TabIndex = 0;
             BangTheoGio.WrapContents = false;
             // 
@@ -336,7 +336,7 @@
             khuVucTrai_HienTai.Dock = DockStyle.Fill;
             khuVucTrai_HienTai.Location = new Point(3, 3);
             khuVucTrai_HienTai.Name = "khuVucTrai_HienTai";
-            khuVucTrai_HienTai.Size = new Size(792, 428);
+            khuVucTrai_HienTai.Size = new Size(726, 392);
             khuVucTrai_HienTai.TabIndex = 0;
             // 
             // anhIconThoiTiet
@@ -409,13 +409,13 @@
             detailGridPanel.Controls.Add(pressurePanel, 0, 1);
             detailGridPanel.Controls.Add(visibilityPanel, 1, 1);
             detailGridPanel.Dock = DockStyle.Bottom;
-            detailGridPanel.Location = new Point(0, 232);
+            detailGridPanel.Location = new Point(0, 196);
             detailGridPanel.Name = "detailGridPanel";
             detailGridPanel.Padding = new Padding(5);
             detailGridPanel.RowCount = 2;
             detailGridPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             detailGridPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            detailGridPanel.Size = new Size(792, 196);
+            detailGridPanel.Size = new Size(726, 196);
             detailGridPanel.TabIndex = 3;
             // 
             // feelsLikePanel
@@ -425,27 +425,27 @@
             feelsLikePanel.Location = new Point(8, 8);
             feelsLikePanel.Name = "feelsLikePanel";
             feelsLikePanel.Padding = new Padding(10);
-            feelsLikePanel.Size = new Size(254, 87);
+            feelsLikePanel.Size = new Size(232, 87);
             feelsLikePanel.TabIndex = 0;
             // 
             // humidityPanel
             // 
             humidityPanel.BackColor = Color.FromArgb(120, 255, 255, 255);
             humidityPanel.Dock = DockStyle.Fill;
-            humidityPanel.Location = new Point(268, 8);
+            humidityPanel.Location = new Point(246, 8);
             humidityPanel.Name = "humidityPanel";
             humidityPanel.Padding = new Padding(10);
-            humidityPanel.Size = new Size(254, 87);
+            humidityPanel.Size = new Size(232, 87);
             humidityPanel.TabIndex = 1;
             // 
             // windPanel
             // 
             windPanel.BackColor = Color.FromArgb(120, 255, 255, 255);
             windPanel.Dock = DockStyle.Fill;
-            windPanel.Location = new Point(528, 8);
+            windPanel.Location = new Point(484, 8);
             windPanel.Name = "windPanel";
             windPanel.Padding = new Padding(10);
-            windPanel.Size = new Size(256, 87);
+            windPanel.Size = new Size(234, 87);
             windPanel.TabIndex = 2;
             // 
             // pressurePanel
@@ -455,17 +455,17 @@
             pressurePanel.Location = new Point(8, 101);
             pressurePanel.Name = "pressurePanel";
             pressurePanel.Padding = new Padding(10);
-            pressurePanel.Size = new Size(254, 87);
+            pressurePanel.Size = new Size(232, 87);
             pressurePanel.TabIndex = 3;
             // 
             // visibilityPanel
             // 
             visibilityPanel.BackColor = Color.FromArgb(120, 255, 255, 255);
             visibilityPanel.Dock = DockStyle.Fill;
-            visibilityPanel.Location = new Point(268, 101);
+            visibilityPanel.Location = new Point(246, 101);
             visibilityPanel.Name = "visibilityPanel";
             visibilityPanel.Padding = new Padding(10);
-            visibilityPanel.Size = new Size(254, 87);
+            visibilityPanel.Size = new Size(232, 87);
             visibilityPanel.TabIndex = 4;
             // 
             // anhNenDong
@@ -475,7 +475,7 @@
             anhNenDong.ErrorImage = null;
             anhNenDong.Location = new Point(0, 0);
             anhNenDong.Name = "anhNenDong";
-            anhNenDong.Size = new Size(792, 428);
+            anhNenDong.Size = new Size(726, 392);
             anhNenDong.SizeMode = PictureBoxSizeMode.StretchImage;
             anhNenDong.TabIndex = 5;
             anhNenDong.TabStop = false;
@@ -486,10 +486,10 @@
             khuVucPhai_5Ngay.BackColor = Color.Transparent;
             khuVucPhai_5Ngay.Controls.Add(khung5Ngay);
             khuVucPhai_5Ngay.Dock = DockStyle.Fill;
-            khuVucPhai_5Ngay.Location = new Point(801, 3);
+            khuVucPhai_5Ngay.Location = new Point(735, 3);
             khuVucPhai_5Ngay.Name = "khuVucPhai_5Ngay";
             khuVucPhai_5Ngay.Padding = new Padding(8);
-            khuVucPhai_5Ngay.Size = new Size(527, 428);
+            khuVucPhai_5Ngay.Size = new Size(593, 392);
             khuVucPhai_5Ngay.TabIndex = 1;
             // 
             // khung5Ngay
@@ -501,7 +501,7 @@
             khung5Ngay.Location = new Point(8, 8);
             khung5Ngay.Name = "khung5Ngay";
             khung5Ngay.Padding = new Padding(8);
-            khung5Ngay.Size = new Size(511, 412);
+            khung5Ngay.Size = new Size(577, 376);
             khung5Ngay.TabIndex = 0;
             khung5Ngay.TabStop = false;
             khung5Ngay.Text = "Dự báo 5 ngày";
@@ -515,7 +515,7 @@
             BangNhieuNgay.Location = new Point(8, 31);
             BangNhieuNgay.Name = "BangNhieuNgay";
             BangNhieuNgay.Padding = new Padding(4);
-            BangNhieuNgay.Size = new Size(495, 373);
+            BangNhieuNgay.Size = new Size(561, 337);
             BangNhieuNgay.TabIndex = 0;
             BangNhieuNgay.WrapContents = false;
             // 
@@ -524,7 +524,6 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(135, 206, 250);
-            BackgroundImage = Properties.Resources.nen_troi_quang;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1331, 781);
             Controls.Add(boCucChinh);

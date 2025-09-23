@@ -2732,20 +2732,20 @@ namespace THOITIET
             try
             {
                 // Panel cảm giác thực tế
-                TaoPanelChiTiet(feelsLikePanel, "🌡️", "Cảm giác như", $"{Math.Round(hienTai.NhietDoCamGiac)}{kyHieuNhietDo}");
+                TaoPanelChiTiet(feelsLikePanel, "🌡️", "Cảm giác", $"{Math.Round(hienTai.NhietDoCamGiac)}{kyHieuNhietDo}");
 
                 // Panel độ ẩm
                 TaoPanelChiTiet(humidityPanel, "💧", "Độ ẩm", $"{hienTai.DoAm}%");
 
                 // Panel gió
                 var donViGio = donViCelsius ? "m/s" : "mph";
-                TaoPanelChiTiet(windPanel, "💨", "Tốc độ gió", $"{Math.Round(hienTai.TocDoGio)} {donViGio}");
+                TaoPanelChiTiet(windPanel, "💨", "Gió", $"{Math.Round(hienTai.TocDoGio)} {donViGio}");
 
                 // Panel áp suất
-                TaoPanelChiTiet(pressurePanel, "📊", "Áp suất khí quyển", $"{hienTai.ApSuat} hPa");
+                TaoPanelChiTiet(pressurePanel, "📊", "Áp suất", $"{hienTai.ApSuat} hPa");
 
                 // Panel tầm nhìn
-                TaoPanelChiTiet(visibilityPanel, "👁️", "Tầm nhìn xa", $"{hienTai.TamNhin / 1000.0:0.0} km");
+                TaoPanelChiTiet(visibilityPanel, "👁️", "Tầm nhìn", $"{hienTai.TamNhin / 1000.0:0.0} km");
 
                 // Đã xóa sunrisePanel
             }
