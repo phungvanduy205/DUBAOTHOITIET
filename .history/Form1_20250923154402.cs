@@ -13,7 +13,6 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Windows.Forms.DataVisualization.Charting;
-using Microsoft.Web.WebView2.WinForms;
 
 namespace THOITIET
 {
@@ -51,7 +50,7 @@ namespace THOITIET
         // Các fields mới cho tính năng nâng cao
         private PictureBox? backgroundPictureBox;
         private Chart? temperatureChart;
-        private WebView2? windyView;
+        private WebBrowser? windyBrowser;
         private Button? btnToggleMapChart;
         private bool isShowingWindyMap = false;
         private const string WINDY_API_KEY = "NI44O5nRjXST4TKiDk0x7hzaWnpHHiCP";
@@ -3544,18 +3543,19 @@ namespace THOITIET
 
         private void EnsureWindyBrowser()
         {
-            if (windyView != null) return;
+            if (windyBrowser != null) return;
 
-            windyView = new WebView2
+            windyBrowser = new WebBrowser
             {
+                ScriptErrorsSuppressed = true,
                 Dock = DockStyle.Fill,
                 Visible = false
             };
 
             if (tabLichSu != null)
             {
-                tabLichSu.Controls.Add(windyView);
-                windyView.BringToFront();
+                tabLichSu.Controls.Add(windyBrowser);
+                windyBrowser.BringToFront();
             }
         }
 
@@ -3569,9 +3569,9 @@ namespace THOITIET
 
             if (temperatureChart != null)
                 temperatureChart.Visible = !isShowingWindyMap;
-            if (windyView != null)
+            if (windyBrowser != null)
             {
-                windyView.Visible = isShowingWindyMap;
+                windyBrowser.Visible = isShowingWindyMap;
                 if (isShowingWindyMap)
                 {
                     LoadWindyMap(currentLat, currentLon);
@@ -3582,12 +3582,17 @@ namespace THOITIET
         private void LoadWindyMap(double lat, double lon)
         {
             EnsureWindyBrowser();
-            if (windyView == null) return;
+            if (windyBrowser == null) return;
 
             string latStr = lat.ToString(System.Globalization.CultureInfo.InvariantCulture);
             string lonStr = lon.ToString(System.Globalization.CultureInfo.InvariantCulture);
             string embedUrl = $"https://embed.windy.com/embed2.html?key={WINDY_API_KEY}&lat={latStr}&lon={lonStr}&detailLat={latStr}&detailLon={lonStr}&zoom=7&overlay=temp&level=surface&menu=&message=true&marker=true&calendar=&pressure=true&type=map&location=coordinates&detail=true&metricWind=default&metricTemp=default";
-            windyView.Source = new Uri(embedUrl);
+            try
+            {
+                windyBrowser.AllowNavigation = true;
+                windyBrowser.Navigate(embedUrl);
+            }
+            catch { }
         }
 
         /// <summary>

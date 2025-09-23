@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +14,6 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Windows.Forms.DataVisualization.Charting;
-using Microsoft.Web.WebView2.WinForms;
 
 namespace THOITIET
 {
@@ -51,7 +51,7 @@ namespace THOITIET
         // Các fields mới cho tính năng nâng cao
         private PictureBox? backgroundPictureBox;
         private Chart? temperatureChart;
-        private WebView2? windyView;
+        private WebBrowser? windyBrowser;
         private Button? btnToggleMapChart;
         private bool isShowingWindyMap = false;
         private const string WINDY_API_KEY = "NI44O5nRjXST4TKiDk0x7hzaWnpHHiCP";
@@ -3527,11 +3527,9 @@ namespace THOITIET
                     btnExport.Click += (s, e) => ExportChart();
                     tabLichSu.Controls.Add(btnExport);
 
-                    // Nút chuyển đổi (đặt cạnh tiêu đề biểu đồ)
+                    // Nút chuyển đổi
                     tabLichSu.Controls.Add(btnToggleMapChart);
                     btnToggleMapChart.BringToFront();
-                    tabLichSu.Resize += (s, e) => PositionToggleButton();
-                    PositionToggleButton();
                 }
 
                 System.Diagnostics.Debug.WriteLine("Đã khởi tạo Chart nhiệt độ");
@@ -3544,18 +3542,19 @@ namespace THOITIET
 
         private void EnsureWindyBrowser()
         {
-            if (windyView != null) return;
+            if (windyBrowser != null) return;
 
-            windyView = new WebView2
+            windyBrowser = new WebBrowser
             {
+                ScriptErrorsSuppressed = true,
                 Dock = DockStyle.Fill,
                 Visible = false
             };
 
             if (tabLichSu != null)
             {
-                tabLichSu.Controls.Add(windyView);
-                windyView.BringToFront();
+                tabLichSu.Controls.Add(windyBrowser);
+                windyBrowser.BringToFront();
             }
         }
 
@@ -3569,9 +3568,9 @@ namespace THOITIET
 
             if (temperatureChart != null)
                 temperatureChart.Visible = !isShowingWindyMap;
-            if (windyView != null)
+            if (windyBrowser != null)
             {
-                windyView.Visible = isShowingWindyMap;
+                windyBrowser.Visible = isShowingWindyMap;
                 if (isShowingWindyMap)
                 {
                     LoadWindyMap(currentLat, currentLon);
@@ -3582,12 +3581,36 @@ namespace THOITIET
         private void LoadWindyMap(double lat, double lon)
         {
             EnsureWindyBrowser();
-            if (windyView == null) return;
+            if (windyBrowser == null) return;
 
-            string latStr = lat.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            string lonStr = lon.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            string embedUrl = $"https://embed.windy.com/embed2.html?key={WINDY_API_KEY}&lat={latStr}&lon={lonStr}&detailLat={latStr}&detailLon={lonStr}&zoom=7&overlay=temp&level=surface&menu=&message=true&marker=true&calendar=&pressure=true&type=map&location=coordinates&detail=true&metricWind=default&metricTemp=default";
-            windyView.Source = new Uri(embedUrl);
+            string html = $@"<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+  <style>html,body,#map{{height:100%;margin:0;padding:0;background:#1a1a1a;}}</style>
+  <script src='https://api.windy.com/assets/map-forecast/libBoot.js'></script>
+  <script>
+    const options = {{
+      key: '{WINDY_API_KEY}',
+      lat: {lat.ToString(System.Globalization.CultureInfo.InvariantCulture)},
+      lon: {lon.ToString(System.Globalization.CultureInfo.InvariantCulture)},
+      zoom: 7,
+      overlay: 'temp',
+      timestamp: Date.now(),
+    }};
+    window.windyInit(options, function (windyAPI) {{
+      const map = windyAPI.map;
+      map.setView([options.lat, options.lon], options.zoom);
+    }});
+  </script>
+  <meta charset='utf-8' />
+</head>
+<body>
+  <div id='map'></div>
+</body>
+</html>";
+
+            windyBrowser.DocumentText = html;
         }
 
         /// <summary>
@@ -4401,13 +4424,6 @@ namespace THOITIET
             return string.Join("\n", info);
         }
 
-        private void PositionToggleButton()
-        {
-            if (tabLichSu == null || btnToggleMapChart == null || temperatureChart == null) return;
-            var chartBounds = temperatureChart.Bounds;
-            btnToggleMapChart.Location = new Point(chartBounds.Left + chartBounds.Width - btnToggleMapChart.Width - 10,
-                                                   chartBounds.Top + 5);
-        }
     }
 
     // Extension method để vẽ hình chữ nhật bo tròn
