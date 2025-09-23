@@ -91,7 +91,7 @@
             thanhTrenCung.Location = new Point(0, 0);
             thanhTrenCung.Name = "thanhTrenCung";
             thanhTrenCung.Padding = new Padding(10);
-            thanhTrenCung.Size = new Size(1331, 57);
+            thanhTrenCung.Size = new Size(1186, 57);
             thanhTrenCung.TabIndex = 0;
             thanhTrenCung.Paint += thanhTrenCung_Paint;
             // 
@@ -103,7 +103,7 @@
             nutChuyenDoiDiaDiem.FlatAppearance.BorderSize = 0;
             nutChuyenDoiDiaDiem.FlatStyle = FlatStyle.Flat;
             nutChuyenDoiDiaDiem.Font = new Font("Segoe UI", 12F);
-            nutChuyenDoiDiaDiem.Location = new Point(1092, 13);
+            nutChuyenDoiDiaDiem.Location = new Point(947, 13);
             nutChuyenDoiDiaDiem.Name = "nutChuyenDoiDiaDiem";
             nutChuyenDoiDiaDiem.Size = new Size(57, 34);
             nutChuyenDoiDiaDiem.TabIndex = 2;
@@ -117,7 +117,7 @@
             nutLuuDiaDiem.BackColor = Color.WhiteSmoke;
             nutLuuDiaDiem.FlatAppearance.BorderSize = 0;
             nutLuuDiaDiem.FlatStyle = FlatStyle.Flat;
-            nutLuuDiaDiem.Location = new Point(1155, 13);
+            nutLuuDiaDiem.Location = new Point(1010, 13);
             nutLuuDiaDiem.Name = "nutLuuDiaDiem";
             nutLuuDiaDiem.Size = new Size(54, 34);
             nutLuuDiaDiem.TabIndex = 3;
@@ -132,7 +132,7 @@
             NutTimKiem.FlatAppearance.BorderSize = 0;
             NutTimKiem.FlatStyle = FlatStyle.Flat;
             NutTimKiem.Font = new Font("Segoe UI", 12F);
-            NutTimKiem.Location = new Point(1031, 13);
+            NutTimKiem.Location = new Point(886, 13);
             NutTimKiem.Name = "NutTimKiem";
             NutTimKiem.Size = new Size(42, 34);
             NutTimKiem.TabIndex = 0;
@@ -146,7 +146,7 @@
             unitToggle.BackColor = Color.Transparent;
             unitToggle.Font = new Font("Segoe UI", 10F);
             unitToggle.IsCelsius = true;
-            unitToggle.Location = new Point(1215, 13);
+            unitToggle.Location = new Point(1070, 13);
             unitToggle.Name = "unitToggle";
             unitToggle.Size = new Size(104, 34);
             unitToggle.TabIndex = 1;
@@ -160,7 +160,7 @@
             oTimKiemDiaDiem.Multiline = true;
             oTimKiemDiaDiem.Name = "oTimKiemDiaDiem";
             oTimKiemDiaDiem.PlaceholderText = "🔍Tìm kiếm địa điểm...";
-            oTimKiemDiaDiem.Size = new Size(1067, 34);
+            oTimKiemDiaDiem.Size = new Size(922, 34);
             oTimKiemDiaDiem.TabIndex = 0;
             oTimKiemDiaDiem.KeyDown += oTimKiemDiaDiem_KeyDown;
             oTimKiemDiaDiem.KeyPress += oTimKiemDiaDiem_KeyPress;
@@ -206,15 +206,16 @@
             nutChonMacDinh.TabIndex = 2;
             nutChonMacDinh.Text = "Mặc định";
             nutChonMacDinh.UseVisualStyleBackColor = true;
+            nutChonMacDinh.Click += nutChonMacDinh_Click;
             // 
             // tabDieuKhien
             // 
             tabDieuKhien.Controls.Add(tabLichSu);
             tabDieuKhien.Dock = DockStyle.Fill;
-            tabDieuKhien.Location = new Point(801, 437);
+            tabDieuKhien.Location = new Point(714, 415);
             tabDieuKhien.Name = "tabDieuKhien";
             tabDieuKhien.SelectedIndex = 0;
-            tabDieuKhien.Size = new Size(527, 284);
+            tabDieuKhien.Size = new Size(469, 269);
             tabDieuKhien.TabIndex = 3;
             // 
             // tabLichSu
@@ -227,7 +228,7 @@
             tabLichSu.Location = new Point(4, 29);
             tabLichSu.Name = "tabLichSu";
             tabLichSu.Padding = new Padding(8);
-            tabLichSu.Size = new Size(519, 251);
+            tabLichSu.Size = new Size(461, 236);
             tabLichSu.TabIndex = 0;
             tabLichSu.Text = "Biểu đồ nhiệt độ";
             tabLichSu.UseVisualStyleBackColor = true;
@@ -235,7 +236,7 @@
             // NutXuatLichSu
             // 
             NutXuatLichSu.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            NutXuatLichSu.Location = new Point(387, 212);
+            NutXuatLichSu.Location = new Point(329, 197);
             NutXuatLichSu.Name = "NutXuatLichSu";
             NutXuatLichSu.Size = new Size(124, 29);
             NutXuatLichSu.TabIndex = 1;
@@ -257,7 +258,7 @@
             BangLichSu.ReadOnly = true;
             BangLichSu.RowHeadersVisible = false;
             BangLichSu.RowHeadersWidth = 51;
-            BangLichSu.Size = new Size(500, 195);
+            BangLichSu.Size = new Size(442, 180);
             BangLichSu.TabIndex = 0;
             // 
             // khuVucDuoi_24Gio
@@ -265,10 +266,10 @@
             khuVucDuoi_24Gio.BackColor = Color.Transparent;
             khuVucDuoi_24Gio.Controls.Add(khung24Gio);
             khuVucDuoi_24Gio.Dock = DockStyle.Fill;
-            khuVucDuoi_24Gio.Location = new Point(3, 437);
+            khuVucDuoi_24Gio.Location = new Point(3, 415);
             khuVucDuoi_24Gio.Name = "khuVucDuoi_24Gio";
             khuVucDuoi_24Gio.Padding = new Padding(8);
-            khuVucDuoi_24Gio.Size = new Size(792, 284);
+            khuVucDuoi_24Gio.Size = new Size(705, 269);
             khuVucDuoi_24Gio.TabIndex = 2;
             // 
             // khung24Gio
@@ -280,7 +281,7 @@
             khung24Gio.Location = new Point(8, 8);
             khung24Gio.Name = "khung24Gio";
             khung24Gio.Padding = new Padding(8);
-            khung24Gio.Size = new Size(776, 268);
+            khung24Gio.Size = new Size(689, 253);
             khung24Gio.TabIndex = 0;
             khung24Gio.TabStop = false;
             khung24Gio.Text = "Dự báo 24 giờ";
@@ -294,7 +295,7 @@
             BangTheoGio.Location = new Point(8, 31);
             BangTheoGio.Name = "BangTheoGio";
             BangTheoGio.Padding = new Padding(4);
-            BangTheoGio.Size = new Size(760, 229);
+            BangTheoGio.Size = new Size(673, 214);
             BangTheoGio.TabIndex = 0;
             BangTheoGio.WrapContents = false;
             // 
@@ -314,7 +315,7 @@
             boCucChinh.RowCount = 2;
             boCucChinh.RowStyles.Add(new RowStyle(SizeType.Percent, 60F));
             boCucChinh.RowStyles.Add(new RowStyle(SizeType.Percent, 40F));
-            boCucChinh.Size = new Size(1331, 724);
+            boCucChinh.Size = new Size(1186, 687);
             boCucChinh.TabIndex = 1;
             // 
             // khuVucTrai_HienTai
@@ -330,7 +331,7 @@
             khuVucTrai_HienTai.Dock = DockStyle.Fill;
             khuVucTrai_HienTai.Location = new Point(3, 3);
             khuVucTrai_HienTai.Name = "khuVucTrai_HienTai";
-            khuVucTrai_HienTai.Size = new Size(792, 428);
+            khuVucTrai_HienTai.Size = new Size(705, 406);
             khuVucTrai_HienTai.TabIndex = 0;
             // 
             // anhIconThoiTiet
@@ -338,7 +339,7 @@
             anhIconThoiTiet.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             anhIconThoiTiet.BackColor = Color.Transparent;
             anhIconThoiTiet.BackgroundImageLayout = ImageLayout.Stretch;
-            anhIconThoiTiet.Location = new Point(173, 67);
+            anhIconThoiTiet.Location = new Point(164, 67);
             anhIconThoiTiet.Name = "anhIconThoiTiet";
             anhIconThoiTiet.Size = new Size(74, 67);
             anhIconThoiTiet.SizeMode = PictureBoxSizeMode.Zoom;
@@ -403,13 +404,13 @@
             detailGridPanel.Controls.Add(pressurePanel, 0, 1);
             detailGridPanel.Controls.Add(visibilityPanel, 1, 1);
             detailGridPanel.Dock = DockStyle.Bottom;
-            detailGridPanel.Location = new Point(0, 232);
+            detailGridPanel.Location = new Point(0, 210);
             detailGridPanel.Name = "detailGridPanel";
             detailGridPanel.Padding = new Padding(5);
             detailGridPanel.RowCount = 2;
             detailGridPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             detailGridPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            detailGridPanel.Size = new Size(792, 196);
+            detailGridPanel.Size = new Size(705, 196);
             detailGridPanel.TabIndex = 3;
             // 
             // feelsLikePanel
@@ -419,27 +420,27 @@
             feelsLikePanel.Location = new Point(8, 8);
             feelsLikePanel.Name = "feelsLikePanel";
             feelsLikePanel.Padding = new Padding(10);
-            feelsLikePanel.Size = new Size(254, 87);
+            feelsLikePanel.Size = new Size(225, 87);
             feelsLikePanel.TabIndex = 0;
             // 
             // humidityPanel
             // 
             humidityPanel.BackColor = Color.FromArgb(120, 255, 255, 255);
             humidityPanel.Dock = DockStyle.Fill;
-            humidityPanel.Location = new Point(268, 8);
+            humidityPanel.Location = new Point(239, 8);
             humidityPanel.Name = "humidityPanel";
             humidityPanel.Padding = new Padding(10);
-            humidityPanel.Size = new Size(254, 87);
+            humidityPanel.Size = new Size(225, 87);
             humidityPanel.TabIndex = 1;
             // 
             // windPanel
             // 
             windPanel.BackColor = Color.FromArgb(120, 255, 255, 255);
             windPanel.Dock = DockStyle.Fill;
-            windPanel.Location = new Point(528, 8);
+            windPanel.Location = new Point(470, 8);
             windPanel.Name = "windPanel";
             windPanel.Padding = new Padding(10);
-            windPanel.Size = new Size(256, 87);
+            windPanel.Size = new Size(227, 87);
             windPanel.TabIndex = 2;
             // 
             // pressurePanel
@@ -449,17 +450,17 @@
             pressurePanel.Location = new Point(8, 101);
             pressurePanel.Name = "pressurePanel";
             pressurePanel.Padding = new Padding(10);
-            pressurePanel.Size = new Size(254, 87);
+            pressurePanel.Size = new Size(225, 87);
             pressurePanel.TabIndex = 3;
             // 
             // visibilityPanel
             // 
             visibilityPanel.BackColor = Color.FromArgb(120, 255, 255, 255);
             visibilityPanel.Dock = DockStyle.Fill;
-            visibilityPanel.Location = new Point(268, 101);
+            visibilityPanel.Location = new Point(239, 101);
             visibilityPanel.Name = "visibilityPanel";
             visibilityPanel.Padding = new Padding(10);
-            visibilityPanel.Size = new Size(254, 87);
+            visibilityPanel.Size = new Size(225, 87);
             visibilityPanel.TabIndex = 4;
             // 
             // anhNenDong
@@ -469,7 +470,7 @@
             anhNenDong.ErrorImage = null;
             anhNenDong.Location = new Point(0, 0);
             anhNenDong.Name = "anhNenDong";
-            anhNenDong.Size = new Size(792, 428);
+            anhNenDong.Size = new Size(705, 406);
             anhNenDong.SizeMode = PictureBoxSizeMode.StretchImage;
             anhNenDong.TabIndex = 5;
             anhNenDong.TabStop = false;
@@ -480,10 +481,10 @@
             khuVucPhai_5Ngay.BackColor = Color.Transparent;
             khuVucPhai_5Ngay.Controls.Add(khung5Ngay);
             khuVucPhai_5Ngay.Dock = DockStyle.Fill;
-            khuVucPhai_5Ngay.Location = new Point(801, 3);
+            khuVucPhai_5Ngay.Location = new Point(714, 3);
             khuVucPhai_5Ngay.Name = "khuVucPhai_5Ngay";
             khuVucPhai_5Ngay.Padding = new Padding(8);
-            khuVucPhai_5Ngay.Size = new Size(527, 428);
+            khuVucPhai_5Ngay.Size = new Size(469, 406);
             khuVucPhai_5Ngay.TabIndex = 1;
             // 
             // khung5Ngay
@@ -495,7 +496,7 @@
             khung5Ngay.Location = new Point(8, 8);
             khung5Ngay.Name = "khung5Ngay";
             khung5Ngay.Padding = new Padding(8);
-            khung5Ngay.Size = new Size(511, 412);
+            khung5Ngay.Size = new Size(453, 390);
             khung5Ngay.TabIndex = 0;
             khung5Ngay.TabStop = false;
             khung5Ngay.Text = "Dự báo 5 ngày";
@@ -509,7 +510,7 @@
             BangNhieuNgay.Location = new Point(8, 31);
             BangNhieuNgay.Name = "BangNhieuNgay";
             BangNhieuNgay.Padding = new Padding(4);
-            BangNhieuNgay.Size = new Size(495, 373);
+            BangNhieuNgay.Size = new Size(437, 351);
             BangNhieuNgay.TabIndex = 0;
             BangNhieuNgay.WrapContents = false;
             // 
@@ -519,7 +520,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(135, 206, 250);
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(1331, 781);
+            ClientSize = new Size(1186, 744);
             Controls.Add(boCucChinh);
             Controls.Add(thanhTrenCung);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -555,8 +556,6 @@
          private System.Windows.Forms.ListBox listBoxGoiY;
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;
         private System.Windows.Forms.Button nutLuuDiaDiem;
-        private System.Windows.Forms.Button nutXoaDiaDiem;
-        private System.Windows.Forms.Button nutChonMacDinh;
         private TabControl tabDieuKhien;
          private TabPage tabLichSu;
          private Button NutXuatLichSu;

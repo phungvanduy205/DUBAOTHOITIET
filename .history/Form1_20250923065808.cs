@@ -67,6 +67,7 @@ namespace THOITIET
         // Lưu địa điểm
         private List<string> savedLocationNames = new List<string>();
         private int currentLocationIndex = 0;
+        private string defaultLocationName = "Hanoi";
         private string locationsFilePath = "saved_locations.json";
 
         public Form1()
@@ -1204,7 +1205,8 @@ namespace THOITIET
             {
                 var data = new
                 {
-                    locations = savedLocationNames
+                    locations = savedLocationNames,
+                    defaultLocation = savedLocationNames.Count > currentLocationIndex ? savedLocationNames[currentLocationIndex] : defaultLocationName
                 };
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
                 File.WriteAllText(locationsFilePath, json);
@@ -1377,6 +1379,25 @@ namespace THOITIET
         /// <summary>
         /// Chọn địa điểm mặc định
         /// </summary>
+        private void nutChonMacDinh_Click(object sender, EventArgs e)
+        {
+            if (listBoxDiaDiemDaLuu.SelectedIndex == -1)
+            {
+                MessageBox.Show("Vui lòng chọn địa điểm làm mặc định!", "Thông báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var selectedLocation = listBoxDiaDiemDaLuu.SelectedItem?.ToString();
+            if (string.IsNullOrEmpty(selectedLocation)) return;
+
+            defaultLocationName = selectedLocation;
+            currentLocationIndex = savedLocationNames.IndexOf(selectedLocation);
+            SaveLocationList();
+
+            MessageBox.Show($"Đã đặt '{selectedLocation}' làm địa điểm mặc định!", "Thành công", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         /// <summary>
         /// Cập nhật danh sách địa điểm trong ListBox

@@ -67,6 +67,7 @@ namespace THOITIET
         // Lưu địa điểm
         private List<string> savedLocationNames = new List<string>();
         private int currentLocationIndex = 0;
+        private string defaultLocationName = "Hanoi";
         private string locationsFilePath = "saved_locations.json";
 
         public Form1()
@@ -1091,9 +1092,13 @@ namespace THOITIET
                     {
                         savedLocationNames = data.locations.ToObject<List<string>>();
                     }
+                    if (data?.defaultLocation != null)
+                    {
+                        defaultLocationName = data.defaultLocation.ToString();
+                    }
                 }
                 
-                // Nếu chưa có địa điểm nào, thêm một số địa điểm mẫu
+                // Nếu chưa có địa điểm nào, thêm mặc định
                 if (savedLocationNames.Count == 0)
                 {
                     savedLocationNames.Add("Hanoi");
@@ -1122,12 +1127,10 @@ namespace THOITIET
             {
                 // Lấy vị trí hiện tại theo IP
                 var locationData = await WeatherApiService.GetCurrentLocationAsync();
-                if (locationData?.Results?.Length > 0)
+                if (locationData != null && !string.IsNullOrEmpty(locationData.City))
                 {
-                    var result = locationData.Results[0];
-                    
                     // Cập nhật UI với tên địa điểm
-                    string locationName = $"{result.Name}, {result.Country}";
+                    string locationName = $"{locationData.City}, {locationData.Country}";
                     oTimKiemDiaDiem.Text = locationName;
                     currentLocation = locationName;
                     CapNhatDiaDiem(locationName);
@@ -1142,7 +1145,7 @@ namespace THOITIET
                     }
                     
                     // Lấy dữ liệu thời tiết
-                    var weatherData = await WeatherApiService.GetCurrentWeatherAsync(result.Lat, result.Lon);
+                    var weatherData = await WeatherApiService.GetWeatherAsync(locationData.Latitude, locationData.Longitude);
                     if (weatherData != null)
                     {
                         this.weatherData = weatherData;
@@ -1204,7 +1207,8 @@ namespace THOITIET
             {
                 var data = new
                 {
-                    locations = savedLocationNames
+                    locations = savedLocationNames,
+                    defaultLocation = savedLocationNames.Count > currentLocationIndex ? savedLocationNames[currentLocationIndex] : defaultLocationName
                 };
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
                 File.WriteAllText(locationsFilePath, json);
@@ -1278,64 +1282,76 @@ namespace THOITIET
                     Cursor = Cursors.Hand,
                     BackColor = Color.Transparent
                 };
-                locationLabel.Click += async (s, args) => {
-                    // Kiểm tra nếu là địa điểm IP
-                    if (location == "📍 Vị trí hiện tại")
-                    {
-                        // Load thời tiết theo IP
-                        await LoadWeatherByIP();
-                    }
-                    else
-                    {
-                        oTimKiemDiaDiem.Text = location;
-                        currentLocation = location;
-                        currentLocationIndex = savedLocationNames.IndexOf(location);
-                        
-                        // Cập nhật tên địa điểm hiển thị
-                        CapNhatDiaDiem(location);
-                        
-                        await CapNhatThoiTiet();
-                    }
+                locationLabel.Click += (s, args) => {
+                    oTimKiemDiaDiem.Text = location;
+                    currentLocation = location;
+                    currentLocationIndex = savedLocationNames.IndexOf(location);
+                    
+                    // Cập nhật tên địa điểm hiển thị
+                    CapNhatDiaDiem(location);
+                    
+                    _ = CapNhatThoiTiet();
                     SaveLocationList();
                     contextMenu.Close();
                 };
                 
-                // Nút xóa (✗) - chỉ hiện cho địa điểm khác (không phải vị trí hiện tại)
-                Button deleteBtn = null;
-                if (location != "📍 Vị trí hiện tại")
+                // Nút đặt mặc định (✓) - chỉ hiện nếu chưa phải mặc định
+                Button setDefaultBtn = null;
+                if (location != defaultLocationName)
                 {
-                    deleteBtn = new Button
+                    setDefaultBtn = new Button
                     {
-                        Text = "✗",
-                        Location = new Point(160, 3),
+                        Text = "✓",
+                        Location = new Point(130, 3),
                         Size = new Size(25, 24),
                         Font = new Font("Arial", 10, FontStyle.Bold),
-                        BackColor = Color.LightCoral,
+                        BackColor = Color.LightGreen,
                         ForeColor = Color.White,
                         FlatStyle = FlatStyle.Flat
                     };
-                    deleteBtn.Click += (s, args) => {
-                        var result = MessageBox.Show($"Bạn có chắc muốn xóa địa điểm '{location}'?", "Xác nhận xóa", 
-                            MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        
-                        if (result == DialogResult.Yes)
-                        {
-                            savedLocationNames.Remove(location);
-                            SaveLocationList();
-                            CapNhatDanhSachDiaDiem();
-                            MessageBox.Show($"Đã xóa địa điểm: {location}", "Thành công", 
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            contextMenu.Close();
-                        }
+                    setDefaultBtn.Click += (s, args) => {
+                        defaultLocationName = location;
+                        currentLocationIndex = savedLocationNames.IndexOf(location);
+                        SaveLocationList();
+                        MessageBox.Show($"Đã đặt '{location}' làm địa điểm mặc định!", "Thành công", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        contextMenu.Close();
                     };
                 }
                 
+                // Nút xóa (✗)
+                var deleteBtn = new Button
+                {
+                    Text = "✗",
+                    Location = new Point(160, 3),
+                    Size = new Size(25, 24),
+                    Font = new Font("Arial", 10, FontStyle.Bold),
+                    BackColor = Color.LightCoral,
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat
+                };
+                deleteBtn.Click += (s, args) => {
+                    var result = MessageBox.Show($"Bạn có chắc muốn xóa địa điểm '{location}'?", "Xác nhận xóa", 
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    
+                    if (result == DialogResult.Yes)
+                    {
+                        savedLocationNames.Remove(location);
+                        SaveLocationList();
+                        CapNhatDanhSachDiaDiem();
+                        MessageBox.Show($"Đã xóa địa điểm: {location}", "Thành công", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        contextMenu.Close();
+                    }
+                };
+                
                 // Thêm các control vào panel
                 innerPanel.Controls.Add(locationLabel);
-                if (deleteBtn != null)
+                if (setDefaultBtn != null)
                 {
-                    innerPanel.Controls.Add(deleteBtn);
+                    innerPanel.Controls.Add(setDefaultBtn);
                 }
+                innerPanel.Controls.Add(deleteBtn);
                 
                 // Tạo ToolStripControlHost với panel
                 var locationPanel = new ToolStripControlHost(innerPanel);
@@ -1377,6 +1393,25 @@ namespace THOITIET
         /// <summary>
         /// Chọn địa điểm mặc định
         /// </summary>
+        private void nutChonMacDinh_Click(object sender, EventArgs e)
+        {
+            if (listBoxDiaDiemDaLuu.SelectedIndex == -1)
+            {
+                MessageBox.Show("Vui lòng chọn địa điểm làm mặc định!", "Thông báo", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var selectedLocation = listBoxDiaDiemDaLuu.SelectedItem?.ToString();
+            if (string.IsNullOrEmpty(selectedLocation)) return;
+
+            defaultLocationName = selectedLocation;
+            currentLocationIndex = savedLocationNames.IndexOf(selectedLocation);
+            SaveLocationList();
+
+            MessageBox.Show($"Đã đặt '{selectedLocation}' làm địa điểm mặc định!", "Thành công", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         /// <summary>
         /// Cập nhật danh sách địa điểm trong ListBox
