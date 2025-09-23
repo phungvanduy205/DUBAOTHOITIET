@@ -3428,7 +3428,7 @@ namespace THOITIET
                 temperatureChart.ChartAreas[0].AxisX.TitleForeColor = Color.White;
                 temperatureChart.ChartAreas[0].AxisX.Minimum = 0;
                 temperatureChart.ChartAreas[0].AxisX.Maximum = 23;
-                temperatureChart.ChartAreas[0].AxisX.Interval = 1; // hiện đủ cột theo giờ
+                temperatureChart.ChartAreas[0].AxisX.Interval = 2;
                 temperatureChart.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Segoe UI", 8);
                 temperatureChart.ChartAreas[0].AxisX.LabelStyle.ForeColor = Color.White;
                 temperatureChart.ChartAreas[0].AxisX.LineColor = Color.FromArgb(200, 255, 255, 255);

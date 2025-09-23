@@ -215,7 +215,7 @@
             tabDieuKhien.Location = new Point(801, 437);
             tabDieuKhien.Name = "tabDieuKhien";
             tabDieuKhien.SelectedIndex = 0;
-            tabDieuKhien.Size = new Size(527, 324);
+            tabDieuKhien.Size = new Size(527, 284);
             tabDieuKhien.TabIndex = 3;
             // 
             // tabChart
@@ -223,7 +223,7 @@
             tabChart.Location = new Point(4, 29);
             tabChart.Name = "tabChart";
             tabChart.Padding = new Padding(8);
-            tabChart.Size = new Size(519, 291);
+            tabChart.Size = new Size(519, 251);
             tabChart.TabIndex = 0;
             tabChart.Text = "Biểu đồ nhiệt độ";
             tabChart.UseVisualStyleBackColor = true;
@@ -233,7 +233,7 @@
             tabMap.Location = new Point(4, 29);
             tabMap.Name = "tabMap";
             tabMap.Padding = new Padding(8);
-            tabMap.Size = new Size(519, 291);
+            tabMap.Size = new Size(519, 251);
             tabMap.TabIndex = 1;
             tabMap.Text = "Bản đồ";
             tabMap.UseVisualStyleBackColor = true;
