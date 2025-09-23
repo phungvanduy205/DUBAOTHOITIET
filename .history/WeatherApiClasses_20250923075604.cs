@@ -73,7 +73,7 @@ namespace THOITIET
         {
             try
             {
-                string url = $"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={ApiConfig.API_KEY}&lang=vi&exclude=minutely,alerts";
+                string url = $"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={ApiConfig.API_KEY}&units=metric&lang=vi&exclude=minutely,alerts";
                 System.Diagnostics.Debug.WriteLine($"URL API 3.0: {url}");
                 string json = await httpClient.GetStringAsync(url);
                 System.Diagnostics.Debug.WriteLine($"Response API 3.0: {json}");
@@ -105,11 +105,11 @@ namespace THOITIET
             }
         }
 
-        public static async Task<OneCallResponse> GetWeatherDataAsync(double lat, double lon)
+        public static async Task<OneCallResponse> GetWeatherDataAsync(double lat, double lon, string units = "metric")
         {
             try
             {
-                string url = $"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={ApiConfig.API_KEY}&lang=vi&exclude=minutely,alerts";
+                string url = $"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={ApiConfig.API_KEY}&units={units}&lang=vi&exclude=minutely,alerts";
                 System.Diagnostics.Debug.WriteLine($"URL API 3.0: {url}");
                 string json = await httpClient.GetStringAsync(url);
                 System.Diagnostics.Debug.WriteLine($"Response API 3.0: {json}");
@@ -169,17 +169,9 @@ namespace THOITIET
                 
                 if (ipData != null && ipData.Status == "success")
                 {
-                    // Thử reverse geocoding từ lat/lon để lấy tên tỉnh/thành chính xác
-                    var reverse = await ReverseGeocodeAsync(ipData.Lat, ipData.Lon);
-                    var displayName = reverse?.Name;
-                    if (string.IsNullOrWhiteSpace(displayName))
-                    {
-                        displayName = ipData.City; // fallback
-                    }
-
                     var result = new GeocodingResult
                     {
-                        Name = displayName,
+                        Name = ipData.City,
                         Country = ipData.Country,
                         Lat = ipData.Lat,
                         Lon = ipData.Lon
@@ -194,45 +186,6 @@ namespace THOITIET
                 return null;
             }
         }
-
-        // Reverse geocoding qua OpenWeather Geo API (lấy state/tỉnh nếu có)
-        public static async Task<GeocodingResult> ReverseGeocodeAsync(double lat, double lon)
-        {
-            try
-            {
-                string url = $"http://api.openweathermap.org/geo/1.0/reverse?lat={lat}&lon={lon}&limit=1&appid={ApiConfig.GEOCODING_API_KEY}";
-                string json = await httpClient.GetStringAsync(url);
-                var arr = JsonConvert.DeserializeObject<List<Newtonsoft.Json.Linq.JObject>>(json);
-                if (arr != null && arr.Count > 0)
-                {
-                    var obj = arr[0];
-                    string name = obj.Value<string>("name") ?? string.Empty;
-                    string state = obj.Value<string>("state") ?? string.Empty;
-                    string country = obj.Value<string>("country") ?? string.Empty;
-
-                    string combined = string.IsNullOrWhiteSpace(state) ? name : $"{name}, {state}";
-                    return new GeocodingResult
-                    {
-                        Name = string.IsNullOrWhiteSpace(combined) ? name : combined,
-                        Country = country,
-                        Lat = lat,
-                        Lon = lon
-                    };
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi reverse geocoding: {ex.Message}");
-                return null;
-            }
-        }
-    }
-
-    public static class TemperatureConverter
-    {
-        public static double ToCelsius(double kelvin) => kelvin - 273.15;
-        public static double ToFahrenheit(double kelvin) => (kelvin - 273.15) * 9.0 / 5.0 + 32.0;
     }
 
     // Class cho Geocoding API

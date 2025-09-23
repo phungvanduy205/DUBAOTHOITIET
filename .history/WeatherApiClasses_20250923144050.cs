@@ -229,12 +229,6 @@ namespace THOITIET
         }
     }
 
-    public static class TemperatureConverter
-    {
-        public static double ToCelsius(double kelvin) => kelvin - 273.15;
-        public static double ToFahrenheit(double kelvin) => (kelvin - 273.15) * 9.0 / 5.0 + 32.0;
-    }
-
     // Class cho Geocoding API
     public class GeocodingResponse
     {

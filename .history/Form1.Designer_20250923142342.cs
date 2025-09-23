@@ -34,6 +34,7 @@
             nutLuuDiaDiem = new Button();
             NutTimKiem = new Button();
             unitToggle = new THOITIET.Controls.UnitToggle();
+            webView21 = new Microsoft.Web.WebView2.WinForms.WebView2();
             oTimKiemDiaDiem = new TextBox();
             CongTacDonVi = new CheckBox();
             listBoxGoiY = new ListBox();
@@ -77,7 +78,7 @@
             ((System.ComponentModel.ISupportInitialize)anhNenDong).BeginInit();
             khuVucPhai_5Ngay.SuspendLayout();
             khung5Ngay.SuspendLayout();
-            
+            ((System.ComponentModel.ISupportInitialize)webView21).BeginInit();
             SuspendLayout();
             // 
             // thanhTrenCung
@@ -309,6 +310,7 @@
             boCucChinh.Controls.Add(khuVucPhai_5Ngay, 1, 0);
             boCucChinh.Controls.Add(khuVucDuoi_24Gio, 0, 1);
             boCucChinh.Controls.Add(tabDieuKhien, 1, 1);
+            boCucChinh.Controls.Add(webView21, 0, 0);
             boCucChinh.Dock = DockStyle.Fill;
             boCucChinh.Location = new Point(0, 57);
             boCucChinh.Name = "boCucChinh";
@@ -543,7 +545,7 @@
             ((System.ComponentModel.ISupportInitialize)anhNenDong).EndInit();
             khuVucPhai_5Ngay.ResumeLayout(false);
             khung5Ngay.ResumeLayout(false);
-            
+            ((System.ComponentModel.ISupportInitialize)webView21).EndInit();
             ResumeLayout(false);
         }
 
@@ -553,6 +555,7 @@
  		private System.Windows.Forms.Button NutTimKiem;
  		private System.Windows.Forms.TextBox oTimKiemDiaDiem;
         private THOITIET.Controls.UnitToggle unitToggle;
+        private Microsoft.Web.WebView2.WinForms.WebView2 webView21;
          private System.Windows.Forms.Button nutChuyenDoiDiaDiem;
          private System.Windows.Forms.ListBox listBoxGoiY;
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;

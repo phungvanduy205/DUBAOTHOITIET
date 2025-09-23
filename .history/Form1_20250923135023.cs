@@ -79,12 +79,11 @@ namespace THOITIET
             // Đồng bộ hóa donViCelsius với unitToggle.IsCelsius
             donViCelsius = unitToggle.IsCelsius;
             
-            // Đăng ký event UnitChanged để cập nhật hiển thị từ dữ liệu Kelvin
+            // Đăng ký event UnitChanged để cập nhật UI
             unitToggle.UnitChanged += async (sender, isCelsius) => {
                 donViCelsius = isCelsius;
                 System.Diagnostics.Debug.WriteLine($"UnitToggle changed to: {(isCelsius ? "Celsius" : "Fahrenheit")}");
-                if (weatherData != null)
-                    await CapNhatThoiTiet();
+                await CapNhatUIKhiChuyenDoiDonVi();
             };
             
             // Bo tròn thanh tìm kiếm
@@ -787,12 +786,10 @@ namespace THOITIET
 
                 var kyHieuNhietDo = donViCelsius ? "°C" : "°F";
 
-                System.Diagnostics.Debug.WriteLine($"Đang hiển thị thông tin: {name}, Nhiệt độ(K): {weather.Current.Temp}");
+                System.Diagnostics.Debug.WriteLine($"Đang hiển thị thông tin: {name}, Nhiệt độ: {weather.Current.Temp}{kyHieuNhietDo}");
 
-                // Cập nhật thông tin chính (API trả Kelvin)
-                double nhietDoHienTai = donViCelsius
-                    ? TemperatureConverter.ToCelsius(weather.Current.Temp)
-                    : TemperatureConverter.ToFahrenheit(weather.Current.Temp);
+                // Cập nhật thông tin chính
+                var nhietDoHienTai = GetTemperatureInUnit(weather.Current.Temp);
                 nhanNhietDoHienTai.Text = $"{Math.Round(nhietDoHienTai)}{kyHieuNhietDo}";
                 nhanTrangThai.Text = weather.Current.Weather?[0]?.Description ?? "Không xác định";
 
@@ -1153,7 +1150,7 @@ namespace THOITIET
                         CapNhatDanhSachDiaDiem();
                     }
                     
-                    // Lấy dữ liệu thời tiết (Kelvin)
+                    // Lấy dữ liệu thời tiết
                     var weatherData = await WeatherApiService.GetCurrentWeatherAsync(result.Lat, result.Lon);
                     if (weatherData != null)
                     {
@@ -1481,9 +1478,7 @@ namespace THOITIET
                 if (weatherData.Current != null)
                 {
                     var current = weatherData.Current;
-                    var currentDisplay = donViCelsius ? TemperatureConverter.ToCelsius(current.Temp)
-                                                      : TemperatureConverter.ToFahrenheit(current.Temp);
-                    nhanNhietDoHienTai.Text = $"{Math.Round(currentDisplay)}{kyHieuNhietDo}";
+                    nhanNhietDoHienTai.Text = $"{Math.Round(current.Temp)}{kyHieuNhietDo}";
                     nhanTrangThai.Text = current.Weather?[0]?.Description ?? "Không xác định";
 
                     // Cập nhật icon thời tiết chính
@@ -1683,13 +1678,13 @@ namespace THOITIET
                 System.Diagnostics.Debug.WriteLine($"Visibility: {current.Visibility}");
                 System.Diagnostics.Debug.WriteLine($"=======================");
 
-                // Gỡ popup debug để tránh làm phiền người dùng
+                // Hiển thị debug trong MessageBox
+                MessageBox.Show($"Debug API Data:\nFeelsLike: {current.FeelsLike}\nWindSpeed: {current.WindSpeed}\nHumidity: {current.Humidity}\nPressure: {current.Pressure}\nVisibility: {current.Visibility}\n\nAPI 3.0 Test - Nếu WindSpeed = 0, có thể do:\n1. API key không có quyền truy cập API 3.0\n2. Cần subscription riêng cho One Call 3.0\n3. Thử chuyển về API 2.5", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Sử dụng TaoPanelChiTiet để cập nhật tất cả panel
                 // Xử lý FeelsLike - nếu bằng 0 thì lấy từ Temp
                 var feelsLikeValue = current.FeelsLike != 0 ? current.FeelsLike : current.Temp;
-                var feelsLikeInUnit = donViCelsius ? TemperatureConverter.ToCelsius(feelsLikeValue)
-                                                   : TemperatureConverter.ToFahrenheit(feelsLikeValue);
+                var feelsLikeInUnit = GetTemperatureInUnit(feelsLikeValue);
                 TaoPanelChiTiet(feelsLikePanel, "🌡️", "Cảm giác", $"{Math.Round(feelsLikeInUnit)}{kyHieu}");
 
                 TaoPanelChiTiet(humidityPanel, "💧", "Độ ẩm", $"{current.Humidity}%");
@@ -2968,8 +2963,7 @@ namespace THOITIET
                 };
 
                 // Hàng 1: Nhiệt độ (to nhất)
-                var tempInUnit = donViCelsius ? TemperatureConverter.ToCelsius(hour.Temp)
-                                              : TemperatureConverter.ToFahrenheit(hour.Temp);
+                var tempInUnit = GetTemperatureInUnit(hour.Temp);
                 var lblTemp = new Label
                 {
                     Text = $"{Math.Round(tempInUnit)}{kyHieu}",
@@ -3030,9 +3024,7 @@ namespace THOITIET
                 panel.Click += (s, e) =>
                 {
                     // Cập nhật thông tin chính với dữ liệu từ giờ được chọn
-                    var tempDisp = donViCelsius ? TemperatureConverter.ToCelsius(hour.Temp)
-                                                : TemperatureConverter.ToFahrenheit(hour.Temp);
-                    nhanNhietDoHienTai.Text = $"{Math.Round(tempDisp)}{kyHieu}";
+                    nhanNhietDoHienTai.Text = $"{Math.Round(hour.Temp)}{kyHieu}";
                     nhanTrangThai.Text = hour.Weather?[0]?.Description ?? "N/A";
 
                     // Cập nhật icon thời tiết
@@ -3164,10 +3156,8 @@ namespace THOITIET
                 };
 
                 // 4. Nhiệt độ cao/thấp (nổi bật)
-                var tempMaxInUnit = donViCelsius ? TemperatureConverter.ToCelsius(daily.Temp.Max)
-                                                 : TemperatureConverter.ToFahrenheit(daily.Temp.Max);
-                var tempMinInUnit = donViCelsius ? TemperatureConverter.ToCelsius(daily.Temp.Min)
-                                                 : TemperatureConverter.ToFahrenheit(daily.Temp.Min);
+                var tempMaxInUnit = GetTemperatureInUnit(daily.Temp.Max);
+                var tempMinInUnit = GetTemperatureInUnit(daily.Temp.Min);
                 var lblTemp = new Label
                 {
                     Text = $"Cao nhất: {Math.Round(tempMaxInUnit)}°{kyHieu}\nThấp nhất: {Math.Round(tempMinInUnit)}°{kyHieu}",
@@ -3386,8 +3376,7 @@ namespace THOITIET
                 foreach (var hour in hourlyData)
                 {
                     var hourTime = UnixToLocal(hour.Dt);
-                    var temperature = donViCelsius ? TemperatureConverter.ToCelsius(hour.Temp)
-                                                  : TemperatureConverter.ToFahrenheit(hour.Temp);
+                    var temperature = donViCelsius ? hour.Temp : ConvertCelsiusToFahrenheit(hour.Temp);
                     
                     var pointIndex = series.Points.AddXY(hourTime.Hour, temperature);
                     var point = series.Points[pointIndex];
@@ -3417,19 +3406,6 @@ namespace THOITIET
 
                 // Cấu hình trục Y
                 temperatureChart.ChartAreas[0].AxisY.Title = $"Nhiệt độ (°{(donViCelsius ? "C" : "F")})";
-                // Điều chỉnh trục Y theo dải °C/°F hợp lý
-                if (donViCelsius)
-                {
-                    temperatureChart.ChartAreas[0].AxisY.Minimum = -10;
-                    temperatureChart.ChartAreas[0].AxisY.Maximum = 50;
-                    temperatureChart.ChartAreas[0].AxisY.Interval = 5;
-                }
-                else
-                {
-                    temperatureChart.ChartAreas[0].AxisY.Minimum = 10;  // ≈ 14°F ~ -10°C
-                    temperatureChart.ChartAreas[0].AxisY.Maximum = 120; // ≈ 122°F ~ 50°C
-                    temperatureChart.ChartAreas[0].AxisY.Interval = 10;
-                }
                 temperatureChart.ChartAreas[0].AxisY.TitleFont = new Font("Segoe UI", 10, FontStyle.Bold);
                 temperatureChart.ChartAreas[0].AxisY.TitleForeColor = Color.White;
                 temperatureChart.ChartAreas[0].AxisY.LabelStyle.Font = new Font("Segoe UI", 8);
@@ -3626,18 +3602,13 @@ namespace THOITIET
                 // Cập nhật panel chi tiết từ text hiện tại
                 if (feelsLikePanel != null)
                 {
-                    var feelsLikeValueLabel = feelsLikePanel.Controls
-                        .OfType<Label>()
-                        .FirstOrDefault(l => l.Text.Contains("°") || l.Text.Contains("º"));
-                    if (feelsLikeValueLabel != null)
+                    var feelsLikeLabel = feelsLikePanel.Controls.OfType<Label>().FirstOrDefault();
+                    if (feelsLikeLabel != null && feelsLikeLabel.Text.Contains("°"))
                     {
-                        bool isCurrentlyCelsius = feelsLikeValueLabel.Text.IndexOf("°C", StringComparison.OrdinalIgnoreCase) >= 0
-                                                 || feelsLikeValueLabel.Text.IndexOf("ºC", StringComparison.OrdinalIgnoreCase) >= 0;
-                        var tempText = feelsLikeValueLabel.Text
-                            .Replace("°C", "").Replace("ºC", "")
-                            .Replace("°F", "").Replace("ºF", "");
+                        var isCurrentlyCelsius = feelsLikeLabel.Text.Contains("°C");
+                        var tempText = feelsLikeLabel.Text.Replace("°C", "").Replace("°F", "");
                         var convertedTemp = ConvertTemperatureFromText(tempText, isCurrentlyCelsius);
-                        feelsLikeValueLabel.Text = $"{Math.Round(convertedTemp)}{kyHieuNhietDo}";
+                        feelsLikeLabel.Text = $"🌡️ Cảm giác {Math.Round(convertedTemp)}{kyHieuNhietDo}";
                     }
                 }
 

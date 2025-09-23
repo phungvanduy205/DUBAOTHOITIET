@@ -34,6 +34,7 @@
             nutLuuDiaDiem = new Button();
             NutTimKiem = new Button();
             unitToggle = new THOITIET.Controls.UnitToggle();
+            webView21 = new Microsoft.Web.WebView2.WinForms.WebView2();
             oTimKiemDiaDiem = new TextBox();
             CongTacDonVi = new CheckBox();
             listBoxGoiY = new ListBox();
@@ -77,7 +78,7 @@
             ((System.ComponentModel.ISupportInitialize)anhNenDong).BeginInit();
             khuVucPhai_5Ngay.SuspendLayout();
             khung5Ngay.SuspendLayout();
-            
+            ((System.ComponentModel.ISupportInitialize)webView21).BeginInit();
             SuspendLayout();
             // 
             // thanhTrenCung
@@ -553,6 +554,7 @@
  		private System.Windows.Forms.Button NutTimKiem;
  		private System.Windows.Forms.TextBox oTimKiemDiaDiem;
         private THOITIET.Controls.UnitToggle unitToggle;
+        private Microsoft.Web.WebView2.WinForms.WebView2 webView21;
          private System.Windows.Forms.Button nutChuyenDoiDiaDiem;
          private System.Windows.Forms.ListBox listBoxGoiY;
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;

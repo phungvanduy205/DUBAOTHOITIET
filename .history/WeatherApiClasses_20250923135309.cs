@@ -73,7 +73,7 @@ namespace THOITIET
         {
             try
             {
-                string url = $"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={ApiConfig.API_KEY}&lang=vi&exclude=minutely,alerts";
+                string url = $"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={ApiConfig.API_KEY}&units=metric&lang=vi&exclude=minutely,alerts";
                 System.Diagnostics.Debug.WriteLine($"URL API 3.0: {url}");
                 string json = await httpClient.GetStringAsync(url);
                 System.Diagnostics.Debug.WriteLine($"Response API 3.0: {json}");
@@ -109,7 +109,7 @@ namespace THOITIET
         {
             try
             {
-                string url = $"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={ApiConfig.API_KEY}&lang=vi&exclude=minutely,alerts";
+                string url = $"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={ApiConfig.API_KEY}&units=metric&lang=vi&exclude=minutely,alerts";
                 System.Diagnostics.Debug.WriteLine($"URL API 3.0: {url}");
                 string json = await httpClient.GetStringAsync(url);
                 System.Diagnostics.Debug.WriteLine($"Response API 3.0: {json}");
@@ -227,12 +227,6 @@ namespace THOITIET
                 return null;
             }
         }
-    }
-
-    public static class TemperatureConverter
-    {
-        public static double ToCelsius(double kelvin) => kelvin - 273.15;
-        public static double ToFahrenheit(double kelvin) => (kelvin - 273.15) * 9.0 / 5.0 + 32.0;
     }
 
     // Class cho Geocoding API

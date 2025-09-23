@@ -77,7 +77,7 @@
             ((System.ComponentModel.ISupportInitialize)anhNenDong).BeginInit();
             khuVucPhai_5Ngay.SuspendLayout();
             khung5Ngay.SuspendLayout();
-            
+            ((System.ComponentModel.ISupportInitialize)webView21).BeginInit();
             SuspendLayout();
             // 
             // thanhTrenCung

@@ -77,7 +77,6 @@
             ((System.ComponentModel.ISupportInitialize)anhNenDong).BeginInit();
             khuVucPhai_5Ngay.SuspendLayout();
             khung5Ngay.SuspendLayout();
-            
             SuspendLayout();
             // 
             // thanhTrenCung
@@ -543,7 +542,6 @@
             ((System.ComponentModel.ISupportInitialize)anhNenDong).EndInit();
             khuVucPhai_5Ngay.ResumeLayout(false);
             khung5Ngay.ResumeLayout(false);
-            
             ResumeLayout(false);
         }
 
@@ -553,6 +551,7 @@
  		private System.Windows.Forms.Button NutTimKiem;
  		private System.Windows.Forms.TextBox oTimKiemDiaDiem;
         private THOITIET.Controls.UnitToggle unitToggle;
+        private Microsoft.Web.WebView2.WinForms.WebView2 webView21;
          private System.Windows.Forms.Button nutChuyenDoiDiaDiem;
          private System.Windows.Forms.ListBox listBoxGoiY;
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;

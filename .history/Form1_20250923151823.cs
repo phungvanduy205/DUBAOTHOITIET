@@ -1683,7 +1683,8 @@ namespace THOITIET
                 System.Diagnostics.Debug.WriteLine($"Visibility: {current.Visibility}");
                 System.Diagnostics.Debug.WriteLine($"=======================");
 
-                // Gỡ popup debug để tránh làm phiền người dùng
+                // Hiển thị debug trong MessageBox
+                MessageBox.Show($"Debug API Data:\nFeelsLike: {current.FeelsLike}\nWindSpeed: {current.WindSpeed}\nHumidity: {current.Humidity}\nPressure: {current.Pressure}\nVisibility: {current.Visibility}\n\nAPI 3.0 Test - Nếu WindSpeed = 0, có thể do:\n1. API key không có quyền truy cập API 3.0\n2. Cần subscription riêng cho One Call 3.0\n3. Thử chuyển về API 2.5", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Sử dụng TaoPanelChiTiet để cập nhật tất cả panel
                 // Xử lý FeelsLike - nếu bằng 0 thì lấy từ Temp

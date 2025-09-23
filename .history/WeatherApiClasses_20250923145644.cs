@@ -482,3 +482,50 @@ namespace THOITIET
         }
     }
 }
+        [JsonProperty("icon")]
+        public string Icon { get; set; }
+    }
+
+    public class Rain
+    {
+        public double? OneHour { get; set; }
+    }
+
+    public class Snow
+    {
+        public double? OneHour { get; set; }
+    }
+
+    // Custom JsonConverter để xử lý Rain và Snow có thể là số hoặc object
+    public class RainSnowConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(Rain) || objectType == typeof(Snow);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Float || reader.TokenType == JsonToken.Integer)
+            {
+                // Nếu là số, tạo object với OneHour
+                var value = Convert.ToDouble(reader.Value);
+                if (objectType == typeof(Rain))
+                    return new Rain { OneHour = value };
+                else
+                    return new Snow { OneHour = value };
+            }
+            else if (reader.TokenType == JsonToken.StartObject)
+            {
+                // Nếu là object, deserialize bình thường
+                return serializer.Deserialize(reader, objectType);
+            }
+            return null;
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            serializer.Serialize(writer, value);
+        }
+    }
+}

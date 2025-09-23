@@ -1481,9 +1481,7 @@ namespace THOITIET
                 if (weatherData.Current != null)
                 {
                     var current = weatherData.Current;
-                    var currentDisplay = donViCelsius ? TemperatureConverter.ToCelsius(current.Temp)
-                                                      : TemperatureConverter.ToFahrenheit(current.Temp);
-                    nhanNhietDoHienTai.Text = $"{Math.Round(currentDisplay)}{kyHieuNhietDo}";
+                    nhanNhietDoHienTai.Text = $"{Math.Round(current.Temp)}{kyHieuNhietDo}";
                     nhanTrangThai.Text = current.Weather?[0]?.Description ?? "Không xác định";
 
                     // Cập nhật icon thời tiết chính
@@ -1683,7 +1681,8 @@ namespace THOITIET
                 System.Diagnostics.Debug.WriteLine($"Visibility: {current.Visibility}");
                 System.Diagnostics.Debug.WriteLine($"=======================");
 
-                // Gỡ popup debug để tránh làm phiền người dùng
+                // Hiển thị debug trong MessageBox
+                MessageBox.Show($"Debug API Data:\nFeelsLike: {current.FeelsLike}\nWindSpeed: {current.WindSpeed}\nHumidity: {current.Humidity}\nPressure: {current.Pressure}\nVisibility: {current.Visibility}\n\nAPI 3.0 Test - Nếu WindSpeed = 0, có thể do:\n1. API key không có quyền truy cập API 3.0\n2. Cần subscription riêng cho One Call 3.0\n3. Thử chuyển về API 2.5", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Sử dụng TaoPanelChiTiet để cập nhật tất cả panel
                 // Xử lý FeelsLike - nếu bằng 0 thì lấy từ Temp
@@ -3386,8 +3385,7 @@ namespace THOITIET
                 foreach (var hour in hourlyData)
                 {
                     var hourTime = UnixToLocal(hour.Dt);
-                    var temperature = donViCelsius ? TemperatureConverter.ToCelsius(hour.Temp)
-                                                  : TemperatureConverter.ToFahrenheit(hour.Temp);
+                    var temperature = donViCelsius ? hour.Temp : ConvertCelsiusToFahrenheit(hour.Temp);
                     
                     var pointIndex = series.Points.AddXY(hourTime.Hour, temperature);
                     var point = series.Points[pointIndex];
@@ -3417,19 +3415,6 @@ namespace THOITIET
 
                 // Cấu hình trục Y
                 temperatureChart.ChartAreas[0].AxisY.Title = $"Nhiệt độ (°{(donViCelsius ? "C" : "F")})";
-                // Điều chỉnh trục Y theo dải °C/°F hợp lý
-                if (donViCelsius)
-                {
-                    temperatureChart.ChartAreas[0].AxisY.Minimum = -10;
-                    temperatureChart.ChartAreas[0].AxisY.Maximum = 50;
-                    temperatureChart.ChartAreas[0].AxisY.Interval = 5;
-                }
-                else
-                {
-                    temperatureChart.ChartAreas[0].AxisY.Minimum = 10;  // ≈ 14°F ~ -10°C
-                    temperatureChart.ChartAreas[0].AxisY.Maximum = 120; // ≈ 122°F ~ 50°C
-                    temperatureChart.ChartAreas[0].AxisY.Interval = 10;
-                }
                 temperatureChart.ChartAreas[0].AxisY.TitleFont = new Font("Segoe UI", 10, FontStyle.Bold);
                 temperatureChart.ChartAreas[0].AxisY.TitleForeColor = Color.White;
                 temperatureChart.ChartAreas[0].AxisY.LabelStyle.Font = new Font("Segoe UI", 8);
@@ -4245,6 +4230,138 @@ namespace THOITIET
         /// <summary>
         /// Chuyển đổi mô tả thời tiết sang tiếng Việt
         /// </summary>
+        private string GetVietnameseWeatherDescription(string description)
+        {
+            if (string.IsNullOrEmpty(description)) return "N/A";
+
+            var vietnameseMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "clear sky", "Trời quang" },
+                { "few clouds", "Ít mây" },
+                { "scattered clouds", "Mây thưa" },
+                { "broken clouds", "Mây rải rác" },
+                { "overcast clouds", "Nhiều mây" },
+                { "light rain", "Mưa nhẹ" },
+                { "moderate rain", "Mưa vừa" },
+                { "heavy rain", "Mưa to" },
+                { "very heavy rain", "Mưa rất to" },
+                { "extreme rain", "Mưa cực to" },
+                { "freezing rain", "Mưa đá" },
+                { "light intensity shower rain", "Mưa rào nhẹ" },
+                { "shower rain", "Mưa rào" },
+                { "heavy intensity shower rain", "Mưa rào to" },
+                { "ragged shower rain", "Mưa rào không đều" },
+                { "light snow", "Tuyết nhẹ" },
+                { "snow", "Tuyết" },
+                { "heavy snow", "Tuyết to" },
+                { "sleet", "Mưa tuyết" },
+                { "light shower sleet", "Mưa tuyết nhẹ" },
+                { "shower sleet", "Mưa tuyết" },
+                { "light rain and snow", "Mưa và tuyết nhẹ" },
+                { "rain and snow", "Mưa và tuyết" },
+                { "light shower snow", "Tuyết rơi nhẹ" },
+                { "shower snow", "Tuyết rơi" },
+                { "heavy shower snow", "Tuyết rơi to" },
+                { "mist", "Sương mù" },
+                { "smoke", "Khói" },
+                { "haze", "Sương mù nhẹ" },
+                { "sand/dust whirls", "Cát/bụi xoáy" },
+                { "fog", "Sương mù dày" },
+                { "sand", "Cát" },
+                { "dust", "Bụi" },
+                { "volcanic ash", "Tro núi lửa" },
+                { "squalls", "Giông tố" },
+                { "tornado", "Lốc xoáy" },
+                { "cold", "Lạnh" },
+                { "hot", "Nóng" },
+                { "windy", "Có gió" },
+                { "hail", "Mưa đá" },
+                { "calm", "Lặng gió" },
+                { "light breeze", "Gió nhẹ" },
+                { "gentle breeze", "Gió nhẹ" },
+                { "moderate breeze", "Gió vừa" },
+                { "fresh breeze", "Gió mạnh" },
+                { "strong breeze", "Gió rất mạnh" },
+                { "high wind", "Gió cực mạnh" },
+                { "gale", "Bão" },
+                { "severe gale", "Bão mạnh" },
+                { "storm", "Bão" },
+                { "violent storm", "Bão dữ dội" },
+                { "hurricane", "Cuồng phong" }
+            };
+
+            return vietnameseMap.TryGetValue(description, out string? vietnamese) ? vietnamese : description;
+        }
+
+        /// <summary>
+        /// Lấy thông tin mưa và gió
+        /// </summary>
+        private string GetRainWindInfo(DailyWeather daily)
+        {
+            var info = new List<string>();
+
+            // Thông tin mưa - kiểm tra Rain object
+            if (daily.Rain != null)
+            {
+                // Nếu có dữ liệu mưa, hiển thị thông tin cơ bản
+                info.Add("Có mưa");
+            }
+
+            // Thông tin gió
+            if (daily.WindSpeed > 0)
+            {
+                info.Add($"Gió: {Math.Round(daily.WindSpeed, 1)} m/s");
+            }
+
+            return string.Join("\n", info);
+        }
+
+    }
+
+    // Extension method để vẽ hình chữ nhật bo tròn
+    public static class GraphicsExtensions
+    {
+        public static void DrawRoundedRectangle(this Graphics graphics, Pen pen, Rectangle rectangle, int radius)
+        {
+            var path = new System.Drawing.Drawing2D.GraphicsPath();
+            path.AddArc(rectangle.X, rectangle.Y, radius, radius, 180, 90);
+            path.AddArc(rectangle.X + rectangle.Width - radius, rectangle.Y, radius, radius, 270, 90);
+            path.AddArc(rectangle.X + rectangle.Width - radius, rectangle.Y + rectangle.Height - radius, radius, radius, 0, 90);
+            path.AddArc(rectangle.X, rectangle.Y + rectangle.Height - radius, radius, radius, 90, 90);
+            path.CloseAllFigures();
+            graphics.DrawPath(pen, path);
+        }
+    }
+
+    /// <summary>
+    /// Class lưu trữ thông tin địa điểm đã lưu
+    /// </summary>
+    public class SavedLocation
+    {
+        public string Name { get; set; } = "";
+        public double Lat { get; set; }
+        public double Lon { get; set; }
+        
+        public SavedLocation(string name, double lat, double lon)
+        {
+            Name = name;
+            Lat = lat;
+            Lon = lon;
+        }
+    }
+
+    // Class để quản lý địa điểm yêu thích
+    public class FavoriteLocation
+    {
+        public string Name { get; set; } = "";
+        public string Country { get; set; } = "";
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public bool IsDefault { get; set; } = false;
+        public DateTime AddedDate { get; set; } = DateTime.Now;
+    }
+}
+
         private string GetVietnameseWeatherDescription(string description)
         {
             if (string.IsNullOrEmpty(description)) return "N/A";
