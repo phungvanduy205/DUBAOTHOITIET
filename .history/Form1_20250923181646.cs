@@ -3525,14 +3525,6 @@ namespace THOITIET
                 btnExport.Click += (s, e) => ExportChart();
                 tabChart.Controls.Add(btnExport);
 
-                // Chuyển đổi hiển thị khi đổi tab
-                try
-                {
-                    tabDieuKhien.SelectedIndexChanged -= TabDieuKhien_SelectedIndexChanged;
-                }
-                catch { }
-                tabDieuKhien.SelectedIndexChanged += TabDieuKhien_SelectedIndexChanged;
-
                 System.Diagnostics.Debug.WriteLine("Đã khởi tạo Chart nhiệt độ");
             }
             catch (Exception ex)
@@ -3572,22 +3564,6 @@ namespace THOITIET
             LoadWindyMap(currentLat, currentLon);
             if (temperatureChart != null) temperatureChart.Visible = false;
             windyView.Visible = true;
-        }
-
-        private void TabDieuKhien_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            try
-            {
-                if (tabDieuKhien.SelectedTab == tabMap)
-                {
-                    ShowMap();
-                }
-                else if (tabDieuKhien.SelectedTab == tabChart)
-                {
-                    ShowChart();
-                }
-            }
-            catch { }
         }
 
         private void LoadWindyMap(double lat, double lon)

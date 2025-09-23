@@ -1032,7 +1032,7 @@ namespace THOITIET
 
                 // TabControl - hoàn toàn trong suốt
                 tabDieuKhien.BackColor = Color.Transparent;
-                tabChart.BackColor = Color.FromArgb(30, 50, 70, 90); // Nền xanh dương mờ
+                tabLichSu.BackColor = Color.FromArgb(30, 50, 70, 90); // Nền xanh dương mờ
 
                 // DataGridView - trong suốt mờ mờ
                 BangLichSu.BackgroundColor = Color.FromArgb(40, 255, 255, 255);
@@ -3254,13 +3254,6 @@ namespace THOITIET
                         
                         BangNhieuNgay.Controls.Add(card);
                     }
-
-                    // Hiển thị mặc định biểu đồ 24h cho ngày đầu tiên và chọn tab Biểu đồ
-                    if (data5Ngay.Length > 0)
-                    {
-                        Show24hChartForDay(data5Ngay[0]);
-                        try { tabDieuKhien.SelectedTab = tabChart; } catch {}
-                    }
                 }
             }
             catch (Exception ex)
@@ -3471,7 +3464,25 @@ namespace THOITIET
         {
             try
             {
-                // Dùng 2 TabPage có sẵn trên giao diện: tabChart, tabMap
+                // Panel chứa header + vùng nội dung
+                chartHostPanel = new Panel
+                {
+                    Dock = DockStyle.Fill,
+                    BackColor = Color.Transparent
+                };
+
+                chartHeaderPanel = new Panel
+                {
+                    Dock = DockStyle.Top,
+                    Height = 32,
+                    BackColor = Color.Transparent
+                };
+
+                var contentPanel = new Panel
+                {
+                    Dock = DockStyle.Fill,
+                    BackColor = Color.Transparent
+                };
 
                 temperatureChart = new Chart
                 {
@@ -3501,37 +3512,76 @@ namespace THOITIET
 
                 temperatureChart.ChartAreas.Add(chartArea);
 
-                // Thêm Chart vào tab "Biểu đồ nhiệt độ"
-                tabChart.Controls.Clear();
-                tabChart.Controls.Add(temperatureChart);
-
-                // Đảm bảo control bản đồ tồn tại và nằm trên tabMap
-                EnsureWindyBrowser();
-                if (windyView != null)
+                // Nút hiển thị Biểu đồ / Bản đồ riêng biệt
+                btnShowChart = new Button
                 {
-                    windyView.Dock = DockStyle.Fill;
-                    tabMap.Controls.Clear();
-                    tabMap.Controls.Add(windyView);
-                }
-
-                // Nút export trên tab biểu đồ
-                var btnExport = new Button
-                {
-                    Text = "Xuất biểu đồ",
-                    Location = new Point(334, 182),
-                    Size = new Size(124, 29),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+                    Text = "Biểu đồ",
+                    AutoSize = true,
+                    BackColor = Color.FromArgb(230, 64, 64, 64),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                    Anchor = AnchorStyles.Top | AnchorStyles.Right
                 };
-                btnExport.Click += (s, e) => ExportChart();
-                tabChart.Controls.Add(btnExport);
+                btnShowChart.FlatAppearance.BorderColor = Color.Gray;
+                btnShowChart.Click += (s, e) => ShowChart();
 
-                // Chuyển đổi hiển thị khi đổi tab
-                try
+                btnShowMap = new Button
                 {
-                    tabDieuKhien.SelectedIndexChanged -= TabDieuKhien_SelectedIndexChanged;
+                    Text = "Bản đồ",
+                    AutoSize = true,
+                    BackColor = Color.FromArgb(230, 64, 64, 64),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                    Anchor = AnchorStyles.Top | AnchorStyles.Right
+                };
+                btnShowMap.FlatAppearance.BorderColor = Color.Gray;
+                btnShowMap.Click += (s, e) => ShowMap();
+
+                // Thêm Chart vào tabLichSu (thay thế BangLichSu)
+                if (tabLichSu != null)
+                {
+                    // Xóa BangLichSu và các controls khác
+                    tabLichSu.Controls.Clear();
+                    
+                    // Lắp ghép panel: header + content
+                    tabLichSu.Controls.Add(chartHostPanel);
+                    chartHostPanel.Controls.Add(contentPanel);
+                    chartHostPanel.Controls.Add(chartHeaderPanel);
+                    
+                    // Thêm Chart vào contentPanel
+                    contentPanel.Controls.Add(temperatureChart);
+                    
+                    // Đảm bảo control bản đồ tồn tại song song và đang ẩn
+                    EnsureWindyBrowser();
+                    if (windyView != null)
+                    {
+                        windyView.Dock = DockStyle.Fill;
+                        windyView.Visible = false;
+                        contentPanel.Controls.Add(windyView);
+                        temperatureChart.BringToFront();
+                    }
+                    
+                    // Nút export
+                    var btnExport = new Button
+                    {
+                        Text = "Xuất biểu đồ",
+                        Location = new Point(334, 182),
+                        Size = new Size(124, 29),
+                        Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+                    };
+                    btnExport.Click += (s, e) => ExportChart();
+                    tabLichSu.Controls.Add(btnExport);
+
+                    // Nút Biểu đồ / Bản đồ (đặt trên header của panel)
+                    chartHeaderPanel.Controls.Add(btnShowChart);
+                    chartHeaderPanel.Controls.Add(btnShowMap);
+                    btnShowChart.BringToFront();
+                    btnShowMap.BringToFront();
+                    chartHostPanel.Resize += (s, e) => PositionHeaderButtons();
+                    PositionHeaderButtons();
                 }
-                catch { }
-                tabDieuKhien.SelectedIndexChanged += TabDieuKhien_SelectedIndexChanged;
 
                 System.Diagnostics.Debug.WriteLine("Đã khởi tạo Chart nhiệt độ");
             }
@@ -3551,12 +3601,20 @@ namespace THOITIET
                 Visible = false
             };
 
-            // Thêm vào tabMap khi đã khởi tạo từ Designer
-            tabMap.Controls.Add(windyView);
-            windyView.BringToFront();
+            if (tabLichSu != null)
+            {
+                tabLichSu.Controls.Add(windyView);
+                windyView.BringToFront();
+            }
         }
 
-        
+        private void PositionHeaderButtons()
+        {
+            if (chartHostPanel == null || chartHeaderPanel == null || btnShowChart == null || btnShowMap == null) return;
+            int padding = 6;
+            btnShowChart.Location = new Point(padding, (chartHeaderPanel.Height - btnShowChart.Height) / 2);
+            btnShowMap.Location = new Point(btnShowChart.Right + padding, (chartHeaderPanel.Height - btnShowMap.Height) / 2);
+        }
 
         private void ShowChart()
         {
@@ -3572,22 +3630,6 @@ namespace THOITIET
             LoadWindyMap(currentLat, currentLon);
             if (temperatureChart != null) temperatureChart.Visible = false;
             windyView.Visible = true;
-        }
-
-        private void TabDieuKhien_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            try
-            {
-                if (tabDieuKhien.SelectedTab == tabMap)
-                {
-                    ShowMap();
-                }
-                else if (tabDieuKhien.SelectedTab == tabChart)
-                {
-                    ShowChart();
-                }
-            }
-            catch { }
         }
 
         private void LoadWindyMap(double lat, double lon)

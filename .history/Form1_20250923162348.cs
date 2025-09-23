@@ -52,7 +52,8 @@ namespace THOITIET
         private PictureBox? backgroundPictureBox;
         private Chart? temperatureChart;
         private WebView2? windyView;
-        private TabControl? tabChartMap;
+        private Button? btnToggleMapChart;
+        private bool isShowingWindyMap = false;
         private const string WINDY_API_KEY = "NI44O5nRjXST4TKiDk0x7hzaWnpHHiCP";
         private List<FavoriteLocation> favoriteLocations = new List<FavoriteLocation>();
         private string defaultLocation = "";
@@ -1032,7 +1033,7 @@ namespace THOITIET
 
                 // TabControl - hoàn toàn trong suốt
                 tabDieuKhien.BackColor = Color.Transparent;
-                tabChart.BackColor = Color.FromArgb(30, 50, 70, 90); // Nền xanh dương mờ
+                tabLichSu.BackColor = Color.FromArgb(30, 50, 70, 90); // Nền xanh dương mờ
 
                 // DataGridView - trong suốt mờ mờ
                 BangLichSu.BackgroundColor = Color.FromArgb(40, 255, 255, 255);
@@ -1229,7 +1230,8 @@ namespace THOITIET
                 System.Diagnostics.Debug.WriteLine($"Lỗi lưu địa điểm: {ex.Message}");
             }
         }
-        // (đã xoá phiên bản trùng lặp ShowChart/ShowMap)
+
+
         /// <summary>
         /// Lưu địa điểm hiện tại
         /// </summary>
@@ -3254,13 +3256,6 @@ namespace THOITIET
                         
                         BangNhieuNgay.Controls.Add(card);
                     }
-
-                    // Hiển thị mặc định biểu đồ 24h cho ngày đầu tiên và chọn tab Biểu đồ
-                    if (data5Ngay.Length > 0)
-                    {
-                        Show24hChartForDay(data5Ngay[0]);
-                        try { tabDieuKhien.SelectedTab = tabChart; } catch {}
-                    }
                 }
             }
             catch (Exception ex)
@@ -3471,8 +3466,6 @@ namespace THOITIET
         {
             try
             {
-                // Dùng 2 TabPage có sẵn trên giao diện: tabChart, tabMap
-
                 temperatureChart = new Chart
                 {
                     Dock = DockStyle.Fill,
@@ -3501,37 +3494,45 @@ namespace THOITIET
 
                 temperatureChart.ChartAreas.Add(chartArea);
 
-                // Thêm Chart vào tab "Biểu đồ nhiệt độ"
-                tabChart.Controls.Clear();
-                tabChart.Controls.Add(temperatureChart);
-
-                // Đảm bảo control bản đồ tồn tại và nằm trên tabMap
-                EnsureWindyBrowser();
-                if (windyView != null)
+                // Chuẩn bị nút chuyển đổi Biểu đồ/Bản đồ
+                btnToggleMapChart = new Button
                 {
-                    windyView.Dock = DockStyle.Fill;
-                    tabMap.Controls.Clear();
-                    tabMap.Controls.Add(windyView);
-                }
-
-                // Nút export trên tab biểu đồ
-                var btnExport = new Button
-                {
-                    Text = "Xuất biểu đồ",
-                    Location = new Point(334, 182),
-                    Size = new Size(124, 29),
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+                    Text = "Bản đồ",
+                    AutoSize = true,
+                    BackColor = Color.FromArgb(230, 64, 64, 64),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat,
+                    Font = new Font("Segoe UI", 9F, FontStyle.Bold)
                 };
-                btnExport.Click += (s, e) => ExportChart();
-                tabChart.Controls.Add(btnExport);
+                btnToggleMapChart.FlatAppearance.BorderColor = Color.Gray;
+                btnToggleMapChart.Click += (s, e) => ToggleChartAndMap();
 
-                // Chuyển đổi hiển thị khi đổi tab
-                try
+                // Thêm Chart vào tabLichSu (thay thế BangLichSu)
+                if (tabLichSu != null)
                 {
-                    tabDieuKhien.SelectedIndexChanged -= TabDieuKhien_SelectedIndexChanged;
+                    // Xóa BangLichSu và các controls khác
+                    tabLichSu.Controls.Clear();
+                    
+                    // Thêm Chart vào tabLichSu
+                    tabLichSu.Controls.Add(temperatureChart);
+                    
+                    // Nút export
+                    var btnExport = new Button
+                    {
+                        Text = "Xuất biểu đồ",
+                        Location = new Point(334, 182),
+                        Size = new Size(124, 29),
+                        Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+                    };
+                    btnExport.Click += (s, e) => ExportChart();
+                    tabLichSu.Controls.Add(btnExport);
+
+                    // Nút chuyển đổi (đặt cạnh tiêu đề biểu đồ)
+                    tabLichSu.Controls.Add(btnToggleMapChart);
+                    btnToggleMapChart.BringToFront();
+                    tabLichSu.Resize += (s, e) => PositionToggleButton();
+                    PositionToggleButton();
                 }
-                catch { }
-                tabDieuKhien.SelectedIndexChanged += TabDieuKhien_SelectedIndexChanged;
 
                 System.Diagnostics.Debug.WriteLine("Đã khởi tạo Chart nhiệt độ");
             }
@@ -3551,43 +3552,31 @@ namespace THOITIET
                 Visible = false
             };
 
-            // Thêm vào tabMap khi đã khởi tạo từ Designer
-            tabMap.Controls.Add(windyView);
-            windyView.BringToFront();
+            if (tabLichSu != null)
+            {
+                tabLichSu.Controls.Add(windyView);
+                windyView.BringToFront();
+            }
         }
 
-        
-
-        private void ShowChart()
-        {
-            if (temperatureChart != null) temperatureChart.Visible = true;
-            if (windyView != null) windyView.Visible = false;
-        }
-
-        private void ShowMap()
+        private void ToggleChartAndMap()
         {
             EnsureWindyBrowser();
-            if (windyView == null) return;
-            // Luôn nạp theo vị trí hiện tại, không phụ thuộc chọn ngày
-            LoadWindyMap(currentLat, currentLon);
-            if (temperatureChart != null) temperatureChart.Visible = false;
-            windyView.Visible = true;
-        }
 
-        private void TabDieuKhien_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            try
+            isShowingWindyMap = !isShowingWindyMap;
+            if (btnToggleMapChart != null)
+                btnToggleMapChart.Text = isShowingWindyMap ? "Biểu đồ" : "Bản đồ";
+
+            if (temperatureChart != null)
+                temperatureChart.Visible = !isShowingWindyMap;
+            if (windyView != null)
             {
-                if (tabDieuKhien.SelectedTab == tabMap)
+                windyView.Visible = isShowingWindyMap;
+                if (isShowingWindyMap)
                 {
-                    ShowMap();
-                }
-                else if (tabDieuKhien.SelectedTab == tabChart)
-                {
-                    ShowChart();
+                    LoadWindyMap(currentLat, currentLon);
                 }
             }
-            catch { }
         }
 
         private void LoadWindyMap(double lat, double lon)
@@ -4412,9 +4401,13 @@ namespace THOITIET
             return string.Join("\n", info);
         }
 
-        
-
-        
+        private void PositionToggleButton()
+        {
+            if (tabLichSu == null || btnToggleMapChart == null || temperatureChart == null) return;
+            var chartBounds = temperatureChart.Bounds;
+            btnToggleMapChart.Location = new Point(chartBounds.Left + chartBounds.Width - btnToggleMapChart.Width - 10,
+                                                   chartBounds.Top + 5);
+        }
     }
 
     // Extension method để vẽ hình chữ nhật bo tròn

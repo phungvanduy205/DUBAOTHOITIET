@@ -3574,22 +3574,6 @@ namespace THOITIET
             windyView.Visible = true;
         }
 
-        private void TabDieuKhien_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            try
-            {
-                if (tabDieuKhien.SelectedTab == tabMap)
-                {
-                    ShowMap();
-                }
-                else if (tabDieuKhien.SelectedTab == tabChart)
-                {
-                    ShowChart();
-                }
-            }
-            catch { }
-        }
-
         private void LoadWindyMap(double lat, double lon)
         {
             EnsureWindyBrowser();

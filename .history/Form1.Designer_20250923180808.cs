@@ -77,6 +77,7 @@
             ((System.ComponentModel.ISupportInitialize)anhNenDong).BeginInit();
             khuVucPhai_5Ngay.SuspendLayout();
             khung5Ngay.SuspendLayout();
+            
             SuspendLayout();
             // 
             // thanhTrenCung
@@ -524,7 +525,6 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(135, 206, 250);
-            BackgroundImage = Properties.Resources.nen_troi_quang;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1331, 781);
             Controls.Add(boCucChinh);
@@ -548,6 +548,7 @@
             ((System.ComponentModel.ISupportInitialize)anhNenDong).EndInit();
             khuVucPhai_5Ngay.ResumeLayout(false);
             khung5Ngay.ResumeLayout(false);
+            
             ResumeLayout(false);
         }
 

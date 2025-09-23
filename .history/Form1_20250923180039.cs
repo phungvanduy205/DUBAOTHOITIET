@@ -3254,13 +3254,6 @@ namespace THOITIET
                         
                         BangNhieuNgay.Controls.Add(card);
                     }
-
-                    // Hiển thị mặc định biểu đồ 24h cho ngày đầu tiên và chọn tab Biểu đồ
-                    if (data5Ngay.Length > 0)
-                    {
-                        Show24hChartForDay(data5Ngay[0]);
-                        try { tabDieuKhien.SelectedTab = tabChart; } catch {}
-                    }
                 }
             }
             catch (Exception ex)
@@ -3525,14 +3518,6 @@ namespace THOITIET
                 btnExport.Click += (s, e) => ExportChart();
                 tabChart.Controls.Add(btnExport);
 
-                // Chuyển đổi hiển thị khi đổi tab
-                try
-                {
-                    tabDieuKhien.SelectedIndexChanged -= TabDieuKhien_SelectedIndexChanged;
-                }
-                catch { }
-                tabDieuKhien.SelectedIndexChanged += TabDieuKhien_SelectedIndexChanged;
-
                 System.Diagnostics.Debug.WriteLine("Đã khởi tạo Chart nhiệt độ");
             }
             catch (Exception ex)
@@ -3551,9 +3536,11 @@ namespace THOITIET
                 Visible = false
             };
 
-            // Thêm vào tabMap khi đã khởi tạo từ Designer
-            tabMap.Controls.Add(windyView);
-            windyView.BringToFront();
+            if (tabLichSu != null)
+            {
+                tabLichSu.Controls.Add(windyView);
+                windyView.BringToFront();
+            }
         }
 
         
@@ -3572,22 +3559,6 @@ namespace THOITIET
             LoadWindyMap(currentLat, currentLon);
             if (temperatureChart != null) temperatureChart.Visible = false;
             windyView.Visible = true;
-        }
-
-        private void TabDieuKhien_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            try
-            {
-                if (tabDieuKhien.SelectedTab == tabMap)
-                {
-                    ShowMap();
-                }
-                else if (tabDieuKhien.SelectedTab == tabChart)
-                {
-                    ShowChart();
-                }
-            }
-            catch { }
         }
 
         private void LoadWindyMap(double lat, double lon)
