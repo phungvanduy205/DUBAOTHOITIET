@@ -632,9 +632,6 @@ namespace THOITIET
                 // Xóa các panel dự báo
                 BangTheoGio.Controls.Clear();
                 BangNhieuNgay.Controls.Clear();
-                
-                // Load thời tiết theo vị trí hiện tại (IP) để có tọa độ cho bản đồ
-                await LoadWeatherByIP();
             }
             catch (Exception ex)
             {
@@ -1116,6 +1113,8 @@ namespace THOITIET
                     savedLocationNames.Add("Tokyo");
                 }
                 
+                // Ưu tiên load thời tiết theo IP (vị trí hiện tại)
+                _ = LoadWeatherByIP();
                 
                 // Cập nhật danh sách trong ListBox
                 CapNhatDanhSachDiaDiem();
@@ -1143,8 +1142,6 @@ namespace THOITIET
                     string locationName = $"{result.Name}, {result.Country}";
                     oTimKiemDiaDiem.Text = locationName;
                     currentLocation = locationName;
-                    currentLat = result.Lat;
-                    currentLon = result.Lon;
                     CapNhatDiaDiem(locationName);
                     
                     // Thêm địa điểm IP vào danh sách nếu chưa có

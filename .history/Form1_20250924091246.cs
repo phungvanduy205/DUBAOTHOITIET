@@ -632,9 +632,6 @@ namespace THOITIET
                 // Xóa các panel dự báo
                 BangTheoGio.Controls.Clear();
                 BangNhieuNgay.Controls.Clear();
-                
-                // Load thời tiết theo vị trí hiện tại (IP) để có tọa độ cho bản đồ
-                await LoadWeatherByIP();
             }
             catch (Exception ex)
             {
@@ -1116,6 +1113,8 @@ namespace THOITIET
                     savedLocationNames.Add("Tokyo");
                 }
                 
+                // Ưu tiên load thời tiết theo IP (vị trí hiện tại)
+                _ = LoadWeatherByIP();
                 
                 // Cập nhật danh sách trong ListBox
                 CapNhatDanhSachDiaDiem();
@@ -1143,8 +1142,6 @@ namespace THOITIET
                     string locationName = $"{result.Name}, {result.Country}";
                     oTimKiemDiaDiem.Text = locationName;
                     currentLocation = locationName;
-                    currentLat = result.Lat;
-                    currentLon = result.Lon;
                     CapNhatDiaDiem(locationName);
                     
                     // Thêm địa điểm IP vào danh sách nếu chưa có
@@ -3878,35 +3875,11 @@ namespace THOITIET
             if (windyView != null) windyView.Visible = false;
         }
 
-        private async void ShowMap()
+        private void ShowMap()
         {
             EnsureWindyBrowser();
             if (windyView == null) return;
-            
-            // Nếu chưa có tọa độ hiện tại, lấy từ vị trí hiện tại
-            if (currentLat == 0 && currentLon == 0)
-            {
-                try
-                {
-                    var locationData = await WeatherApiService.GetCurrentLocationAsync();
-                    if (locationData?.Results?.Length > 0)
-                    {
-                        var result = locationData.Results[0];
-                        currentLat = result.Lat;
-                        currentLon = result.Lon;
-                        System.Diagnostics.Debug.WriteLine($"Lấy tọa độ hiện tại cho bản đồ: {currentLat}, {currentLon}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Lỗi lấy vị trí hiện tại cho bản đồ: {ex.Message}");
-                    // Fallback về tọa độ mặc định (Hà Nội)
-                    currentLat = 21.0285;
-                    currentLon = 105.8542;
-                }
-            }
-            
-            // Luôn nạp theo vị trí hiện tại
+            // Luôn nạp theo vị trí hiện tại, không phụ thuộc chọn ngày
             LoadWindyMap(currentLat, currentLon);
             if (temperatureChart != null) temperatureChart.Visible = false;
             windyView.Visible = true;
@@ -4367,6 +4340,7 @@ namespace THOITIET
                     Country = currentLocation.Split(',').Length > 1 ? currentLocation.Split(',')[1].Trim() : "",
                     Latitude = weatherData.Lat,
                     Longitude = weatherData.Lon,
+                    IsDefault = false,
                     AddedDate = DateTime.Now
                 };
 
@@ -4483,6 +4457,13 @@ namespace THOITIET
                     comboBox.DataSource = null;
                     comboBox.DataSource = favoriteLocations.Select(l => $"{l.Name}, {l.Country}").ToList();
                     
+                    // Chọn địa điểm mặc định
+                    var defaultLoc = favoriteLocations.FirstOrDefault(l => l.IsDefault);
+                    if (defaultLoc != null)
+                    {
+                        var defaultText = $"{defaultLoc.Name}, {defaultLoc.Country}";
+                        comboBox.SelectedItem = defaultText;
+                    }
                 }
             }
             catch (Exception ex)

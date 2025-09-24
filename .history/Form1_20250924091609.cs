@@ -1116,6 +1116,8 @@ namespace THOITIET
                     savedLocationNames.Add("Tokyo");
                 }
                 
+                // Ưu tiên load thời tiết theo IP (vị trí hiện tại)
+                _ = LoadWeatherByIP();
                 
                 // Cập nhật danh sách trong ListBox
                 CapNhatDanhSachDiaDiem();

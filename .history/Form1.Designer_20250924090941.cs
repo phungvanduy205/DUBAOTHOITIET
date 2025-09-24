@@ -551,6 +551,7 @@
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;
         private System.Windows.Forms.Button nutLuuDiaDiem;
         private System.Windows.Forms.Button nutXoaDiaDiem;
+        private System.Windows.Forms.Button nutChonMacDinh;
         private TabControl tabDieuKhien;
         private TabPage tabChart;
         private TabPage tabMap;

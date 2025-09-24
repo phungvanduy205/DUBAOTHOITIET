@@ -55,6 +55,7 @@ namespace THOITIET
         private TabControl? tabChartMap;
         private const string WINDY_API_KEY = "NI44O5nRjXST4TKiDk0x7hzaWnpHHiCP";
         private List<FavoriteLocation> favoriteLocations = new List<FavoriteLocation>();
+        private string defaultLocation = "";
         private int selectedDayIndex = 0; // Ngày được chọn trong dự báo 5 ngày
 
         // Throttle nền: lưu trạng thái lần trước
@@ -112,6 +113,8 @@ namespace THOITIET
             // Tải dữ liệu thời tiết ban đầu từ địa điểm hiện tại
             _ = LoadInitialWeatherData();
 
+            // Load địa điểm yêu thích và mặc định
+            _ = LoadDefaultLocationOnStartup();
 
             // Tạo file icon thật
             TaoFileIconThuc();
@@ -180,7 +183,7 @@ namespace THOITIET
                    }
                    else
                    {
-                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.jpg"));
+                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
                        System.Diagnostics.Debug.WriteLine("ForceSetBackground: Chọn nền ban ngày");
                    }
 
@@ -329,7 +332,7 @@ namespace THOITIET
                    else
                    {
                        // Ban ngày - dùng nền ban ngày mặc định
-                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.jpg"));
+                       backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
                        System.Diagnostics.Debug.WriteLine("SetDefaultBackground: Chọn nền ban ngày mặc định");
                    }
 
@@ -437,13 +440,13 @@ namespace THOITIET
                 {
                     // Snow (tuyết) => nen_tuyet
                     backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_tuyet.jpg"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_tuyet.jpg (snow - {weatherId})");
+                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_tuyet.gif (snow - {weatherId})");
                 }
                 else if (weatherId >= 701 && weatherId <= 781)
                 {
                     // Atmosphere (sương mù, bụi, khói…) => nen_suong_mu
-                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_suong_mu.jpg"));
-                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_suong_mu.jpg (atmosphere - {weatherId})");
+                    backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_suong_mu.gif"));
+                    System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_suong_mu.gif (atmosphere - {weatherId})");
                 }
                 else if (weatherId == 800)
                 {
@@ -462,7 +465,7 @@ namespace THOITIET
                         if (!File.Exists(nangPath))
                         {
                             // Fallback nếu thiếu file: dùng trời quang
-                            nangPath = Path.Combine(resourcesPath, "nen_troi_quang.jpg");
+                            nangPath = Path.Combine(resourcesPath, "nen_troi_quang.gif");
                         }
                         backgroundImage = Image.FromFile(nangPath);
                         System.Diagnostics.Debug.WriteLine($"Chọn nền: {Path.GetFileName(nangPath)} (clear day/sunny - {weatherId})");
@@ -492,8 +495,8 @@ namespace THOITIET
                     }
                     else
                     {
-                        backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.jpg"));
-                        System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_troi_quang.jpg (mặc định ngày - {weatherId})");
+                        backgroundImage = Image.FromFile(Path.Combine(resourcesPath, "nen_troi_quang.gif"));
+                        System.Diagnostics.Debug.WriteLine($"Chọn nền: nen_troi_quang.gif (mặc định ngày - {weatherId})");
                     }
                 }
 
@@ -632,9 +635,6 @@ namespace THOITIET
                 // Xóa các panel dự báo
                 BangTheoGio.Controls.Clear();
                 BangNhieuNgay.Controls.Clear();
-                
-                // Load thời tiết theo vị trí hiện tại (IP) để có tọa độ cho bản đồ
-                await LoadWeatherByIP();
             }
             catch (Exception ex)
             {
@@ -1111,11 +1111,13 @@ namespace THOITIET
                 // Nếu chưa có địa điểm nào, thêm một số địa điểm mẫu
                 if (savedLocationNames.Count == 0)
                 {
-                    savedLocationNames.Add("London");
-                    savedLocationNames.Add("New York");
-                    savedLocationNames.Add("Tokyo");
+                    savedLocationNames.Add("Hanoi");
+                    savedLocationNames.Add("Ho Chi Minh City");
+                    savedLocationNames.Add("Da Nang");
                 }
                 
+                // Ưu tiên load thời tiết theo IP (vị trí hiện tại)
+                _ = LoadWeatherByIP();
                 
                 // Cập nhật danh sách trong ListBox
                 CapNhatDanhSachDiaDiem();
@@ -1143,8 +1145,6 @@ namespace THOITIET
                     string locationName = $"{result.Name}, {result.Country}";
                     oTimKiemDiaDiem.Text = locationName;
                     currentLocation = locationName;
-                    currentLat = result.Lat;
-                    currentLon = result.Lon;
                     CapNhatDiaDiem(locationName);
                     
                     // Thêm địa điểm IP vào danh sách nếu chưa có
@@ -2168,8 +2168,8 @@ namespace THOITIET
                 // Fallback theo mã thời tiết cũ nếu không có IconCode
                 if (ma >= 200 && ma <= 232) tenNen = "nen_giong.gif";
                 else if ((ma >= 300 && ma <= 321) || (ma >= 500 && ma <= 531)) tenNen = "nen_mua.jpg";
-                else if (ma >= 600 && ma <= 622) tenNen = "nen_tuyet.jpg";
-                else if (ma == 800) tenNen = "nen_troi_quang.jpg";
+                else if (ma >= 600 && ma <= 622) tenNen = "nen_tuyet.gif";
+                else if (ma == 800) tenNen = "nen_troi_quang.gif";
                 else tenNen = "nen_mua.jpg";
             }
 
@@ -2281,15 +2281,15 @@ namespace THOITIET
             var code2 = iconCode.Length >= 2 ? iconCode.Substring(0, 2) : iconCode;
             return code2 switch
             {
-                "01" => "nen_troi_quang.jpg",        // trời quang
+                "01" => "nen_troi_quang.gif",        // trời quang
                 "02" => "nen_it_may.gif",            // ít mây
                 "03" => "nen_may_rac_rac.gif",       // mây rải rác
                 "04" => "nen_may_day.gif",           // mây dày
                 "09" => "nen_mua_rao.jpg",           // mưa rào
                 "10" => "nen_mua.jpg",               // mưa
                 "11" => "nen_giong_bao.jpg",         // giông bão
-                "13" => "nen_tuyet.jpg",             // tuyết
-                "50" => "nen_suong_mu.jpg",          // sương mù
+                "13" => "nen_tuyet.gif",             // tuyết
+                "50" => "nen_suong_mu.gif",          // sương mù
                 _ => "nen_may_day.gif"               // fallback
             };
         }
@@ -2692,29 +2692,26 @@ namespace THOITIET
                     Location = new Point(10, 10)
                 };
 
-                // Label title - căn giữa và hiển thị đầy đủ
+                // Label title
                 var titleLabel = new Label
                 {
                     Text = title,
-                    Font = new Font("Segoe UI", 10F, FontStyle.Regular),
+                    Font = new Font("Segoe UI", 10F),
                     ForeColor = Color.White,
                     BackColor = Color.Transparent,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Location = new Point(5, 35),
-                    Size = new Size(panel.Width - 10, 18),
-                    AutoEllipsis = true
+                    AutoSize = true,
+                    Location = new Point(10, 35)
                 };
 
-                // Label value - căn giữa
+                // Label value
                 var valueLabel = new Label
                 {
                     Text = value,
-                    Font = new Font("Segoe UI", 13F, FontStyle.Regular),
+                    Font = new Font("Segoe UI", 14F, FontStyle.Bold),
                     ForeColor = Color.White,
                     BackColor = Color.Transparent,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Location = new Point(5, 50),
-                    Size = new Size(panel.Width - 10, 25)
+                    AutoSize = true,
+                    Location = new Point(10, 50)
                 };
 
                 panel.Controls.Add(iconLabel);
@@ -3380,16 +3377,62 @@ namespace THOITIET
 
                 // Xóa dữ liệu cũ
                 temperatureChart.Series.Clear();
+                temperatureChart.Legends.Clear();
 
-                // Tạo series cột
-                var series = new Series("Nhiệt độ")
+                // Tạo legend
+                var legend = new Legend
                 {
-                    ChartType = SeriesChartType.Column,
-                    Color = Color.FromArgb(200, 100, 200, 255),
-                    BorderWidth = 1,
-                    IsValueShownAsLabel = false
+                    Docking = Docking.Bottom,
+                    Alignment = StringAlignment.Center,
+                    ForeColor = Color.White,
+                    BackColor = Color.Transparent,
+                    Font = new Font("Segoe UI", 14F, FontStyle.Regular)
                 };
-                series["PointWidth"] = "0.6"; // Độ rộng cột
+                temperatureChart.Legends.Add(legend);
+
+                // Series 1: Nhiệt độ thực tế (đường mượt)
+                var tempSeries = new Series("Nhiệt độ thực tế")
+                {
+                    ChartType = SeriesChartType.Spline,
+                    Color = Color.FromArgb(255, 0, 197, 255),
+                    BorderWidth = 5,
+                    MarkerStyle = MarkerStyle.Circle,
+                    MarkerSize = 12,
+                    MarkerColor = Color.White,
+                    MarkerBorderColor = Color.FromArgb(255, 0, 197, 255),
+                    MarkerBorderWidth = 4,
+                    Legend = legend.Name
+                };
+
+                // Series 2: Cảm nhận (Feels like)
+                var feelsSeries = new Series("Cảm nhận (feels like)")
+                {
+                    ChartType = SeriesChartType.Spline,
+                    Color = Color.FromArgb(255, 255, 140, 0),
+                    BorderWidth = 5,
+                    MarkerStyle = MarkerStyle.Diamond,
+                    MarkerSize = 12,
+                    MarkerColor = Color.White,
+                    MarkerBorderColor = Color.FromArgb(255, 255, 140, 0),
+                    MarkerBorderWidth = 4,
+                    Legend = legend.Name
+                };
+
+                // Vùng nền dưới hai đường
+                var tempArea = new Series("__tempArea")
+                {
+                    ChartType = SeriesChartType.SplineArea,
+                    Color = Color.FromArgb(60, 0, 197, 255),
+                    BorderWidth = 0,
+                    IsVisibleInLegend = false
+                };
+                var feelsArea = new Series("__feelsArea")
+                {
+                    ChartType = SeriesChartType.SplineArea,
+                    Color = Color.FromArgb(50, 255, 140, 0),
+                    BorderWidth = 0,
+                    IsVisibleInLegend = false
+                };
 
                 // Thêm dữ liệu điểm
                 foreach (var hour in hourlyData)
@@ -3398,11 +3441,21 @@ namespace THOITIET
                     var temperature = donViCelsius ? TemperatureConverter.ToCelsius(hour.Temp)
                                                   : TemperatureConverter.ToFahrenheit(hour.Temp);
                     
-                    var pointIndex = series.Points.AddXY(hourTime.Hour, temperature);
-                    var point = series.Points[pointIndex];
-                    point.ToolTip = $"Giờ: {hourTime:HH:mm}\nNhiệt độ: {temperature:F1}°{(donViCelsius ? "C" : "F")}\nTrạng thái: {hour.Weather?[0]?.Description ?? "N/A"}";
+                    // Thêm điểm nhiệt độ thực
+                    var tempPointIndex = tempSeries.Points.AddXY(hourTime.Hour, temperature);
+                    var tempPoint = tempSeries.Points[tempPointIndex];
+                    tempPoint.ToolTip = $"Giờ: {hourTime:HH:mm}\nNhiệt độ: {temperature:F1}°{(donViCelsius ? "C" : "F")}\nTrạng thái: {hour.Weather?[0]?.Description ?? "N/A"}";
+                    tempArea.Points.AddXY(hourTime.Hour, temperature);
 
-                    // Gắn icon thời tiết trên đỉnh cột
+                    // Thêm điểm cảm nhận (feels like)
+                    var feelsVal = donViCelsius ? TemperatureConverter.ToCelsius(hour.FeelsLike)
+                                                : TemperatureConverter.ToFahrenheit(hour.FeelsLike);
+                    var feelsPointIndex = feelsSeries.Points.AddXY(hourTime.Hour, feelsVal);
+                    var feelsPoint = feelsSeries.Points[feelsPointIndex];
+                    feelsPoint.ToolTip = $"Giờ: {hourTime:HH:mm}\nCảm nhận: {feelsVal:F1}°{(donViCelsius ? "C" : "F")}";
+                    feelsArea.Points.AddXY(hourTime.Hour, feelsVal);
+
+                    // Gắn icon thời tiết vào điểm nhiệt độ
                     try
                     {
                         var iconCode = hour.Weather?.FirstOrDefault()?.Icon ?? "01d";
@@ -3415,35 +3468,33 @@ namespace THOITIET
                                 using var img = Image.FromFile(iconPath);
                                 temperatureChart.Images.Add(new NamedImage(imageName, (Image)img.Clone()));
                             }
-                            point.MarkerImage = imageName;
-                            point.MarkerStyle = MarkerStyle.None;
-                            point.MarkerSize = 20;
+                            tempPoint.MarkerImage = imageName;
+                            tempPoint.MarkerSize = 18;
                         }
                     }
                     catch { }
                 }
 
-                temperatureChart.Series.Add(series);
-
-                // Bỏ đánh dấu chữ T và C
+                temperatureChart.Series.Add(tempArea);
+                temperatureChart.Series.Add(feelsArea);
+                temperatureChart.Series.Add(tempSeries);
+                temperatureChart.Series.Add(feelsSeries);
 
                 // Cấu hình trục X
-                temperatureChart.ChartAreas[0].AxisX.Title = "Giờ";
-                temperatureChart.ChartAreas[0].AxisX.TitleFont = new Font("Segoe UI", 12, FontStyle.Regular);
+                temperatureChart.ChartAreas[0].AxisX.Title = "Giờ trong ngày";
+                temperatureChart.ChartAreas[0].AxisX.TitleFont = new Font("Segoe UI", 14, FontStyle.Regular);
                 temperatureChart.ChartAreas[0].AxisX.TitleForeColor = Color.White;
                 temperatureChart.ChartAreas[0].AxisX.Minimum = 0;
                 temperatureChart.ChartAreas[0].AxisX.Maximum = 23;
-                temperatureChart.ChartAreas[0].AxisX.Interval = 1; // hiện mỗi giờ: 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
-                temperatureChart.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Segoe UI", 7, FontStyle.Regular);
+                temperatureChart.ChartAreas[0].AxisX.Interval = 1; // hiện đủ cột theo giờ
+                temperatureChart.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Segoe UI", 12);
                 temperatureChart.ChartAreas[0].AxisX.LabelStyle.ForeColor = Color.White;
                 temperatureChart.ChartAreas[0].AxisX.LineColor = Color.FromArgb(200, 255, 255, 255);
                 temperatureChart.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.FromArgb(100, 255, 255, 255);
                 temperatureChart.ChartAreas[0].AxisX.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
 
                 // Cấu hình trục Y
-                temperatureChart.ChartAreas[0].AxisY.Title = $"Nhiệt độ °{(donViCelsius ? "C" : "F")}";
-                temperatureChart.ChartAreas[0].AxisY.TitleForeColor = Color.White;
-                temperatureChart.ChartAreas[0].AxisY.TitleFont = new Font("Segoe UI", 12, FontStyle.Regular);
+                temperatureChart.ChartAreas[0].AxisY.Title = $"Nhiệt độ (°{(donViCelsius ? "C" : "F")})";
                 // Điều chỉnh trục Y theo dải °C/°F hợp lý
                 if (donViCelsius)
                 {
@@ -3457,7 +3508,9 @@ namespace THOITIET
                     temperatureChart.ChartAreas[0].AxisY.Maximum = 120; // ≈ 122°F ~ 50°C
                     temperatureChart.ChartAreas[0].AxisY.Interval = 10;
                 }
-                temperatureChart.ChartAreas[0].AxisY.LabelStyle.Font = new Font("Segoe UI", 10, FontStyle.Regular);
+                temperatureChart.ChartAreas[0].AxisY.TitleFont = new Font("Segoe UI", 14, FontStyle.Regular);
+                temperatureChart.ChartAreas[0].AxisY.TitleForeColor = Color.White;
+                temperatureChart.ChartAreas[0].AxisY.LabelStyle.Font = new Font("Segoe UI", 12);
                 temperatureChart.ChartAreas[0].AxisY.LabelStyle.ForeColor = Color.White;
                 temperatureChart.ChartAreas[0].AxisY.LineColor = Color.FromArgb(200, 255, 255, 255);
                 temperatureChart.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.FromArgb(100, 255, 255, 255);
@@ -3465,7 +3518,7 @@ namespace THOITIET
                 temperatureChart.Titles[0].Font = new Font("Segoe UI", 16F, FontStyle.Regular);
 
                 // Tự điều chỉnh dải trục Y theo dữ liệu, cộng trừ 3° đệm
-                var allVals = series.Points.Select(p => p.YValues[0]).ToArray();
+                var allVals = tempSeries.Points.Select(p => p.YValues[0]).Concat(feelsSeries.Points.Select(p => p.YValues[0])).ToArray();
                 if (allVals.Length > 0)
                 {
                     double min = allVals.Min();
@@ -3497,253 +3550,6 @@ namespace THOITIET
         /// <summary>
         /// Khởi tạo Chart nhiệt độ
         /// </summary>
-        private void CreateDailyComparisonChart(GroupBox parent)
-        {
-            try
-            {
-                var chart = new Chart
-                {
-                    Dock = DockStyle.Fill,
-                    BackColor = Color.FromArgb(30, 20, 30, 40),
-                    AntiAliasing = AntiAliasingStyles.All
-                };
-
-                var chartArea = new ChartArea("ComparisonArea")
-                {
-                    BackColor = Color.FromArgb(20, 30, 40, 50),
-                    BorderColor = Color.FromArgb(100, 255, 255, 255),
-                    BorderWidth = 1
-                };
-
-                // Cấu hình trục
-                chartArea.AxisX.Interval = 1;
-                chartArea.AxisX.LabelStyle.ForeColor = Color.White;
-                chartArea.AxisX.TitleForeColor = Color.White;
-                chartArea.AxisX.Title = "Nhiệt độ (°C)";
-                chartArea.AxisX.TitleFont = new Font("Segoe UI", 10F);
-                
-                chartArea.AxisY.LabelStyle.ForeColor = Color.White;
-                chartArea.AxisY.TitleForeColor = Color.White;
-                chartArea.AxisY.Title = "Ngày";
-                chartArea.AxisY.TitleFont = new Font("Segoe UI", 10F);
-
-                chart.ChartAreas.Add(chartArea);
-
-                // Tạo series cho hôm nay và hôm qua
-                var todaySeries = new Series("Hôm nay")
-                {
-                    ChartType = SeriesChartType.Bar,
-                    Color = Color.FromArgb(255, 255, 159, 67),
-                    BorderColor = Color.FromArgb(255, 255, 159, 67),
-                    BorderWidth = 2
-                };
-
-                var yesterdaySeries = new Series("Hôm qua")
-                {
-                    ChartType = SeriesChartType.Bar,
-                    Color = Color.FromArgb(255, 74, 144, 226),
-                    BorderColor = Color.FromArgb(255, 74, 144, 226),
-                    BorderWidth = 2
-                };
-
-                // Thêm dữ liệu mẫu
-                todaySeries.Points.AddXY(25, "Tối thiểu");
-                todaySeries.Points.AddXY(34, "Tối đa");
-                
-                yesterdaySeries.Points.AddXY(25, "Tối thiểu");
-                yesterdaySeries.Points.AddXY(32, "Tối đa");
-
-                chart.Series.Add(todaySeries);
-                chart.Series.Add(yesterdaySeries);
-
-                parent.Controls.Add(chart);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi tạo biểu đồ so sánh: {ex.Message}");
-            }
-        }
-
-        private void CreateRainProbabilityChart(GroupBox parent)
-        {
-            try
-            {
-                var chart = new Chart
-                {
-                    Dock = DockStyle.Fill,
-                    BackColor = Color.FromArgb(30, 20, 30, 40),
-                    AntiAliasing = AntiAliasingStyles.All
-                };
-
-                var chartArea = new ChartArea("RainProbArea")
-                {
-                    BackColor = Color.Transparent, // Nền trong suốt
-                    BorderColor = Color.FromArgb(100, 255, 255, 255),
-                    BorderWidth = 1
-                };
-
-                // Cấu hình trục
-                chartArea.AxisX.Interval = 6; // Mỗi 6 giờ
-                chartArea.AxisX.LabelStyle.ForeColor = Color.White;
-                chartArea.AxisX.TitleForeColor = Color.White;
-                chartArea.AxisX.Title = "Giờ";
-                chartArea.AxisX.TitleFont = new Font("Segoe UI", 10F);
-                chartArea.AxisX.Minimum = 0;
-                chartArea.AxisX.Maximum = 24;
-                
-                chartArea.AxisY.Interval = 20; // Mỗi 20%
-                chartArea.AxisY.LabelStyle.ForeColor = Color.White;
-                chartArea.AxisY.TitleForeColor = Color.White;
-                chartArea.AxisY.Title = "Tỉ lệ (%)";
-                chartArea.AxisY.TitleFont = new Font("Segoe UI", 10F);
-                chartArea.AxisY.Minimum = 0;
-                chartArea.AxisY.Maximum = 100;
-
-                // Cấu hình grid
-                chartArea.AxisX.MajorGrid.LineColor = Color.FromArgb(60, 255, 255, 255);
-                chartArea.AxisY.MajorGrid.LineColor = Color.FromArgb(60, 255, 255, 255);
-                chartArea.AxisX.MajorGrid.Enabled = true;
-                chartArea.AxisY.MajorGrid.Enabled = true;
-                chartArea.AxisX.MajorGrid.LineDashStyle = ChartDashStyle.Dot;
-                chartArea.AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dot;
-
-                chart.ChartAreas.Add(chartArea);
-
-                // Tạo series cho tỉ lệ mưa (SplineArea)
-                var rainProbSeries = new Series("Tỉ lệ mưa")
-                {
-                    ChartType = SeriesChartType.SplineArea,
-                    Color = Color.FromArgb(120, Color.DeepSkyBlue), // Xanh nhạt có độ trong suốt
-                    BorderColor = Color.DeepSkyBlue,
-                    BorderWidth = 2
-                };
-
-                // Thêm dữ liệu mẫu (0% mưa trong ngày)
-                for (int hour = 0; hour < 24; hour += 6)
-                {
-                    rainProbSeries.Points.AddXY(hour, 0); // 0% mưa
-                }
-
-                chart.Series.Add(rainProbSeries);
-
-                // Thêm text hiển thị tỉ lệ mưa hôm nay
-                var title = new Title("Khả năng có mưa vào hôm nay: 0%")
-                {
-                    Font = new Font("Segoe UI", 11F),
-                    ForeColor = Color.White,
-                    Docking = Docking.Top
-                };
-                chart.Titles.Add(title);
-
-                parent.Controls.Add(chart);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi tạo biểu đồ tỉ lệ mưa: {ex.Message}");
-            }
-        }
-
-        private void CreateRainfallSummary(GroupBox parent)
-        {
-            try
-            {
-                var panel = new Panel
-                {
-                    Dock = DockStyle.Fill,
-                    BackColor = Color.Transparent,
-                    Padding = new Padding(10)
-                };
-
-                // 24 giờ qua
-                var past24hPanel = new Panel
-                {
-                    Location = new Point(10, 10),
-                    Size = new Size(parent.Width - 40, 50),
-                    BackColor = Color.FromArgb(60, 74, 144, 226),
-                    Padding = new Padding(10)
-                };
-
-                var past24hIcon = new Label
-                {
-                    Text = "🌧️",
-                    Font = new Font("Segoe UI Emoji", 20F),
-                    ForeColor = Color.White,
-                    Location = new Point(10, 10),
-                    AutoSize = true
-                };
-
-                var past24hLabel = new Label
-                {
-                    Text = "24 GIỜ QUA",
-                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                    ForeColor = Color.White,
-                    Location = new Point(50, 10),
-                    AutoSize = true
-                };
-
-                var past24hValue = new Label
-                {
-                    Text = "Mưa 3 mm",
-                    Font = new Font("Segoe UI", 12F),
-                    ForeColor = Color.White,
-                    Location = new Point(50, 30),
-                    AutoSize = true
-                };
-
-                past24hPanel.Controls.Add(past24hIcon);
-                past24hPanel.Controls.Add(past24hLabel);
-                past24hPanel.Controls.Add(past24hValue);
-
-                // 24 giờ tới
-                var next24hPanel = new Panel
-                {
-                    Location = new Point(10, 70),
-                    Size = new Size(parent.Width - 40, 50),
-                    BackColor = Color.FromArgb(60, 255, 159, 67),
-                    Padding = new Padding(10)
-                };
-
-                var next24hIcon = new Label
-                {
-                    Text = "🌧️",
-                    Font = new Font("Segoe UI Emoji", 20F),
-                    ForeColor = Color.White,
-                    Location = new Point(10, 10),
-                    AutoSize = true
-                };
-
-                var next24hLabel = new Label
-                {
-                    Text = "24 GIỜ TỚI",
-                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                    ForeColor = Color.White,
-                    Location = new Point(50, 10),
-                    AutoSize = true
-                };
-
-                var next24hValue = new Label
-                {
-                    Text = "Mưa 4 mm",
-                    Font = new Font("Segoe UI", 12F),
-                    ForeColor = Color.White,
-                    Location = new Point(50, 30),
-                    AutoSize = true
-                };
-
-                next24hPanel.Controls.Add(next24hIcon);
-                next24hPanel.Controls.Add(next24hLabel);
-                next24hPanel.Controls.Add(next24hValue);
-
-                panel.Controls.Add(past24hPanel);
-                panel.Controls.Add(next24hPanel);
-                parent.Controls.Add(panel);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi tạo tổng lượng mưa: {ex.Message}");
-            }
-        }
-
         private void InitializeTemperatureChart()
         {
             try
@@ -3753,31 +3559,24 @@ namespace THOITIET
                 temperatureChart = new Chart
                 {
                     Dock = DockStyle.Fill,
-                    BackColor = Color.FromArgb(30, 20, 30, 40), // Nền tối đẹp
+                    BackColor = Color.FromArgb(50, 0, 0, 0),
                     AntiAliasing = AntiAliasingStyles.All,
-                    TextAntiAliasingQuality = TextAntiAliasingQuality.High,
-                    Margin = new Padding(0)
+                    TextAntiAliasingQuality = TextAntiAliasingQuality.High
                 };
 
-                // Tạo ChartArea với gradient nền vàng-cam
+                // Tạo ChartArea
                 var chartArea = new ChartArea("MainArea")
                 {
-                    BackColor = Color.Orange, // Màu cam
-                    BackSecondaryColor = Color.Yellow, // Màu vàng
-                    BackGradientStyle = GradientStyle.TopBottom, // Gradient từ trên xuống
-                    BorderColor = Color.FromArgb(100, 255, 255, 255),
-                    BorderWidth = 2,
-                    Position = new ElementPosition(0, 0, 100, 100),
-                    InnerPlotPosition = new ElementPosition(12, 20, 82, 70)
+                    BackColor = Color.FromArgb(30, 255, 255, 255),
+                    BorderColor = Color.White,
+                    BorderWidth = 1
                 };
 
-                // Cấu hình grid đẹp hơn
-                chartArea.AxisX.MajorGrid.LineColor = Color.FromArgb(60, 255, 255, 255);
-                chartArea.AxisY.MajorGrid.LineColor = Color.FromArgb(60, 255, 255, 255);
+                // Cấu hình grid
+                chartArea.AxisX.MajorGrid.LineColor = Color.FromArgb(100, 255, 255, 255);
+                chartArea.AxisY.MajorGrid.LineColor = Color.FromArgb(100, 255, 255, 255);
                 chartArea.AxisX.MajorGrid.Enabled = true;
                 chartArea.AxisY.MajorGrid.Enabled = true;
-                chartArea.AxisX.MajorGrid.LineDashStyle = ChartDashStyle.Dot;
-                chartArea.AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dot;
 
                 // Cấu hình màu chữ
                 chartArea.AxisX.LabelStyle.ForeColor = Color.White;
@@ -3787,37 +3586,19 @@ namespace THOITIET
 
                 temperatureChart.ChartAreas.Add(chartArea);
 
-                // Tạo layout scrollable như trong hình
+                // Thêm Chart vào tab "Biểu đồ nhiệt độ" trong GroupBox đẹp như 24h/5 ngày
                 tabChart.Controls.Clear();
-                
-                // Panel chính có thể scroll
-                var mainPanel = new Panel
+                var khungBieuDo = new GroupBox
                 {
                     Dock = DockStyle.Fill,
-                    AutoScroll = true,
-                    BackColor = Color.FromArgb(30, 25, 35, 45)
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    ForeColor = SystemColors.ControlLightLight,
+                    Padding = new Padding(2),
+                    Text = "Biểu đồ 24 giờ"
                 };
-                
-                // 1. Biểu đồ nhiệt độ chính (line chart)
-                var tempChartGroup = new GroupBox
-                {
-                    Dock = DockStyle.Fill,
-                    Font = new Font("Segoe UI", 12F, FontStyle.Regular),
-                    ForeColor = Color.White,
-                    Text = "Nhiệt độ 24 giờ",
-                    BackColor = Color.FromArgb(40, 30, 40, 50),
-                    Padding = new Padding(5)
-                };
-                
-                // Chuyển biểu đồ về line chart
-                temperatureChart.ChartAreas[0].BackColor = Color.FromArgb(20, 30, 40, 50);
-                temperatureChart.BackColor = Color.FromArgb(30, 20, 30, 40);
-                temperatureChart.Dock = DockStyle.Fill;
-                tempChartGroup.Controls.Add(temperatureChart);
-                
-                
-                mainPanel.Controls.Add(tempChartGroup);
-                tabChart.Controls.Add(mainPanel);
+                khungBieuDo.BackColor = Color.FromArgb(40, 255, 255, 255);
+                khungBieuDo.Controls.Add(temperatureChart);
+                tabChart.Controls.Add(khungBieuDo);
 
                 // Đảm bảo control bản đồ tồn tại và nằm trên tabMap
                 EnsureWindyBrowser();
@@ -3878,35 +3659,11 @@ namespace THOITIET
             if (windyView != null) windyView.Visible = false;
         }
 
-        private async void ShowMap()
+        private void ShowMap()
         {
             EnsureWindyBrowser();
             if (windyView == null) return;
-            
-            // Nếu chưa có tọa độ hiện tại, lấy từ vị trí hiện tại
-            if (currentLat == 0 && currentLon == 0)
-            {
-                try
-                {
-                    var locationData = await WeatherApiService.GetCurrentLocationAsync();
-                    if (locationData?.Results?.Length > 0)
-                    {
-                        var result = locationData.Results[0];
-                        currentLat = result.Lat;
-                        currentLon = result.Lon;
-                        System.Diagnostics.Debug.WriteLine($"Lấy tọa độ hiện tại cho bản đồ: {currentLat}, {currentLon}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Lỗi lấy vị trí hiện tại cho bản đồ: {ex.Message}");
-                    // Fallback về tọa độ mặc định (Hà Nội)
-                    currentLat = 21.0285;
-                    currentLon = 105.8542;
-                }
-            }
-            
-            // Luôn nạp theo vị trí hiện tại
+            // Luôn nạp theo vị trí hiện tại, không phụ thuộc chọn ngày
             LoadWindyMap(currentLat, currentLon);
             if (temperatureChart != null) temperatureChart.Visible = false;
             windyView.Visible = true;
@@ -4322,6 +4079,12 @@ namespace THOITIET
                     var json = File.ReadAllText("favorite_locations.json");
                     favoriteLocations = JsonConvert.DeserializeObject<List<FavoriteLocation>>(json) ?? new List<FavoriteLocation>();
                     
+                    // Tìm địa điểm mặc định
+                    var defaultLoc = favoriteLocations.FirstOrDefault(l => l.IsDefault);
+                    if (defaultLoc != null)
+                    {
+                        defaultLocation = $"{defaultLoc.Name}, {defaultLoc.Country}";
+                    }
                     
                     System.Diagnostics.Debug.WriteLine($"Đã tải {favoriteLocations.Count} địa điểm yêu thích");
                 }
@@ -4367,6 +4130,7 @@ namespace THOITIET
                     Country = currentLocation.Split(',').Length > 1 ? currentLocation.Split(',')[1].Trim() : "",
                     Latitude = weatherData.Lat,
                     Longitude = weatherData.Lon,
+                    IsDefault = false,
                     AddedDate = DateTime.Now
                 };
 
@@ -4468,6 +4232,95 @@ namespace THOITIET
             }
         }
 
+        /// <summary>
+        /// Đặt địa điểm được chọn làm mặc định
+        /// </summary>
+        private void SetDefaultLocation()
+        {
+            try
+            {
+                if (favoriteLocations.Count == 0)
+                {
+                    MessageBox.Show("Danh sách yêu thích trống!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Hiển thị dialog chọn địa điểm để đặt mặc định
+                var locationNames = favoriteLocations.Select(l => $"{l.Name}, {l.Country}").ToArray();
+                var selectedIndex = -1;
+                
+                // Tạo dialog đơn giản để chọn địa điểm
+                using (var form = new Form())
+                {
+                    form.Text = "Chọn địa điểm mặc định";
+                    form.Size = new Size(400, 300);
+                    form.StartPosition = FormStartPosition.CenterParent;
+
+                    var listBox = new ListBox
+                    {
+                        Dock = DockStyle.Fill,
+                        DataSource = locationNames
+                    };
+
+                    var buttonPanel = new Panel
+                    {
+                        Dock = DockStyle.Bottom,
+                        Height = 50
+                    };
+
+                    var btnOK = new Button
+                    {
+                        Text = "Đặt mặc định",
+                        DialogResult = DialogResult.OK,
+                        Location = new Point(200, 10),
+                        Size = new Size(120, 30)
+                    };
+
+                    var btnCancel = new Button
+                    {
+                        Text = "Hủy",
+                        DialogResult = DialogResult.Cancel,
+                        Location = new Point(330, 10),
+                        Size = new Size(80, 30)
+                    };
+
+                    buttonPanel.Controls.Add(btnOK);
+                    buttonPanel.Controls.Add(btnCancel);
+                    form.Controls.Add(listBox);
+                    form.Controls.Add(buttonPanel);
+
+                    if (form.ShowDialog() == DialogResult.OK && listBox.SelectedIndex >= 0)
+                    {
+                        selectedIndex = listBox.SelectedIndex;
+                    }
+                }
+
+                if (selectedIndex >= 0 && selectedIndex < favoriteLocations.Count)
+                {
+                    // Bỏ mặc định cho tất cả địa điểm
+                    foreach (var location in favoriteLocations)
+                    {
+                        location.IsDefault = false;
+                    }
+
+                    // Đặt mặc định cho địa điểm được chọn
+                    favoriteLocations[selectedIndex].IsDefault = true;
+                    defaultLocation = $"{favoriteLocations[selectedIndex].Name}, {favoriteLocations[selectedIndex].Country}";
+                    
+                    SaveLocations();
+
+                    MessageBox.Show($"Đã đặt '{favoriteLocations[selectedIndex].Name}' làm địa điểm mặc định!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    
+                    // Cập nhật ComboBox nếu có
+                    UpdateFavoritesComboBox();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi đặt địa điểm mặc định: {ex.Message}");
+                MessageBox.Show("Có lỗi xảy ra khi đặt địa điểm mặc định!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         /// <summary>
         /// Cập nhật ComboBox địa điểm yêu thích (nếu có)
@@ -4483,6 +4336,13 @@ namespace THOITIET
                     comboBox.DataSource = null;
                     comboBox.DataSource = favoriteLocations.Select(l => $"{l.Name}, {l.Country}").ToList();
                     
+                    // Chọn địa điểm mặc định
+                    var defaultLoc = favoriteLocations.FirstOrDefault(l => l.IsDefault);
+                    if (defaultLoc != null)
+                    {
+                        var defaultText = $"{defaultLoc.Name}, {defaultLoc.Country}";
+                        comboBox.SelectedItem = defaultText;
+                    }
                 }
             }
             catch (Exception ex)
@@ -4491,7 +4351,32 @@ namespace THOITIET
             }
         }
 
-
+        /// <summary>
+        /// Load địa điểm mặc định khi khởi động ứng dụng
+        /// </summary>
+        private async Task LoadDefaultLocationOnStartup()
+        {
+            try
+            {
+                LoadLocations();
+                
+                if (!string.IsNullOrEmpty(defaultLocation))
+                {
+                    // Tìm địa điểm mặc định trong danh sách
+                    var defaultLoc = favoriteLocations.FirstOrDefault(l => l.IsDefault);
+                    if (defaultLoc != null)
+                    {
+                        // Tự động tìm kiếm thời tiết cho địa điểm mặc định
+                        await TimKiemDiaDiem(defaultLoc.Name);
+                        System.Diagnostics.Debug.WriteLine($"Đã load địa điểm mặc định: {defaultLoc.Name}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi load địa điểm mặc định: {ex.Message}");
+            }
+        }
 
         #endregion
 
@@ -4666,6 +4551,7 @@ namespace THOITIET
         public string Country { get; set; } = "";
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public bool IsDefault { get; set; } = false;
         public DateTime AddedDate { get; set; } = DateTime.Now;
     }
 }

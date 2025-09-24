@@ -39,6 +39,7 @@
             listBoxGoiY = new ListBox();
             listBoxDiaDiemDaLuu = new ListBox();
             nutXoaDiaDiem = new Button();
+            nutChonMacDinh = new Button();
             tabDieuKhien = new TabControl();
             tabChart = new TabPage();
             tabMap = new TabPage();
@@ -197,6 +198,15 @@
             nutXoaDiaDiem.UseVisualStyleBackColor = true;
             nutXoaDiaDiem.Click += nutXoaDiaDiem_Click;
             // 
+            // nutChonMacDinh
+            // 
+            nutChonMacDinh.Location = new Point(220, 80);
+            nutChonMacDinh.Name = "nutChonMacDinh";
+            nutChonMacDinh.Size = new Size(80, 30);
+            nutChonMacDinh.TabIndex = 2;
+            nutChonMacDinh.Text = "Mặc định";
+            nutChonMacDinh.UseVisualStyleBackColor = true;
+            // 
             // tabDieuKhien
             // 
             tabDieuKhien.Controls.Add(tabChart);
@@ -205,15 +215,15 @@
             tabDieuKhien.Location = new Point(735, 401);
             tabDieuKhien.Name = "tabDieuKhien";
             tabDieuKhien.SelectedIndex = 0;
-            tabDieuKhien.Size = new Size(593, 320);
+            tabDieuKhien.Size = new Size(596, 433);
             tabDieuKhien.TabIndex = 3;
             // 
             // tabChart
             // 
             tabChart.Location = new Point(4, 29);
             tabChart.Name = "tabChart";
-            tabChart.Padding = new Padding(8);
-            tabChart.Size = new Size(585, 287);
+            tabChart.Padding = new Padding(4);
+            tabChart.Size = new Size(800, 400);
             tabChart.TabIndex = 0;
             tabChart.Text = "Biểu đồ nhiệt độ";
             tabChart.UseVisualStyleBackColor = true;
@@ -222,8 +232,8 @@
             // 
             tabMap.Location = new Point(4, 29);
             tabMap.Name = "tabMap";
-            tabMap.Padding = new Padding(8);
-            tabMap.Size = new Size(519, 291);
+            tabMap.Padding = new Padding(4);
+            tabMap.Size = new Size(800, 400);
             tabMap.TabIndex = 1;
             tabMap.Text = "Bản đồ";
             tabMap.UseVisualStyleBackColor = true;
@@ -551,6 +561,7 @@
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;
         private System.Windows.Forms.Button nutLuuDiaDiem;
         private System.Windows.Forms.Button nutXoaDiaDiem;
+        private System.Windows.Forms.Button nutChonMacDinh;
         private TabControl tabDieuKhien;
         private TabPage tabChart;
         private TabPage tabMap;

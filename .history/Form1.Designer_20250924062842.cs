@@ -39,6 +39,7 @@
             listBoxGoiY = new ListBox();
             listBoxDiaDiemDaLuu = new ListBox();
             nutXoaDiaDiem = new Button();
+            nutChonMacDinh = new Button();
             tabDieuKhien = new TabControl();
             tabChart = new TabPage();
             tabMap = new TabPage();
@@ -197,33 +198,40 @@
             nutXoaDiaDiem.UseVisualStyleBackColor = true;
             nutXoaDiaDiem.Click += nutXoaDiaDiem_Click;
             // 
+            // nutChonMacDinh
+            // 
+            nutChonMacDinh.Location = new Point(220, 80);
+            nutChonMacDinh.Name = "nutChonMacDinh";
+            nutChonMacDinh.Size = new Size(80, 30);
+            nutChonMacDinh.TabIndex = 2;
+            nutChonMacDinh.Text = "Mặc định";
+            nutChonMacDinh.UseVisualStyleBackColor = true;
+            // 
             // tabDieuKhien
             // 
             tabDieuKhien.Controls.Add(tabChart);
             tabDieuKhien.Controls.Add(tabMap);
             tabDieuKhien.Dock = DockStyle.Fill;
-            tabDieuKhien.Location = new Point(735, 401);
             tabDieuKhien.Name = "tabDieuKhien";
             tabDieuKhien.SelectedIndex = 0;
-            tabDieuKhien.Size = new Size(593, 320);
             tabDieuKhien.TabIndex = 3;
             // 
             // tabChart
             // 
+            tabChart.Dock = DockStyle.Fill;
             tabChart.Location = new Point(4, 29);
             tabChart.Name = "tabChart";
-            tabChart.Padding = new Padding(8);
-            tabChart.Size = new Size(585, 287);
+            tabChart.Padding = new Padding(2);
             tabChart.TabIndex = 0;
             tabChart.Text = "Biểu đồ nhiệt độ";
             tabChart.UseVisualStyleBackColor = true;
             // 
             // tabMap
             // 
+            tabMap.Dock = DockStyle.Fill;
             tabMap.Location = new Point(4, 29);
             tabMap.Name = "tabMap";
-            tabMap.Padding = new Padding(8);
-            tabMap.Size = new Size(519, 291);
+            tabMap.Padding = new Padding(2);
             tabMap.TabIndex = 1;
             tabMap.Text = "Bản đồ";
             tabMap.UseVisualStyleBackColor = true;
@@ -298,8 +306,8 @@
             // 
             boCucChinh.BackColor = Color.Transparent;
             boCucChinh.ColumnCount = 2;
-            boCucChinh.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 55F));
-            boCucChinh.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45F));
+            boCucChinh.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
+            boCucChinh.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F));
             boCucChinh.Controls.Add(khuVucTrai_HienTai, 0, 0);
             boCucChinh.Controls.Add(khuVucPhai_5Ngay, 1, 0);
             boCucChinh.Controls.Add(khuVucDuoi_24Gio, 0, 1);
@@ -551,6 +559,7 @@
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;
         private System.Windows.Forms.Button nutLuuDiaDiem;
         private System.Windows.Forms.Button nutXoaDiaDiem;
+        private System.Windows.Forms.Button nutChonMacDinh;
         private TabControl tabDieuKhien;
         private TabPage tabChart;
         private TabPage tabMap;

@@ -39,6 +39,7 @@
             listBoxGoiY = new ListBox();
             listBoxDiaDiemDaLuu = new ListBox();
             nutXoaDiaDiem = new Button();
+            nutChonMacDinh = new Button();
             tabDieuKhien = new TabControl();
             tabChart = new TabPage();
             tabMap = new TabPage();
@@ -197,6 +198,15 @@
             nutXoaDiaDiem.UseVisualStyleBackColor = true;
             nutXoaDiaDiem.Click += nutXoaDiaDiem_Click;
             // 
+            // nutChonMacDinh
+            // 
+            nutChonMacDinh.Location = new Point(220, 80);
+            nutChonMacDinh.Name = "nutChonMacDinh";
+            nutChonMacDinh.Size = new Size(80, 30);
+            nutChonMacDinh.TabIndex = 2;
+            nutChonMacDinh.Text = "Mặc định";
+            nutChonMacDinh.UseVisualStyleBackColor = true;
+            // 
             // tabDieuKhien
             // 
             tabDieuKhien.Controls.Add(tabChart);
@@ -212,8 +222,8 @@
             // 
             tabChart.Location = new Point(4, 29);
             tabChart.Name = "tabChart";
-            tabChart.Padding = new Padding(8);
-            tabChart.Size = new Size(585, 287);
+            tabChart.Padding = new Padding(4);
+            tabChart.Size = new Size(800, 400);
             tabChart.TabIndex = 0;
             tabChart.Text = "Biểu đồ nhiệt độ";
             tabChart.UseVisualStyleBackColor = true;
@@ -551,6 +561,7 @@
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;
         private System.Windows.Forms.Button nutLuuDiaDiem;
         private System.Windows.Forms.Button nutXoaDiaDiem;
+        private System.Windows.Forms.Button nutChonMacDinh;
         private TabControl tabDieuKhien;
         private TabPage tabChart;
         private TabPage tabMap;

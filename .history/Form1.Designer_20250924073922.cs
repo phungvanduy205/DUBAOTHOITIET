@@ -39,6 +39,7 @@
             listBoxGoiY = new ListBox();
             listBoxDiaDiemDaLuu = new ListBox();
             nutXoaDiaDiem = new Button();
+            nutChonMacDinh = new Button();
             tabDieuKhien = new TabControl();
             tabChart = new TabPage();
             tabMap = new TabPage();
@@ -196,6 +197,15 @@
             nutXoaDiaDiem.Text = "Xóa";
             nutXoaDiaDiem.UseVisualStyleBackColor = true;
             nutXoaDiaDiem.Click += nutXoaDiaDiem_Click;
+            // 
+            // nutChonMacDinh
+            // 
+            nutChonMacDinh.Location = new Point(220, 80);
+            nutChonMacDinh.Name = "nutChonMacDinh";
+            nutChonMacDinh.Size = new Size(80, 30);
+            nutChonMacDinh.TabIndex = 2;
+            nutChonMacDinh.Text = "Mặc định";
+            nutChonMacDinh.UseVisualStyleBackColor = true;
             // 
             // tabDieuKhien
             // 
@@ -551,6 +561,7 @@
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;
         private System.Windows.Forms.Button nutLuuDiaDiem;
         private System.Windows.Forms.Button nutXoaDiaDiem;
+        private System.Windows.Forms.Button nutChonMacDinh;
         private TabControl tabDieuKhien;
         private TabPage tabChart;
         private TabPage tabMap;

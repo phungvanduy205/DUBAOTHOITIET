@@ -197,6 +197,16 @@
             nutXoaDiaDiem.UseVisualStyleBackColor = true;
             nutXoaDiaDiem.Click += nutXoaDiaDiem_Click;
             // 
+            // nutChonMacDinh
+            // 
+            nutChonMacDinh.Location = new Point(220, 80);
+            nutChonMacDinh.Name = "nutChonMacDinh";
+            nutChonMacDinh.Size = new Size(80, 30);
+            nutChonMacDinh.TabIndex = 2;
+            nutChonMacDinh.Text = "Mặc định";
+            nutChonMacDinh.UseVisualStyleBackColor = true;
+            nutChonMacDinh.Click += nutChonMacDinh_Click;
+            // 
             // tabDieuKhien
             // 
             tabDieuKhien.Controls.Add(tabChart);
@@ -551,6 +561,7 @@
         private System.Windows.Forms.ListBox listBoxDiaDiemDaLuu;
         private System.Windows.Forms.Button nutLuuDiaDiem;
         private System.Windows.Forms.Button nutXoaDiaDiem;
+        private System.Windows.Forms.Button nutChonMacDinh;
         private TabControl tabDieuKhien;
         private TabPage tabChart;
         private TabPage tabMap;
