@@ -46,6 +46,7 @@ namespace THOITIET
         private readonly DichVuThoiTiet dichVu = new DichVuThoiTiet();
 
         // Bộ nhớ tạm dữ liệu để xuất CSV
+        private DataTable? bangLichSuBoNho;
 
         // Các fields mới cho tính năng nâng cao
         private PictureBox? backgroundPictureBox;
@@ -65,6 +66,8 @@ namespace THOITIET
         
         // Lưu địa điểm
         private List<string> savedLocationNames = new List<string>();
+        private bool isDarkMode = true;
+        private Button? btnDarkMode;
         private int currentLocationIndex = 0;
         private string locationsFilePath = "saved_locations.json";
 
@@ -128,7 +131,30 @@ namespace THOITIET
             // Xóa gợi ý tìm kiếm
             System.Diagnostics.Debug.WriteLine("=== FORM1 CONSTRUCTOR END ===");
 
-            // Đã bỏ Dark Mode
+            // Nút Dark Mode
+            try
+            {
+                btnDarkMode = new Button
+                {
+                    Text = "🌓",
+                    Width = 36,
+                    Height = 28,
+                    FlatStyle = FlatStyle.Flat,
+                    BackColor = Color.FromArgb(60, 60, 60),
+                    ForeColor = Color.White,
+                    Anchor = AnchorStyles.Top | AnchorStyles.Right
+                };
+                btnDarkMode.FlatAppearance.BorderSize = 0;
+                btnDarkMode.Location = new Point(this.ClientSize.Width - btnDarkMode.Width - 8, 6);
+                btnDarkMode.Click += (s2, e2) => { isDarkMode = !isDarkMode; ApplyTheme(); };
+                this.Controls.Add(btnDarkMode);
+                this.Resize += (s3, e3) =>
+                {
+                    if (btnDarkMode != null)
+                        btnDarkMode.Location = new Point(this.ClientSize.Width - btnDarkMode.Width - 8, 6);
+                };
+            }
+            catch { }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -865,7 +891,8 @@ namespace THOITIET
                         BangNhieuNgay.Controls.Clear();
                 }
 
-                // Bỏ theme tùy chọn
+                // Áp dụng theme sau khi vẽ xong
+                ApplyTheme();
             }
             catch (Exception ex)
             {
@@ -1082,6 +1109,8 @@ namespace THOITIET
                 tabChart.BackColor = Color.FromArgb(30, 50, 70, 90); // Nền xanh dương mờ
 
                 // DataGridView - trong suốt mờ mờ
+                BangLichSu.BackgroundColor = Color.FromArgb(40, 255, 255, 255);
+                BangLichSu.ForeColor = Color.Black;
 
                 // Thêm nút đóng form (vì đã bỏ border)
                 TaoNutDongForm();
@@ -2363,6 +2392,102 @@ namespace THOITIET
             };
         }
 
+        /// <summary>
+        /// Hiển thị dữ liệu lịch sử (DataGridView) và lưu DataTable để xuất
+        /// </summary>
+        private void HienThiBangLichSu(List<LichSuNgayItem> duLieu, string kyHieu)
+        {
+            System.Diagnostics.Debug.WriteLine($"Hiển thị lịch sử: {duLieu?.Count ?? 0} items");
+
+            var dt = new DataTable();
+            dt.Columns.Add("Ngày");
+            dt.Columns.Add("Nhiệt độ TB (" + kyHieu + ")");
+            dt.Columns.Add("Cao (" + kyHieu + ")");
+            dt.Columns.Add("Thấp (" + kyHieu + ")");
+            dt.Columns.Add("Độ ẩm (%)");
+            dt.Columns.Add("Trạng thái");
+
+            if (duLieu != null && duLieu.Count > 0)
+            {
+                foreach (var r in duLieu.OrderByDescending(x => x.Ngay))
+                {
+                    dt.Rows.Add(
+                        r.Ngay.ToString("dd/MM/yyyy"),
+                        Math.Round(r.NhietDoTrungBinh),
+                        Math.Round(r.NhietDoCao),
+                        Math.Round(r.NhietDoThap),
+                        r.DoAmTrungBinh,
+                        r.TrangThaiMoTa
+                    );
+                }
+                System.Diagnostics.Debug.WriteLine($"Đã thêm {dt.Rows.Count} dòng vào DataTable");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Không có dữ liệu lịch sử để hiển thị");
+            }
+
+            bangLichSuBoNho = dt;
+            BangLichSu.DataSource = dt;
+            System.Diagnostics.Debug.WriteLine($"DataGridView có {BangLichSu.Rows.Count} dòng");
+        }
+
+        /// <summary>
+        /// Xuất lịch sử ra CSV
+        /// </summary>
+        private void NutXuatLichSu_Click(object? sender, EventArgs e)
+        {
+            if (bangLichSuBoNho == null || bangLichSuBoNho.Rows.Count == 0)
+            {
+                MessageBox.Show("Chưa có dữ liệu để xuất.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using var dlg = new SaveFileDialog
+            {
+                Filter = "CSV (*.csv)|*.csv",
+                FileName = "lich_su_thoi_tiet.csv"
+            };
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    var csv = ChuyenDataTableSangCsv(bangLichSuBoNho);
+                    File.WriteAllText(dlg.FileName, csv, Encoding.UTF8);
+                    MessageBox.Show("Xuất CSV thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi ghi file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Chuyển DataTable sang chuỗi CSV (UTF-8)
+        /// </summary>
+        private static string ChuyenDataTableSangCsv(DataTable dt)
+        {
+            var sb = new StringBuilder();
+            var tenCot = dt.Columns.Cast<DataColumn>().Select(c => BaoCSV(c.ColumnName));
+            sb.AppendLine(string.Join(",", tenCot));
+            foreach (DataRow row in dt.Rows)
+            {
+                var o = row.ItemArray.Select(v => BaoCSV(v?.ToString() ?? string.Empty));
+                sb.AppendLine(string.Join(",", o));
+            }
+            return sb.ToString();
+
+            static string BaoCSV(string input)
+            {
+                if (input.Contains("\"") || input.Contains(",") || input.Contains("\n"))
+                {
+                    return "\"" + input.Replace("\"", "\"\"") + "\"";
+                }
+                return input;
+            }
+        }
 
         /// <summary>
         /// Chọn icon PNG theo mã thời tiết OpenWeather
@@ -3512,15 +3637,6 @@ namespace THOITIET
                 panel.Controls.Add(lblDesc);
                 panel.Controls.Add(lblTemp);
                 panel.Controls.Add(lblRainWind);
-
-                // Giữ màu chữ trắng như trước
-                foreach (Control c in panel.Controls)
-                {
-                    if (c is Label lbl)
-                    {
-                        lbl.ForeColor = Color.White;
-                    }
-                }
 
                 // Thêm click event cho tất cả control con để đảm bảo click được truyền lên panel cha
                 // Sử dụng Tag để lưu reference đến panel cha

@@ -320,6 +320,68 @@ namespace THOITIET
             }
         }
 
+        /// <summary>
+        /// Lấy lịch sử 30 ngày gần nhất (tài khoản miễn phí thường chỉ 5 ngày gần đây).
+        /// </summary>
+        public async Task<List<LichSuNgayItem>> LayLichSu30Ngay(double lat, double lon, string donVi = "metric")
+        {
+            if (string.IsNullOrWhiteSpace(API_KEY)) throw new InvalidOperationException("Vui lòng điền API_KEY OpenWeather.");
+
+            var kq = new List<LichSuNgayItem>();
+            var soNgayToiDa = 5;
+            for (int i = 1; i <= soNgayToiDa; i++)
+            {
+                var ngay = DateTimeOffset.UtcNow.Date.AddDays(-i);
+                var unix = new DateTimeOffset(ngay).ToUnixTimeSeconds();
+
+                var url = $"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={lat.ToString(CultureInfo.InvariantCulture)}&lon={lon.ToString(CultureInfo.InvariantCulture)}&dt={unix}&units={donVi}&appid={API_KEY}";
+                try
+                {
+                    var json = await http.GetStringAsync(url);
+                    var o = JObject.Parse(json);
+                    var hours = o["data"] as JArray ?? o["hourly"] as JArray ?? new JArray();
+
+                    if (hours.Count == 0) continue;
+
+                    var nhiets = new List<double>();
+                    var doAms = new List<int>();
+                    var mas = new List<int>();
+                    var moTas = new List<string>();
+
+                    foreach (var h in hours)
+                    {
+                        var t = (double?)h["temp"] ?? 0;
+                        nhiets.Add(t);
+                        var humid = (int?)h["humidity"] ?? 0;
+                        doAms.Add(humid);
+                        var ma = (int?)(h["weather"]?.FirstOrDefault()? ["id"]) ?? 800;
+                        mas.Add(ma);
+                        var mt = (string?)(h["weather"]?.FirstOrDefault()? ["description"]) ?? "";
+                        moTas.Add(mt);
+                    }
+
+                    if (nhiets.Count > 0)
+                    {
+                        kq.Add(new LichSuNgayItem
+                        {
+                            Ngay = ngay.ToLocalTime(),
+                            NhietDoTrungBinh = nhiets.Average(),
+                            NhietDoCao = nhiets.Max(),
+                            NhietDoThap = nhiets.Min(),
+                            DoAmTrungBinh = (int)Math.Round(doAms.Average()),
+                            MaThoiTietPhoBien = mas.GroupBy(m => m).OrderByDescending(g => g.Count()).First().Key,
+                            TrangThaiMoTa = moTas.GroupBy(m => m).OrderByDescending(g => g.Count()).First().Key
+                        });
+                    }
+                }
+                catch
+                {
+                    // Bỏ qua ngày không lấy được
+                }
+            }
+
+            return kq.OrderBy(x => x.Ngay).ToList();
+        }
     }
 
     #region Kiểu dữ liệu sử dụng trong Form
@@ -364,6 +426,16 @@ namespace THOITIET
         public string IconCode { get; set; } = "";
     }
 
+    public class LichSuNgayItem
+    {
+        public DateTime Ngay { get; set; }
+        public double NhietDoTrungBinh { get; set; }
+        public double NhietDoCao { get; set; }
+        public double NhietDoThap { get; set; }
+        public int DoAmTrungBinh { get; set; }
+        public int MaThoiTietPhoBien { get; set; }
+        public string TrangThaiMoTa { get; set; } = "";
+    }
 
     #endregion
 }

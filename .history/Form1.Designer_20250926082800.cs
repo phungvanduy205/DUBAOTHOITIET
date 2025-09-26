@@ -496,6 +496,7 @@
             thanhTrenCung.ResumeLayout(false);
             thanhTrenCung.PerformLayout();
             tabDieuKhien.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)BangLichSu).EndInit();
             khuVucDuoi_24Gio.ResumeLayout(false);
             khung24Gio.ResumeLayout(false);
             boCucChinh.ResumeLayout(false);
@@ -523,6 +524,8 @@
         private TabControl tabDieuKhien;
         private TabPage tabChart;
         private TabPage tabMap;
+         private Button NutXuatLichSu;
+         private DataGridView BangLichSu;
          private Panel khuVucDuoi_24Gio;
          private GroupBox khung24Gio;
          private FlowLayoutPanel BangTheoGio;

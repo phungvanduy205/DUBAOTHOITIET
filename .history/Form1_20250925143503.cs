@@ -46,6 +46,7 @@ namespace THOITIET
         private readonly DichVuThoiTiet dichVu = new DichVuThoiTiet();
 
         // Bộ nhớ tạm dữ liệu để xuất CSV
+        private DataTable? bangLichSuBoNho;
 
         // Các fields mới cho tính năng nâng cao
         private PictureBox? backgroundPictureBox;
@@ -127,8 +128,6 @@ namespace THOITIET
 
             // Xóa gợi ý tìm kiếm
             System.Diagnostics.Debug.WriteLine("=== FORM1 CONSTRUCTOR END ===");
-
-            // Đã bỏ Dark Mode
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -865,7 +864,7 @@ namespace THOITIET
                         BangNhieuNgay.Controls.Clear();
                 }
 
-                // Bỏ theme tùy chọn
+                // Hiển thị gợi ý theo thời tiết
             }
             catch (Exception ex)
             {
@@ -884,38 +883,9 @@ namespace THOITIET
         {
             try
             {
-                // Chuẩn hóa tên để so sánh không phân biệt dấu/hoa thường
-                string NormalizeName(string s)
+                // Kiểm tra xem địa điểm đã tồn tại chưa
+                if (savedLocations.Any(loc => loc.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    if (string.IsNullOrWhiteSpace(s)) return string.Empty;
-                    var formD = s.Normalize(NormalizationForm.FormD);
-                    var sb = new StringBuilder(formD.Length);
-                    foreach (var ch in formD)
-                    {
-                        var uc = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(ch);
-                        if (uc != System.Globalization.UnicodeCategory.NonSpacingMark)
-                        {
-                            sb.Append(ch);
-                        }
-                    }
-                    return sb.ToString().Normalize(NormalizationForm.FormC).Trim().ToLowerInvariant();
-                }
-
-                bool CoordinatesEqual(double aLat, double aLon, double bLat, double bLon)
-                {
-                    const double epsilon = 0.2; // ~20km để gom city/province gần nhau
-                    return Math.Abs(aLat - bLat) <= epsilon && Math.Abs(aLon - bLon) <= epsilon;
-                }
-
-                var normalizedNewName = NormalizeName(name);
-
-                // Kiểm tra trùng theo tên đã chuẩn hóa hoặc theo toạ độ gần nhau
-                if (savedLocations.Any(loc =>
-                        NormalizeName(loc.Name) == normalizedNewName ||
-                        CoordinatesEqual(loc.Lat, loc.Lon, lat, lon)))
-                {
-                    MessageBox.Show("Địa điểm này đã có trong danh sách!", "Thông báo",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return; // Đã tồn tại, không lưu trùng
                 }
 
@@ -1082,6 +1052,8 @@ namespace THOITIET
                 tabChart.BackColor = Color.FromArgb(30, 50, 70, 90); // Nền xanh dương mờ
 
                 // DataGridView - trong suốt mờ mờ
+                BangLichSu.BackgroundColor = Color.FromArgb(40, 255, 255, 255);
+                BangLichSu.ForeColor = Color.Black;
 
                 // Thêm nút đóng form (vì đã bỏ border)
                 TaoNutDongForm();
@@ -1150,31 +1122,6 @@ namespace THOITIET
                     if (data?.locations != null)
                     {
                         savedLocationNames = data.locations.ToObject<List<string>>();
-                        // Khử trùng lặp theo tên đã chuẩn hóa và làm sạch hiển thị
-                        string Clean(string s) => s.Replace(" ,", ",").Trim().Trim(',').Trim();
-                        string Normalize(string s)
-                        {
-                            if (string.IsNullOrWhiteSpace(s)) return string.Empty;
-                            var formD = Clean(s).Normalize(NormalizationForm.FormD);
-                            var sb = new System.Text.StringBuilder(formD.Length);
-                            foreach (var ch in formD)
-                            {
-                                var uc = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(ch);
-                                if (uc != System.Globalization.UnicodeCategory.NonSpacingMark)
-                                {
-                                    sb.Append(ch);
-                                }
-                            }
-                            return sb.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
-                        }
-
-                        var dedup = new Dictionary<string, string>();
-                        foreach (var n in savedLocationNames)
-                        {
-                            var key = Normalize(n);
-                            if (!dedup.ContainsKey(key)) dedup[key] = Clean(n);
-                        }
-                        savedLocationNames = dedup.Values.ToList();
                     }
                 }
                 
@@ -1312,42 +1259,19 @@ namespace THOITIET
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            // Chuẩn hóa tên để so sánh không phân biệt hoa/thường, dấu, dấu phẩy thừa
-            string NormalizeName(string s)
-            {
-                if (string.IsNullOrWhiteSpace(s)) return string.Empty;
-                s = s.Replace(" ,", ",").Trim().Trim(',').Trim();
-                var formD = s.Normalize(NormalizationForm.FormD);
-                var sb = new System.Text.StringBuilder(formD.Length);
-                foreach (var ch in formD)
-                {
-                    var uc = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(ch);
-                    if (uc != System.Globalization.UnicodeCategory.NonSpacingMark)
-                    {
-                        sb.Append(ch);
-                    }
-                }
-                return sb.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
-            }
-
-            var normalizedNew = NormalizeName(currentLocation);
-
-            // Kiểm tra trùng theo tên đã chuẩn hóa (ví dụ Thai Nguyen vs Thái Nguyên, hoặc có/không có "City, Province")
-            if (savedLocationNames.Any(n => NormalizeName(n) == normalizedNew))
+            
+            if (savedLocationNames.Contains(currentLocation))
             {
                 MessageBox.Show("Địa điểm này đã được lưu rồi!", "Thông báo", 
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             
-            // Lưu tên đã loại bỏ dấu phẩy thừa ở cuối nếu có
-            var cleanedName = currentLocation.Replace(" ,", ",").Trim().Trim(',').Trim();
-            savedLocationNames.Add(cleanedName);
+            savedLocationNames.Add(currentLocation);
             SaveLocationList();
             CapNhatDanhSachDiaDiem();
             
-            MessageBox.Show($"Đã lưu địa điểm: {cleanedName}", "Thành công", 
+            MessageBox.Show($"Đã lưu địa điểm: {currentLocation}", "Thành công", 
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -2363,6 +2287,102 @@ namespace THOITIET
             };
         }
 
+        /// <summary>
+        /// Hiển thị dữ liệu lịch sử (DataGridView) và lưu DataTable để xuất
+        /// </summary>
+        private void HienThiBangLichSu(List<LichSuNgayItem> duLieu, string kyHieu)
+        {
+            System.Diagnostics.Debug.WriteLine($"Hiển thị lịch sử: {duLieu?.Count ?? 0} items");
+
+            var dt = new DataTable();
+            dt.Columns.Add("Ngày");
+            dt.Columns.Add("Nhiệt độ TB (" + kyHieu + ")");
+            dt.Columns.Add("Cao (" + kyHieu + ")");
+            dt.Columns.Add("Thấp (" + kyHieu + ")");
+            dt.Columns.Add("Độ ẩm (%)");
+            dt.Columns.Add("Trạng thái");
+
+            if (duLieu != null && duLieu.Count > 0)
+            {
+                foreach (var r in duLieu.OrderByDescending(x => x.Ngay))
+                {
+                    dt.Rows.Add(
+                        r.Ngay.ToString("dd/MM/yyyy"),
+                        Math.Round(r.NhietDoTrungBinh),
+                        Math.Round(r.NhietDoCao),
+                        Math.Round(r.NhietDoThap),
+                        r.DoAmTrungBinh,
+                        r.TrangThaiMoTa
+                    );
+                }
+                System.Diagnostics.Debug.WriteLine($"Đã thêm {dt.Rows.Count} dòng vào DataTable");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Không có dữ liệu lịch sử để hiển thị");
+            }
+
+            bangLichSuBoNho = dt;
+            BangLichSu.DataSource = dt;
+            System.Diagnostics.Debug.WriteLine($"DataGridView có {BangLichSu.Rows.Count} dòng");
+        }
+
+        /// <summary>
+        /// Xuất lịch sử ra CSV
+        /// </summary>
+        private void NutXuatLichSu_Click(object? sender, EventArgs e)
+        {
+            if (bangLichSuBoNho == null || bangLichSuBoNho.Rows.Count == 0)
+            {
+                MessageBox.Show("Chưa có dữ liệu để xuất.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using var dlg = new SaveFileDialog
+            {
+                Filter = "CSV (*.csv)|*.csv",
+                FileName = "lich_su_thoi_tiet.csv"
+            };
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    var csv = ChuyenDataTableSangCsv(bangLichSuBoNho);
+                    File.WriteAllText(dlg.FileName, csv, Encoding.UTF8);
+                    MessageBox.Show("Xuất CSV thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi ghi file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Chuyển DataTable sang chuỗi CSV (UTF-8)
+        /// </summary>
+        private static string ChuyenDataTableSangCsv(DataTable dt)
+        {
+            var sb = new StringBuilder();
+            var tenCot = dt.Columns.Cast<DataColumn>().Select(c => BaoCSV(c.ColumnName));
+            sb.AppendLine(string.Join(",", tenCot));
+            foreach (DataRow row in dt.Rows)
+            {
+                var o = row.ItemArray.Select(v => BaoCSV(v?.ToString() ?? string.Empty));
+                sb.AppendLine(string.Join(",", o));
+            }
+            return sb.ToString();
+
+            static string BaoCSV(string input)
+            {
+                if (input.Contains("\"") || input.Contains(",") || input.Contains("\n"))
+                {
+                    return "\"" + input.Replace("\"", "\"\"") + "\"";
+                }
+                return input;
+            }
+        }
 
         /// <summary>
         /// Chọn icon PNG theo mã thời tiết OpenWeather
@@ -2879,7 +2899,6 @@ namespace THOITIET
                 MessageBox.Show($"Bắt đầu tìm kiếm địa điểm: {diaDiem}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Lấy tọa độ từ tên địa điểm
-                // Ưu tiên tìm ở Việt Nam, không phân biệt hoa/thường, có dấu hay không
                 var geocodingData = await WeatherApiService.GetCoordinatesAsync(diaDiem);
                 MessageBox.Show($"Kết quả geocoding: {(geocodingData?.Results?.Length > 0 ? "Thành công" : "Thất bại")}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 if (geocodingData?.Results?.Length > 0)
@@ -2977,11 +2996,25 @@ namespace THOITIET
                 var iconLabel = new Label
                 {
                     Text = icon,
-                    Font = new Font("Segoe UI Emoji", 24F),
+                    Font = new Font("Segoe UI Emoji", 20F),
                     ForeColor = Color.White,
                     BackColor = Color.Transparent,
                     AutoSize = true,
                     Location = new Point(10, 10)
+                };
+
+                // Label title - căn giữa và hiển thị đầy đủ
+                var titleLabel = new Label
+                {
+                    Text = title,
+                    Font = new Font("Segoe UI", 10F, FontStyle.Regular), // Giữ font size 10 như ban đầu
+                    ForeColor = Color.White,
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Location = new Point(5, 45), // Dịch chữ xuống từ 35 xuống 45 để tránh bị che bởi icon
+                    Size = new Size(panel.Width - 10, 18), // Giữ kích thước ban đầu
+                    AutoEllipsis = false, // Tắt AutoEllipsis để hiển thị đầy đủ
+                    AutoSize = false // Đảm bảo không tự động resize
                 };
 
                 // Label value - căn giữa
@@ -2991,43 +3024,14 @@ namespace THOITIET
                     Font = new Font("Segoe UI", 13F, FontStyle.Regular),
                     ForeColor = Color.White,
                     BackColor = Color.Transparent,
-                    TextAlign = ContentAlignment.MiddleLeft,
-                    Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top,
-                    Location = new Point(5, 50),
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Location = new Point(5, 60), // Dịch chữ xuống từ 50 xuống 60 để tránh chồng lên title
                     Size = new Size(panel.Width - 10, 25)
                 };
 
                 panel.Controls.Add(iconLabel);
-                // Chỉ hiển thị giá trị thông tin, bỏ tiêu đề
+                panel.Controls.Add(titleLabel);
                 panel.Controls.Add(valueLabel);
-
-                // Hàm nội bộ để căn giữa các thành phần theo chiều ngang và giữ khoảng cách dọc hợp lý
-                // Căn hàng số liệu ngang với icon và giữ giữa theo chiều ngang
-                void Reposition()
-                {
-                    // giữ icon cố định
-                    var valueHeight = valueLabel.Height;
-                    var targetY = iconLabel.Top + (iconLabel.Height - valueHeight) / 2;
-                    if (targetY < 8) targetY = 8;
-
-                    // Chừa khoảng cho icon bên trái để không che chữ
-                    int minIconWidth = 32; // tối thiểu để chừa đủ chỗ cho emoji/icon
-                    int iconRight = iconLabel.Left + Math.Max(iconLabel.Width, minIconWidth);
-                    int leftPadding = iconRight + 16; // chừa rộng hơn để chắc chắn không chạm icon
-                    if (leftPadding > panel.Width - 20) leftPadding = 10; // fallback nếu panel quá nhỏ
-                    int rightPadding = 10;
-                    int contentWidth = Math.Max(30, panel.Width - leftPadding - rightPadding);
-
-                    valueLabel.Location = new Point(leftPadding, targetY);
-                    valueLabel.Size = new Size(contentWidth, valueLabel.Height);
-                }
-
-                // Đảm bảo chữ nằm trên icon (tránh bị icon che)
-                valueLabel.BringToFront();
-                iconLabel.SendToBack();
-
-                Reposition();
-                panel.Resize += (s, e) => Reposition();
             }
             catch (Exception ex)
             {
@@ -3512,15 +3516,6 @@ namespace THOITIET
                 panel.Controls.Add(lblDesc);
                 panel.Controls.Add(lblTemp);
                 panel.Controls.Add(lblRainWind);
-
-                // Giữ màu chữ trắng như trước
-                foreach (Control c in panel.Controls)
-                {
-                    if (c is Label lbl)
-                    {
-                        lbl.ForeColor = Color.White;
-                    }
-                }
 
                 // Thêm click event cho tất cả control con để đảm bảo click được truyền lên panel cha
                 // Sử dụng Tag để lưu reference đến panel cha
@@ -4848,7 +4843,6 @@ namespace THOITIET
                 { "scattered clouds", "Mây thưa" },
                 { "broken clouds", "Mây rải rác" },
                 { "overcast clouds", "Nhiều mây" },
-                { "heavy intensity rain", "Mưa to" },
                 { "light rain", "Mưa nhẹ" },
                 { "moderate rain", "Mưa vừa" },
                 { "heavy rain", "Mưa to" },

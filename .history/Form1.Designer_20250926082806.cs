@@ -523,6 +523,8 @@
         private TabControl tabDieuKhien;
         private TabPage tabChart;
         private TabPage tabMap;
+         private Button NutXuatLichSu;
+         private DataGridView BangLichSu;
          private Panel khuVucDuoi_24Gio;
          private GroupBox khung24Gio;
          private FlowLayoutPanel BangTheoGio;

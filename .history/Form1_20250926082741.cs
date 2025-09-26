@@ -1082,6 +1082,8 @@ namespace THOITIET
                 tabChart.BackColor = Color.FromArgb(30, 50, 70, 90); // Nền xanh dương mờ
 
                 // DataGridView - trong suốt mờ mờ
+                BangLichSu.BackgroundColor = Color.FromArgb(40, 255, 255, 255);
+                BangLichSu.ForeColor = Color.Black;
 
                 // Thêm nút đóng form (vì đã bỏ border)
                 TaoNutDongForm();

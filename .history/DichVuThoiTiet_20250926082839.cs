@@ -364,6 +364,16 @@ namespace THOITIET
         public string IconCode { get; set; } = "";
     }
 
+    public class LichSuNgayItem
+    {
+        public DateTime Ngay { get; set; }
+        public double NhietDoTrungBinh { get; set; }
+        public double NhietDoCao { get; set; }
+        public double NhietDoThap { get; set; }
+        public int DoAmTrungBinh { get; set; }
+        public int MaThoiTietPhoBien { get; set; }
+        public string TrangThaiMoTa { get; set; } = "";
+    }
 
     #endregion
 }

@@ -225,6 +225,33 @@
             tabMap.Text = "Bản đồ";
             tabMap.UseVisualStyleBackColor = true;
             // 
+            // NutXuatLichSu
+            // 
+            NutXuatLichSu.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            NutXuatLichSu.Location = new Point(387, 212);
+            NutXuatLichSu.Name = "NutXuatLichSu";
+            NutXuatLichSu.Size = new Size(124, 29);
+            NutXuatLichSu.TabIndex = 1;
+            NutXuatLichSu.Text = "Xuất lịch sử";
+            NutXuatLichSu.UseVisualStyleBackColor = true;
+            NutXuatLichSu.Click += NutXuatLichSu_Click;
+            // 
+            // BangLichSu
+            // 
+            BangLichSu.AllowUserToAddRows = false;
+            BangLichSu.AllowUserToDeleteRows = false;
+            BangLichSu.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            BangLichSu.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            BangLichSu.BackgroundColor = SystemColors.ButtonHighlight;
+            BangLichSu.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            BangLichSu.GridColor = SystemColors.ControlLightLight;
+            BangLichSu.Location = new Point(11, 11);
+            BangLichSu.Name = "BangLichSu";
+            BangLichSu.ReadOnly = true;
+            BangLichSu.RowHeadersVisible = false;
+            BangLichSu.RowHeadersWidth = 51;
+            BangLichSu.Size = new Size(500, 195);
+            BangLichSu.TabIndex = 0;
             // 
             // khuVucDuoi_24Gio
             // 
@@ -496,6 +523,7 @@
             thanhTrenCung.ResumeLayout(false);
             thanhTrenCung.PerformLayout();
             tabDieuKhien.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)BangLichSu).EndInit();
             khuVucDuoi_24Gio.ResumeLayout(false);
             khung24Gio.ResumeLayout(false);
             boCucChinh.ResumeLayout(false);
@@ -523,6 +551,8 @@
         private TabControl tabDieuKhien;
         private TabPage tabChart;
         private TabPage tabMap;
+         private Button NutXuatLichSu;
+         private DataGridView BangLichSu;
          private Panel khuVucDuoi_24Gio;
          private GroupBox khung24Gio;
          private FlowLayoutPanel BangTheoGio;
