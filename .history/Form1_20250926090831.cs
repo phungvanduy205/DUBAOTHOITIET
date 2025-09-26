@@ -647,7 +647,7 @@ namespace THOITIET
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi khi tải dữ liệu ban đầu: {ex.Message}");
+                MessageBox.Show($"Lỗi khi tải dữ liệu ban đầu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -793,7 +793,7 @@ namespace THOITIET
             {
                 if (weather?.Current == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("Dữ liệu thời tiết không hợp lệ!");
+                    MessageBox.Show("Dữ liệu thời tiết không hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -869,7 +869,7 @@ namespace THOITIET
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi hiển thị thông tin: {ex.Message}");
+                MessageBox.Show($"Lỗi hiển thị thông tin: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1002,7 +1002,7 @@ namespace THOITIET
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi khi chọn địa điểm: {ex.Message}");
+                MessageBox.Show($"Lỗi khi chọn địa điểm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1627,7 +1627,7 @@ namespace THOITIET
                 // Để trống khi có lỗi
                 BangTheoGio.Controls.Clear();
                 BangNhieuNgay.Controls.Clear();
-                System.Diagnostics.Debug.WriteLine("Có lỗi khi cập nhật thời tiết: " + ex.Message);
+                MessageBox.Show("Có lỗi khi cập nhật thời tiết: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -2900,22 +2900,22 @@ namespace THOITIET
                         }
                         else
                         {
-                            System.Diagnostics.Debug.WriteLine("API trả về null. Vui lòng kiểm tra API key hoặc kết nối mạng.");
+                            MessageBox.Show("API trả về null. Vui lòng kiểm tra API key hoặc kết nối mạng.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                     }
                     catch (Exception apiEx)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Lỗi khi gọi API thời tiết: {apiEx.Message}");
+                        MessageBox.Show($"Lỗi khi gọi API thời tiết: {apiEx.Message}", "Lỗi API", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("Không tìm thấy địa điểm. Vui lòng thử lại với tên địa điểm khác.");
+                    MessageBox.Show("Không tìm thấy địa điểm. Vui lòng thử lại với tên địa điểm khác.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi khi tìm kiếm: {ex.Message}");
+                MessageBox.Show($"Lỗi khi tìm kiếm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -4400,7 +4400,7 @@ namespace THOITIET
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Lỗi cập nhật UI: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Lỗi cập nhật đơn vị: {ex.Message}");
+                MessageBox.Show($"Lỗi cập nhật đơn vị: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

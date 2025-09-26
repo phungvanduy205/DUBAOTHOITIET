@@ -793,7 +793,7 @@ namespace THOITIET
             {
                 if (weather?.Current == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("Dữ liệu thời tiết không hợp lệ!");
+                    MessageBox.Show("Dữ liệu thời tiết không hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -1002,7 +1002,7 @@ namespace THOITIET
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi khi chọn địa điểm: {ex.Message}");
+                MessageBox.Show($"Lỗi khi chọn địa điểm: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -4400,7 +4400,7 @@ namespace THOITIET
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Lỗi cập nhật UI: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Lỗi cập nhật đơn vị: {ex.Message}");
+                MessageBox.Show($"Lỗi cập nhật đơn vị: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
