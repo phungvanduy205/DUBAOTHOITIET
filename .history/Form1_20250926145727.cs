@@ -1152,9 +1152,8 @@ namespace THOITIET
             {
                 if (File.Exists(locationsFilePath))
                 {
-                    // Deprecated: bỏ đọc file danh sách tên; danh sách lấy từ DB trong NapDiaDiemDaLuu
-                    var json = string.Empty;
-                    var data = (dynamic?)null;
+                    var json = File.ReadAllText(locationsFilePath);
+                    var data = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
                     if (data?.locations != null)
                     {
                         savedLocationNames = data.locations.ToObject<List<string>>();

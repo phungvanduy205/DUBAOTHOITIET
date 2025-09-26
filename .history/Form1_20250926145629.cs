@@ -37,7 +37,7 @@ namespace THOITIET
 
         // Danh sách địa điểm đã lưu (giữ để binding UI, nguồn lấy từ DB)
         private List<SavedLocation> savedLocations = new List<SavedLocation>();
-        // private const string SAVED_LOCATIONS_FILE = "saved_locations.txt"; // Deprecated: dùng DB
+        private const string SAVED_LOCATIONS_FILE = "saved_locations.txt";
 
         // Kinh độ, vĩ độ hiện tại của địa điểm đã tìm
         private double? viDoHienTai;
@@ -937,16 +937,9 @@ namespace THOITIET
                 var newLocation = new SavedLocation(name, lat, lon);
                 savedLocations.Add(newLocation);
 
-                // Lưu vào DB
-                if (locationRepo != null)
-                {
-                    var normalized = NormalizeName(name);
-                    const double eps = 0.2;
-                    if (!locationRepo.ExistsByNameOrNear(normalized, lat, lon, eps))
-                    {
-                        locationRepo.Add(name, normalized, lat, lon);
-                    }
-                }
+                // Lưu vào file
+                var lines = savedLocations.Select(loc => $"{loc.Name}|{loc.Lat}|{loc.Lon}");
+                File.WriteAllLines(SAVED_LOCATIONS_FILE, lines);
 
                 // Cập nhật ListBox
                 NapDiaDiemDaLuu();
@@ -1152,9 +1145,8 @@ namespace THOITIET
             {
                 if (File.Exists(locationsFilePath))
                 {
-                    // Deprecated: bỏ đọc file danh sách tên; danh sách lấy từ DB trong NapDiaDiemDaLuu
-                    var json = string.Empty;
-                    var data = (dynamic?)null;
+                    var json = File.ReadAllText(locationsFilePath);
+                    var data = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(json);
                     if (data?.locations != null)
                     {
                         savedLocationNames = data.locations.ToObject<List<string>>();
@@ -1388,17 +1380,17 @@ namespace THOITIET
         /// </summary>
         private void nutChuyenDoiDiaDiem_Click(object sender, EventArgs e)
         {
-            if ((locationRepo?.GetAll()?.Any() ?? false) == false) 
+            if (savedLocationNames.Count == 0) 
             {
                 MessageBox.Show("Chưa có địa điểm nào được lưu. Hãy lưu địa điểm trước!", "Thông báo", 
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             
-            // Tạo context menu để chọn địa điểm (lấy từ DB)
+            // Tạo context menu để chọn địa điểm
             var contextMenu = new ContextMenuStrip();
-            var locationsForMenu = (locationRepo != null ? locationRepo.GetAll().Select(l => l.Name).ToList() : savedLocationNames.ToList());
-            foreach (var location in locationsForMenu)
+            
+            foreach (var location in savedLocationNames)
             {
                 // Tạo panel con chứa tên địa điểm và 2 nút
                 var innerPanel = new Panel
@@ -1428,6 +1420,7 @@ namespace THOITIET
                     {
                         oTimKiemDiaDiem.Text = location;
                         currentLocation = location;
+                        currentLocationIndex = savedLocationNames.IndexOf(location);
                         
                         // Cập nhật tên địa điểm hiển thị
                         CapNhatDiaDiem(location);
@@ -1457,15 +1450,8 @@ namespace THOITIET
                         
                         if (result == DialogResult.Yes)
                         {
-                            try
-                            {
-                                locationRepo?.DeleteByName(location);
-                            }
-                            catch (Exception ex)
-                            {
-                                System.Diagnostics.Debug.WriteLine($"Xóa DB lỗi: {ex.Message}");
-                            }
-                            NapDiaDiemDaLuu();
+                            savedLocationNames.Remove(location);
+                            CapNhatDanhSachDiaDiem();
                             MessageBox.Show($"Đã xóa địa điểm: {location}", "Thành công", 
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                             contextMenu.Close();
