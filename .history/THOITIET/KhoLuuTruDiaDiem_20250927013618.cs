@@ -1,0 +1,125 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace THOITIET
+{
+    public class KhoLuuTruDiaDiem
+    {
+        private readonly string _connectionString;
+
+        public KhoLuuTruDiaDiem(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        public void TaoCoSoDuLieu()
+        {
+            // Đảm bảo cơ sở dữ liệu tồn tại
+            var builder = new SqlConnectionStringBuilder(_connectionString);
+            var databaseName = builder.InitialCatalog;
+            var masterCs = new SqlConnectionStringBuilder(_connectionString) { InitialCatalog = "master" }.ConnectionString;
+
+            using (var conn = new SqlConnection(masterCs))
+            using (var cmd = conn.CreateCommand())
+            {
+                conn.Open();
+                cmd.CommandText = $"IF DB_ID(@db) IS NULL CREATE DATABASE [{databaseName}]";
+                cmd.Parameters.AddWithValue("@db", databaseName);
+                cmd.ExecuteNonQuery();
+            }
+
+            // Đảm bảo bảng dữ liệu tồn tại
+            using (var conn = new SqlConnection(_connectionString))
+            using (var cmd = conn.CreateCommand())
+            {
+                conn.Open();
+                cmd.CommandText = @"
+IF OBJECT_ID('dbo.DiaDiemDaLuu', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.DiaDiemDaLuu (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        Ten NVARCHAR(256) NOT NULL,
+        TenChuanHoa NVARCHAR(256) NOT NULL,
+        ViDo FLOAT NOT NULL,
+        KinhDo FLOAT NOT NULL,
+        NgayTao DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+    );
+    CREATE INDEX IX_DiaDiemDaLuu_TenChuanHoa ON dbo.DiaDiemDaLuu(TenChuanHoa);
+END";
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public IEnumerable<SavedLocation> LayTatCa()
+        {
+            var result = new List<SavedLocation>();
+            using (var conn = new SqlConnection(_connectionString))
+            using (var cmd = conn.CreateCommand())
+            {
+                conn.Open();
+                cmd.CommandText = "SELECT Ten, ViDo, KinhDo FROM dbo.DiaDiemDaLuu ORDER BY NgayTao DESC";
+                using (var rd = cmd.ExecuteReader())
+                {
+                    while (rd.Read())
+                    {
+                        var name = rd.GetString(0);
+                        var lat = rd.GetDouble(1);
+                        var lon = rd.GetDouble(2);
+                        result.Add(new SavedLocation(name, lat, lon));
+                    }
+                }
+            }
+            return result;
+        }
+
+        public bool TonTaiTheoTenHoGan(string normalizedName, double lat, double lon, double epsilon)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            using (var cmd = conn.CreateCommand())
+            {
+                conn.Open();
+                cmd.CommandText = @"
+SELECT TOP 1 1
+FROM dbo.DiaDiemDaLuu
+WHERE TenChuanHoa = @n
+   OR (ABS(ViDo - @lat) <= @eps AND ABS(KinhDo - @lon) <= @eps)";
+                cmd.Parameters.AddWithValue("@n", normalizedName);
+                cmd.Parameters.AddWithValue("@lat", lat);
+                cmd.Parameters.AddWithValue("@lon", lon);
+                cmd.Parameters.AddWithValue("@eps", epsilon);
+                var val = cmd.ExecuteScalar();
+                return val != null && val != DBNull.Value;
+            }
+        }
+
+        public void Them(string name, string normalizedName, double lat, double lon)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            using (var cmd = conn.CreateCommand())
+            {
+                conn.Open();
+                cmd.CommandText = "INSERT INTO dbo.DiaDiemDaLuu(Ten, TenChuanHoa, ViDo, KinhDo) VALUES(@name, @n, @lat, @lon)";
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@n", normalizedName);
+                cmd.Parameters.AddWithValue("@lat", lat);
+                cmd.Parameters.AddWithValue("@lon", lon);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void XoaTheoTen(string name)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            using (var cmd = conn.CreateCommand())
+            {
+                conn.Open();
+                cmd.CommandText = "DELETE FROM dbo.DiaDiemDaLuu WHERE Ten = @name";
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+}
+
