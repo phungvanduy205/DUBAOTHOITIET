@@ -1,0 +1,281 @@
+========================================
+HƯỚNG DẪN SỬ DỤNG CÁC SERVICE CLASS
+========================================
+
+Sau khi refactor, dự án đã được chia thành 6 service class chính:
+
+========================================
+1️⃣ LOCATIONSERVICE.CS
+========================================
+
+📌 Chức năng: Quản lý địa điểm, tìm kiếm, lưu trữ
+📌 Vị trí: LocationService.cs
+
+🔧 Các method chính:
+- SaveLocation(string name, double lat, double lon) - Lưu địa điểm
+- SaveLocationSilent(string name, double lat, double lon) - Lưu địa điểm tự động
+- SearchLocationAsync(string searchTerm) - Tìm kiếm địa điểm
+- GetCurrentLocationAsync() - Lấy vị trí hiện tại
+- GetSavedLocations() - Lấy danh sách địa điểm đã lưu
+- SaveLocationsToFile() - Lưu vào file txt
+- LoadLocationsFromFile() - Đọc từ file txt
+
+💡 Cách sử dụng:
+```csharp
+var locationService = new LocationService();
+
+// Tìm kiếm địa điểm
+var result = await locationService.SearchLocationAsync("Hà Nội");
+if (result.success)
+{
+    // Sử dụng result.location, result.lat, result.lon, result.weatherData
+}
+
+// Lưu địa điểm
+locationService.SaveLocation("Hà Nội", 21.0285, 105.8542);
+
+// Lấy danh sách địa điểm đã lưu
+var savedLocations = locationService.GetSavedLocations();
+```
+
+========================================
+2️⃣ WEATHERDISPLAYSERVICE.CS
+========================================
+
+📌 Chức năng: Hiển thị thông tin thời tiết
+📌 Vị trí: WeatherDisplayService.cs
+
+🔧 Các method chính:
+- DisplayWeatherInfo() - Hiển thị thông tin thời tiết chính
+- UpdateWeatherDisplay() - Cập nhật hiển thị khi đổi đơn vị
+- UpdateDetailPanelFromApi() - Cập nhật panel chi tiết
+- CreateDetailPanelContent() - Tạo nội dung panel chi tiết
+
+💡 Cách sử dụng:
+```csharp
+var weatherDisplayService = new WeatherDisplayService();
+
+// Hiển thị thông tin thời tiết
+weatherDisplayService.DisplayWeatherInfo(
+    "Hà Nội", 
+    weatherData, 
+    true, // isCelsius
+    lblLocation, 
+    lblTime, 
+    lblTemperature, 
+    lblStatus, 
+    picWeatherIcon, 
+    detailPanel
+);
+
+// Cập nhật panel chi tiết
+weatherDisplayService.UpdateDetailPanelFromApi(
+    currentWeather, 
+    "°C", 
+    detailPanel
+);
+```
+
+========================================
+3️⃣ FORECASTSERVICE.CS
+========================================
+
+📌 Chức năng: Hiển thị dự báo thời tiết 24h & 5 ngày
+📌 Vị trí: ForecastService.cs
+
+🔧 Các method chính:
+- Display24HourForecast() - Hiển thị dự báo 24 giờ
+- Display5DayForecast() - Hiển thị dự báo 5 ngày
+- CreateHourCard() - Tạo card giờ
+- CreateDayCard() - Tạo card ngày
+
+💡 Cách sử dụng:
+```csharp
+var forecastService = new ForecastService();
+
+// Hiển thị dự báo 24 giờ
+forecastService.Display24HourForecast(
+    hourlyList, 
+    "°C", 
+    panel24Hours
+);
+
+// Hiển thị dự báo 5 ngày
+forecastService.Display5DayForecast(
+    dailyList, 
+    "°C", 
+    panel5Days
+);
+```
+
+========================================
+4️⃣ CHARTSERVICE.CS
+========================================
+
+📌 Chức năng: Quản lý biểu đồ thời tiết
+📌 Vị trí: ChartService.cs
+
+🔧 Các method chính:
+- ShowTemperatureChart24h() - Biểu đồ nhiệt độ 24h
+- ShowTemperatureChart5Days() - Biểu đồ nhiệt độ 5 ngày
+- ShowChart() - Hiển thị biểu đồ
+- HideChart() - Ẩn biểu đồ
+- ConfigureChart() - Cấu hình biểu đồ
+
+💡 Cách sử dụng:
+```csharp
+var chartService = new ChartService();
+
+// Hiển thị biểu đồ 24h
+chartService.ShowTemperatureChart24h(
+    hourlyList, 
+    temperatureChart
+);
+
+// Hiển thị biểu đồ 5 ngày
+chartService.ShowTemperatureChart5Days(
+    dailyList, 
+    temperatureChart
+);
+
+// Cấu hình biểu đồ
+chartService.ConfigureChart(temperatureChart);
+```
+
+========================================
+5️⃣ MAPSERVICE.CS
+========================================
+
+📌 Chức năng: Quản lý bản đồ thời tiết
+📌 Vị trí: MapService.cs
+
+🔧 Các method chính:
+- ShowMap() - Hiển thị bản đồ
+- HideMap() - Ẩn bản đồ
+- LoadWindyMap() - Tải bản đồ Windy
+- UpdateMarkerByLocation() - Cập nhật marker
+- ConfigureMap() - Cấu hình bản đồ
+
+💡 Cách sử dụng:
+```csharp
+var mapService = new MapService();
+
+// Hiển thị bản đồ
+mapService.ShowMap(windyView);
+
+// Tải bản đồ Windy
+mapService.LoadWindyMap(21.0285, 105.8542, windyView);
+
+// Cập nhật marker
+mapService.UpdateMarkerByLocation(21.0285, 105.8542, windyView);
+
+// Cấu hình bản đồ
+mapService.ConfigureMap(windyView);
+```
+
+========================================
+6️⃣ BACKGROUNDSERVICE.CS
+========================================
+
+📌 Chức năng: Quản lý background thay đổi theo thời tiết
+📌 Vị trí: BackgroundService.cs
+
+🔧 Các method chính:
+- SetBackground() - Thiết lập nền theo thời tiết
+- ForceSetBackgroundInLoad() - Force set nền trong load
+- SetDefaultBackgroundOnStartup() - Set nền mặc định
+- UpdateTextColorByTime() - Cập nhật màu chữ theo thời gian
+- UpdateDetailPanelTextColor() - Cập nhật màu chữ panel
+
+💡 Cách sử dụng:
+```csharp
+var backgroundService = new BackgroundService();
+
+// Thiết lập nền theo thời tiết
+backgroundService.SetBackground("Clear", 800, mainPanel);
+
+// Force set nền trong load
+backgroundService.ForceSetBackgroundInLoad(mainPanel);
+
+// Cập nhật màu chữ theo thời gian
+backgroundService.UpdateTextColorByTime(this);
+
+// Cập nhật màu chữ panel chi tiết
+backgroundService.UpdateDetailPanelTextColor(detailPanel);
+```
+
+========================================
+CÁCH TÍCH HỢP VÀO FORM1.CS
+========================================
+
+1. Khai báo các service trong Form1:
+```csharp
+private readonly LocationService locationService = new LocationService();
+private readonly WeatherDisplayService weatherDisplayService = new WeatherDisplayService();
+private readonly ForecastService forecastService = new ForecastService();
+private readonly ChartService chartService = new ChartService();
+private readonly MapService mapService = new MapService();
+private readonly BackgroundService backgroundService = new BackgroundService();
+```
+
+2. Sử dụng trong các event handler:
+```csharp
+private async void btnTimKiem_Click(object sender, EventArgs e)
+{
+    var result = await locationService.SearchLocationAsync(txtSearch.Text);
+    if (result.success)
+    {
+        weatherDisplayService.DisplayWeatherInfo(
+            result.location, 
+            result.weatherData, 
+            isCelsius,
+            lblLocation, lblTime, lblTemperature, lblStatus, 
+            picWeatherIcon, detailPanel
+        );
+    }
+}
+
+private void btnLuu_Click(object sender, EventArgs e)
+{
+    locationService.SaveLocation(locationName, lat, lon);
+}
+
+private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+{
+    if (tabControl.SelectedTab == tabChart)
+    {
+        chartService.ShowChart(temperatureChart);
+    }
+    else if (tabControl.SelectedTab == tabMap)
+    {
+        mapService.ShowMap(windyView);
+    }
+}
+```
+
+========================================
+LỢI ÍCH CỦA VIỆC REFACTOR
+========================================
+
+✅ **Tách biệt trách nhiệm**: Mỗi service có trách nhiệm riêng biệt
+✅ **Dễ bảo trì**: Code được tổ chức rõ ràng, dễ tìm và sửa
+✅ **Tái sử dụng**: Các service có thể được sử dụng ở nhiều nơi
+✅ **Dễ test**: Có thể test từng service riêng biệt
+✅ **Mở rộng**: Dễ dàng thêm tính năng mới vào từng service
+✅ **Giảm độ phức tạp**: Form1.cs giờ chỉ còn xử lý UI events
+
+========================================
+GHI CHÚ QUAN TRỌNG
+========================================
+
+⚠️ **Data Types**: Các service sử dụng data types từ DichVuThoiTiet.cs:
+- ThoiTietHienTai (thay vì OneCallResponse)
+- List<DuBaoTheoGioItem> (thay vì HourlyWeather[])
+- List<DuBaoNgayItem> (thay vì DailyWeather[])
+- ViTri (thay vì GeocodingResult)
+
+⚠️ **File Storage**: LocationService sử dụng file txt thay vì database
+
+⚠️ **API Integration**: Tất cả service đều sử dụng DichVuThoiTiet class
+
+========================================
