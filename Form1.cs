@@ -31,13 +31,11 @@ namespace THOITIET
         private double currentLat = 0;
         private double currentLon = 0;
 
-        // Kết nối DB lưu địa điểm
-        private readonly string sqlConnectionString = "Server=(localdb)\\MSSQLLocalDB;Database=THOITIET;Trusted_Connection=True;TrustServerCertificate=True";
-        private LocationRepository? locationRepo;
+        // File lưu địa điểm
+        private readonly string locationsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "saved_locations.txt");
 
-        // Danh sách địa điểm đã lưu (giữ để binding UI, nguồn lấy từ DB)
+        // Danh sách địa điểm đã lưu (giữ để binding UI, nguồn lấy từ file txt)
         private List<SavedLocation> savedLocations = new List<SavedLocation>();
-        // private const string SAVED_LOCATIONS_FILE = "saved_locations.txt"; // Deprecated: dùng DB
 
         // Timer tự động cập nhật mỗi 1 giờ
         private readonly System.Windows.Forms.Timer dongHoCapNhat = new System.Windows.Forms.Timer();
@@ -64,9 +62,7 @@ namespace THOITIET
         // Các biến btnC, btnF, donViSegment đã được xóa vì giờ dùng UnitToggle trong Designer
         
         // Lưu địa điểm
-        private List<string> savedLocationNames = new List<string>();
         private int currentLocationIndex = 0;
-        private string locationsFilePath = "saved_locations.json";
 
         public Form1()
         {
@@ -95,15 +91,17 @@ namespace THOITIET
                 ApplyRoundedCorners(khung5Ngay, 15);
             };
             
-            // Khởi tạo DB lưu địa điểm
+            // Khởi tạo file lưu địa điểm nếu chưa có
             try
             {
-                locationRepo = new LocationRepository(sqlConnectionString);
-                locationRepo.EnsureCreated();
+                if (!File.Exists(locationsFilePath))
+                {
+                    File.WriteAllText(locationsFilePath, "");
+                }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"EnsureCreated DB error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Create locations file error: {ex.Message}");
             }
 
             NapDiaDiemDaLuu();
@@ -159,8 +157,6 @@ namespace THOITIET
             System.Diagnostics.Debug.WriteLine("Calling ForceSetBackgroundInLoad...");
             ForceSetBackgroundInLoad();
             
-            // Đảm bảo "📍 Vị trí hiện tại" luôn có trong danh sách
-            EnsureCurrentLocationInList();
             
             System.Diagnostics.Debug.WriteLine("=== FORM1_LOAD END ===");
         }
@@ -932,16 +928,8 @@ namespace THOITIET
                 var newLocation = new SavedLocation(name, lat, lon);
                 savedLocations.Add(newLocation);
 
-                // Lưu vào DB
-                if (locationRepo != null)
-                {
-                    var normalized = NormalizeName(name);
-                    const double eps = 0.2;
-                    if (!locationRepo.ExistsByNameOrNear(normalized, lat, lon, eps))
-                    {
-                        locationRepo.Add(name, normalized, lat, lon);
-                    }
-                }
+                // Lưu vào file txt
+                SaveLocationsToFile();
 
                 // Cập nhật ListBox
                 NapDiaDiemDaLuu();
@@ -953,7 +941,7 @@ namespace THOITIET
         }
 
         /// <summary>
-        /// Nạp danh sách địa điểm đã lưu từ DB
+        /// Nạp danh sách địa điểm đã lưu từ file txt
         /// </summary>
         private void NapDiaDiemDaLuu()
         {
@@ -962,18 +950,69 @@ namespace THOITIET
                 listBoxDiaDiemDaLuu.Items.Clear();
                 savedLocations.Clear();
                 
-                if (locationRepo != null)
+                LoadLocationsFromFile();
+                
+                foreach (var loc in savedLocations)
                 {
-                    foreach (var loc in locationRepo.GetAll())
-                    {
-                        savedLocations.Add(loc);
-                        listBoxDiaDiemDaLuu.Items.Add(loc.Name);
-                    }
+                    listBoxDiaDiemDaLuu.Items.Add(loc.Name);
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Lỗi nạp địa điểm đã lưu: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Lưu danh sách địa điểm vào file txt
+        /// </summary>
+        private void SaveLocationsToFile()
+        {
+            try
+            {
+                var lines = new List<string>();
+                foreach (var loc in savedLocations)
+                {
+                    lines.Add($"{loc.Name}|{loc.Lat}|{loc.Lon}");
+                }
+                File.WriteAllLines(locationsFilePath, lines);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi lưu file địa điểm: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Đọc danh sách địa điểm từ file txt
+        /// </summary>
+        private void LoadLocationsFromFile()
+        {
+            try
+            {
+                if (!File.Exists(locationsFilePath))
+                    return;
+
+                var lines = File.ReadAllLines(locationsFilePath);
+                savedLocations.Clear();
+
+                foreach (var line in lines)
+                {
+                    if (string.IsNullOrWhiteSpace(line))
+                        continue;
+
+                    var parts = line.Split('|');
+                    if (parts.Length == 3 && 
+                        double.TryParse(parts[1], out double lat) && 
+                        double.TryParse(parts[2], out double lon))
+                    {
+                        savedLocations.Add(new SavedLocation(parts[0], lat, lon));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi đọc file địa điểm: {ex.Message}");
             }
         }
 
@@ -1130,66 +1169,6 @@ namespace THOITIET
             }
         }
 
-        /// <summary>
-        /// Load danh sách địa điểm đã lưu
-        /// </summary>
-        private void LoadSavedLocations()
-        {
-            try
-            {
-                if (File.Exists(locationsFilePath))
-                {
-                    // Deprecated: bỏ đọc file danh sách tên; danh sách lấy từ DB trong NapDiaDiemDaLuu
-                    var json = string.Empty;
-                    var data = (dynamic?)null;
-                    if (data?.locations != null)
-                    {
-                        savedLocationNames = data.locations.ToObject<List<string>>();
-                        // Khử trùng lặp theo tên đã chuẩn hóa và làm sạch hiển thị
-                        string Clean(string s) => s.Replace(" ,", ",").Trim().Trim(',').Trim();
-                        string Normalize(string s)
-                        {
-                            if (string.IsNullOrWhiteSpace(s)) return string.Empty;
-                            var formD = Clean(s).Normalize(NormalizationForm.FormD);
-                            var sb = new System.Text.StringBuilder(formD.Length);
-                            foreach (var ch in formD)
-                            {
-                                var uc = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(ch);
-                                if (uc != System.Globalization.UnicodeCategory.NonSpacingMark)
-                                {
-                                    sb.Append(ch);
-                                }
-                            }
-                            return sb.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
-                        }
-
-                        var dedup = new Dictionary<string, string>();
-                        foreach (var n in savedLocationNames)
-                        {
-                            var key = Normalize(n);
-                            if (!dedup.ContainsKey(key)) dedup[key] = Clean(n);
-                        }
-                        savedLocationNames = dedup.Values.ToList();
-                    }
-                }
-                
-                // Nếu chưa có địa điểm nào, thêm một số địa điểm mẫu
-                if (savedLocationNames.Count == 0)
-                {
-                    savedLocationNames.Add("London");
-                    savedLocationNames.Add("New York");
-                    savedLocationNames.Add("Tokyo");
-                }
-                
-                
-                // Cập nhật danh sách trong ListBox
-                CapNhatDanhSachDiaDiem();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Lỗi load địa điểm: {ex.Message}");
-            }
-        }
 
         /// <summary>
         /// Load dữ liệu thời tiết theo vị trí hiện tại (IP)
@@ -1298,8 +1277,6 @@ namespace THOITIET
         {
             try
             {
-                if (locationRepo == null) return;
-                
                 // Chuẩn hóa tên để so sánh
                 string NormalizeName(string s)
                 {
@@ -1318,18 +1295,27 @@ namespace THOITIET
                     return sb.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
                 }
 
+                bool CoordinatesEqual(double aLat, double aLon, double bLat, double bLon)
+                {
+                    const double epsilon = 0.2; // ~20km để gom city/province gần nhau
+                    return Math.Abs(aLat - bLat) <= epsilon && Math.Abs(aLon - bLon) <= epsilon;
+                }
+
                 var cleanedName = locationName.Replace(" ,", ",").Trim().Trim(',').Trim();
                 var normalizedName = NormalizeName(cleanedName);
-                const double epsilon = 0.2; // ~20km
                 
                 // Nếu đã có địa điểm này thì bỏ qua (không thông báo)
-                if (locationRepo.ExistsByNameOrNear(normalizedName, lat, lon, epsilon))
+                if (savedLocations.Any(loc =>
+                        NormalizeName(loc.Name) == normalizedName ||
+                        CoordinatesEqual(loc.Lat, loc.Lon, lat, lon)))
                 {
                     return; // Bỏ qua im lặng
                 }
 
-                // Lưu vào DB
-                locationRepo.Add(cleanedName, normalizedName, lat, lon);
+                // Thêm vào danh sách và lưu vào file
+                var newLocation = new SavedLocation(cleanedName, lat, lon);
+                savedLocations.Add(newLocation);
+                SaveLocationsToFile();
                 
                 // Cập nhật danh sách
                 NapDiaDiemDaLuu();
@@ -1393,31 +1379,37 @@ namespace THOITIET
                 System.Diagnostics.Debug.WriteLine($"Geocode khi lưu lỗi: {ex.Message}");
             }
 
-            // Nếu vẫn chưa có toạ độ, tiếp tục lưu tên nhưng không lưu DB
-            if (locationRepo == null)
-            {
-                MessageBox.Show("Chưa khởi tạo được cơ sở dữ liệu.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            
+            // Kiểm tra trùng lặp và lưu vào file
             var normalizedNew = NormalizeName(cleanedNameFinal);
             const double epsilon = 0.2; // ~20km
+            
+            bool CoordinatesEqual(double aLat, double aLon, double bLat, double bLon)
+            {
+                return Math.Abs(aLat - bLat) <= epsilon && Math.Abs(aLon - bLon) <= epsilon;
+            }
+            
             try
             {
-                if (locationRepo.ExistsByNameOrNear(normalizedNew, lat, lon, epsilon))
+                // Kiểm tra trùng lặp
+                if (savedLocations.Any(loc =>
+                        NormalizeName(loc.Name) == normalizedNew ||
+                        CoordinatesEqual(loc.Lat, loc.Lon, lat, lon)))
                 {
                     MessageBox.Show("Địa điểm này đã được lưu rồi!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
-                locationRepo.Add(cleanedNameFinal, normalizedNew, lat, lon);
+                // Thêm vào danh sách và lưu vào file
+                var newLocation = new SavedLocation(cleanedNameFinal, lat, lon);
+                savedLocations.Add(newLocation);
+                SaveLocationsToFile();
                 NapDiaDiemDaLuu();
                 MessageBox.Show($"Đã lưu địa điểm: {cleanedNameFinal}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lưu DB lỗi: {ex.Message}");
-                MessageBox.Show("Không thể lưu địa điểm vào cơ sở dữ liệu.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Diagnostics.Debug.WriteLine($"Lưu file lỗi: {ex.Message}");
+                MessageBox.Show("Không thể lưu địa điểm vào file.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1426,16 +1418,16 @@ namespace THOITIET
         /// </summary>
         private void nutChuyenDoiDiaDiem_Click(object sender, EventArgs e)
         {
-            if ((locationRepo?.GetAll()?.Any() ?? false) == false) 
+            if (savedLocations.Count == 0) 
             {
                 MessageBox.Show("Chưa có địa điểm nào được lưu. Hãy lưu địa điểm trước!", "Thông báo", 
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             
-            // Tạo context menu để chọn địa điểm (lấy từ DB)
+            // Tạo context menu để chọn địa điểm (lấy từ file)
             var contextMenu = new ContextMenuStrip();
-            var locationsForMenu = (locationRepo != null ? locationRepo.GetAll().Select(l => l.Name).ToList() : savedLocationNames.ToList());
+            var locationsForMenu = savedLocations.Select(l => l.Name).ToList();
             foreach (var location in locationsForMenu)
             {
                 // Tạo panel con chứa tên địa điểm và 2 nút
@@ -1497,11 +1489,13 @@ namespace THOITIET
                         {
                             try
                             {
-                                locationRepo?.DeleteByName(location);
+                                // Xóa khỏi danh sách và file
+                                savedLocations.RemoveAll(loc => loc.Name == location);
+                                SaveLocationsToFile();
                             }
                             catch (Exception ex)
                             {
-                                System.Diagnostics.Debug.WriteLine($"Xóa DB lỗi: {ex.Message}");
+                                System.Diagnostics.Debug.WriteLine($"Xóa file lỗi: {ex.Message}");
                             }
                             NapDiaDiemDaLuu();
                             MessageBox.Show($"Đã xóa địa điểm: {location}", "Thành công", 
@@ -1547,8 +1541,10 @@ namespace THOITIET
 
             if (result == DialogResult.Yes)
             {
-                savedLocationNames.Remove(selectedLocation);
-                CapNhatDanhSachDiaDiem();
+                // Xóa khỏi danh sách và file
+                savedLocations.RemoveAll(loc => loc.Name == selectedLocation);
+                SaveLocationsToFile();
+                NapDiaDiemDaLuu();
                 MessageBox.Show($"Đã xóa địa điểm: {selectedLocation}", "Thành công", 
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1558,45 +1554,13 @@ namespace THOITIET
         /// Chọn địa điểm mặc định
         /// </summary>
 
-        /// <summary>
-        /// Đảm bảo "📍 Vị trí hiện tại" luôn có trong danh sách
-        /// </summary>
-        private void EnsureCurrentLocationInList()
-        {
-            System.Diagnostics.Debug.WriteLine("=== EnsureCurrentLocationInList START ===");
-            System.Diagnostics.Debug.WriteLine($"ListBox items count: {listBoxDiaDiemDaLuu.Items.Count}");
-            
-            if (!listBoxDiaDiemDaLuu.Items.Contains("📍 Vị trí hiện tại"))
-            {
-                listBoxDiaDiemDaLuu.Items.Insert(0, "📍 Vị trí hiện tại");
-                System.Diagnostics.Debug.WriteLine("✅ Added '📍 Vị trí hiện tại' to list");
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("⏭️ '📍 Vị trí hiện tại' already exists in list");
-            }
-            
-            System.Diagnostics.Debug.WriteLine($"ListBox items count after: {listBoxDiaDiemDaLuu.Items.Count}");
-            System.Diagnostics.Debug.WriteLine("=== EnsureCurrentLocationInList END ===");
-        }
 
-        /// <summary>
-        /// Cập nhật danh sách địa điểm trong ListBox
-        /// </summary>
-        private void CapNhatDanhSachDiaDiem()
-        {
-            listBoxDiaDiemDaLuu.Items.Clear();
-            
-            foreach (var location in savedLocationNames)
-            {
-                listBoxDiaDiemDaLuu.Items.Add(location);
-            }
-        }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-            // Không cần lưu file khi đóng ứng dụng (đã dùng DB)
+            // Lưu danh sách địa điểm vào file khi đóng ứng dụng
+            SaveLocationsToFile();
         }
 
         // Method TaoSegmentDonViChiF() đã được xóa vì giờ dùng UnitToggle trong Designer
