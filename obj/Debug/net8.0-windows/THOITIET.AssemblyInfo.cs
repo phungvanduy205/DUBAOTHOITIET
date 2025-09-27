@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("THOITIET")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5a896bea1ae3e0cee49441bfaadeaa82e6bc4491")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7c9939655148924c354dbacf72c10aa4704dc9e8")]
 [assembly: System.Reflection.AssemblyProductAttribute("THOITIET")]
 [assembly: System.Reflection.AssemblyTitleAttribute("THOITIET")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

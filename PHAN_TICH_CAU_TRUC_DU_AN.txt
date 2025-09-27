@@ -1,0 +1,204 @@
+========================================
+PHÂN TÍCH CẤU TRÚC DỰ ÁN THỜI TIẾT
+========================================
+
+1. API VÀ XỬ LÝ DỮ LIỆU
+========================================
+
+1.1. DichVuThoiTiet.cs (Dòng 1-353)
+- TimDiaDiem(string tenXa) - Dòng 17-50: Tìm địa điểm qua Geoapify và OpenWeather
+- TimDiaDiemQuaGeoapify(string tenXa) - Dòng 52-80: Tìm địa điểm qua Geoapify API
+- TimDiaDiemQuaOpenWeather(string tenXa) - Dòng 82-110: Tìm địa điểm qua OpenWeather API
+- ChuanHoaKhongDau(string input) - Dòng 112-130: Chuẩn hóa chuỗi không dấu
+- LayThoiTietHienTai(double lat, double lon) - Dòng 132-160: Lấy thời tiết hiện tại
+- LayDuBao5Ngay(double lat, double lon) - Dòng 162-190: Lấy dự báo 5 ngày
+- LayDuBao24Gio(double lat, double lon) - Dòng 192-220: Lấy dự báo 24 giờ
+- LayThoiTietDayDu(double lat, double lon) - Dòng 222-250: Lấy thời tiết đầy đủ
+- LayViTriHienTai() - Dòng 252-280: Lấy vị trí hiện tại theo IP
+- LayToaDoTuTen(string tenDiaDiem) - Dòng 282-310: Lấy tọa độ từ tên địa điểm
+- LayThoiTietTuToaDo(double lat, double lon) - Dòng 312-340: Lấy thời tiết từ tọa độ
+
+1.2. WeatherApiClasses.cs (Dòng 1-475)
+- CauHinhApi class - Dòng 10-50: Cấu hình API keys
+- WeatherApiService class - Dòng 52-475: Dịch vụ gọi API chính
+  - GetCurrentLocationAsync() - Dòng 60-80: Lấy vị trí hiện tại
+  - GeocodeAsync(string location) - Dòng 82-120: Geocoding
+  - GetCoordinatesAsync(string location) - Dòng 122-160: Lấy tọa độ
+  - GetCurrentWeatherAsync(double lat, double lon) - Dòng 162-200: Thời tiết hiện tại
+  - GetWeatherDataAsync(double lat, double lon) - Dòng 202-240: Dữ liệu thời tiết đầy đủ
+  - GetForecastAsync(double lat, double lon) - Dòng 242-280: Dự báo thời tiết
+  - GetHourlyForecastAsync(double lat, double lon) - Dòng 282-320: Dự báo theo giờ
+
+1.3. Form1.cs - Các hàm API chính
+- LoadInitialWeatherData() - Dòng 449-472: Tải dữ liệu thời tiết ban đầu
+- LoadWeatherByIP() - Dòng 874-907: Load thời tiết theo IP
+- LoadWeatherForDefaultLocation(string locationName) - Dòng 909-938: Load thời tiết cho địa điểm mặc định
+- CapNhatThoiTiet() - Dòng 1239-1272: Cập nhật thời tiết
+- TimKiemDiaDiem(string diaDiem) - Dòng 2357-2396: Tìm kiếm địa điểm
+- HienThiThongTin(string name, OneCallResponse weather) - Dòng 577-650: Hiển thị thông tin thời tiết
+
+2. NHẬP ĐỊA ĐIỂM, TÌM KIẾM, LƯU ĐỊA ĐIỂM, ĐỔI ĐỊA ĐIỂM
+========================================
+
+2.1. Form1.cs - Quản lý địa điểm
+- LuuDiaDiem(string name, double lat, double lon) - Dòng 749-820: Lưu địa điểm vào file
+- LuuDiaDiemSilent(string locationName, double lat, double lon) - Dòng 1010-1070: Lưu địa điểm tự động
+- NapDiaDiemDaLuu() - Dòng 694-720: Nạp danh sách địa điểm đã lưu
+- SaveLocationsToFile() - Dòng 722-740: Lưu danh sách địa điểm vào file
+- LoadLocationsFromFile() - Dòng 742-780: Đọc danh sách địa điểm từ file
+- SuKienChonDiaDiemDaLuu() - Dòng 782-800: Sự kiện chọn địa điểm đã lưu
+- TimKiemGoiYDiaDiem(string searchText) - Dòng 2404-2410: Tìm kiếm gợi ý địa điểm
+
+2.2. Event Handlers - Form1.cs
+- NutTimKiem_Click() - Dòng 1219-1237: Sự kiện click nút tìm kiếm
+- oTimKiemDiaDiem_KeyDown() - Dòng 2279-2295: Sự kiện phím trong ô tìm kiếm
+- oTimKiemDiaDiem_KeyPress() - Dòng 2344-2356: Sự kiện nhấn phím trong ô tìm kiếm
+- listBoxDiaDiemDaLuu_SelectedIndexChanged() - Dòng 2334-2342: Sự kiện chọn địa điểm từ listbox
+
+2.3. Form1.Designer.cs - Giao diện tìm kiếm
+- oTimKiemDiaDiem (TextBox) - Dòng 200-220: Ô nhập địa điểm
+- NutTimKiem (Button) - Dòng 250-270: Nút tìm kiếm
+- listBoxDiaDiemDaLuu (ListBox) - Dòng 300-320: Danh sách địa điểm đã lưu
+
+3. NÚT CHUYỂN ĐỔI C/F (CELSIUS/FAHRENHEIT)
+========================================
+
+3.1. Controls/UnitToggle.cs (Dòng 1-118)
+- UnitToggle class - Dòng 7-118: Control chuyển đổi đơn vị
+- LaCelsius property - Dòng 13-23: Thuộc tính đơn vị Celsius
+- DonViThayDoi event - Dòng 24: Sự kiện thay đổi đơn vị
+- CapNhatGiaoDien() - Dòng 50-80: Cập nhật giao diện toggle
+- btnC_Click() - Dòng 82-90: Sự kiện click nút Celsius
+- btnF_Click() - Dòng 92-100: Sự kiện click nút Fahrenheit
+
+3.2. Form1.cs - Xử lý chuyển đổi đơn vị
+- UnitToggle_DonViThayDoi() - Dòng 1267-1273: Sự kiện thay đổi đơn vị từ UnitToggle
+- CapNhatThoiTiet() - Dòng 1239-1272: Cập nhật thời tiết khi đổi đơn vị
+
+4. BIỂU ĐỒ NHIỆT ĐỘ VÀ BẢN ĐỒ WINDY
+========================================
+
+4.1. Form1.cs - Biểu đồ nhiệt độ
+- LoadWindyMap(double lat, double lon) - Dòng 3440-3534: Load bản đồ Windy
+- TaoNutDongForm() - Dòng 1199-1237: Tạo nút đóng form
+- bieuDoNhietDo (Chart) - Dòng 38: Field biểu đồ nhiệt độ
+- banDoGio (WebView2) - Dòng 39: Field bản đồ gió
+
+4.2. Form1.Designer.cs - Giao diện biểu đồ
+- bieuDoNhietDo (Chart) - Dòng 400-450: Control biểu đồ nhiệt độ
+- banDoGio (WebView2) - Dòng 500-550: Control bản đồ Windy
+
+5. THỜI TIẾT 24H VÀ THỜI TIẾT 5 NGÀY
+========================================
+
+5.1. Form1.cs - Dự báo 24 giờ
+- LoadDuBao24h(HourlyWeather[] hourlyList, string kyHieu) - Dòng 2690-2832: Load dự báo 24 giờ
+- TaoPanelDuBaoGio(HourlyWeather hour, string kyHieu) - Dòng 2750-2800: Tạo panel dự báo theo giờ
+
+5.2. Form1.cs - Dự báo 5 ngày
+- LoadForecast5Days(DailyWeather[] dailyList, string kyHieu) - Dòng 2834-3438: Load dự báo 5 ngày
+- TaoPanelDuBaoNgay(DailyWeather daily, string kyHieu) - Dòng 2900-3000: Tạo panel dự báo theo ngày
+- TaoPanelDuBaoNgayMoi(DailyWeather daily, string kyHieu) - Dòng 3000-3100: Tạo panel dự báo ngày mới
+
+5.3. Form1.Designer.cs - Giao diện dự báo
+- BangTheoGio (Panel) - Dòng 600-650: Panel dự báo 24 giờ
+- BangNhieuNgay (Panel) - Dòng 700-750: Panel dự báo 5 ngày
+
+6. THÔNG TIN DỮ LIỆU CHÍNH, MÔ TẢ TRẠNG THÁI, GỢI Ý HOẠT ĐỘNG
+========================================
+
+6.1. Form1.cs - Hiển thị thông tin chính
+- HienThiThongTin(string name, OneCallResponse weather) - Dòng 577-650: Hiển thị thông tin thời tiết chính
+- CapNhatDiaDiem(string diaDiem) - Dòng 560-576: Cập nhật tên địa điểm
+- CapNhatThoiGian() - Dòng 489-559: Cập nhật thời gian hiện tại
+
+6.2. Form1.cs - Mô tả và gợi ý
+- GetVietnameseWeatherDescription(string englishDesc) - Dòng 3600-3700: Chuyển đổi mô tả sang tiếng Việt
+- GetWeatherSuggestions(string weatherDesc) - Dòng 3700-3800: Lấy gợi ý hoạt động theo thời tiết
+- GetVietnameseDayName(long unixTime) - Dòng 3880-3900: Lấy tên ngày tiếng Việt
+
+6.3. Form1.Designer.cs - Labels thông tin chính
+- nhanTenDiaDiem (Label) - Dòng 100-120: Label tên địa điểm
+- nhanNhietDoHienTai (Label) - Dòng 150-170: Label nhiệt độ hiện tại
+- nhanTrangThai (Label) - Dòng 200-220: Label trạng thái thời tiết
+- nhanThoiGian (Label) - Dòng 250-270: Label thời gian
+
+7. ICON VÀ BACKGROUND
+========================================
+
+7.1. Form1.cs - Icon thời tiết
+- GetWeatherIcon(string iconCode) - Dòng 3600-3650: Lấy icon thời tiết
+- GetWeatherIconFromEmoji(string iconPath) - Dòng 1444-1450: Tạo icon từ emoji
+- GetWeatherIconFromEmojiSmall(string iconPath) - Dòng 1449-1455: Tạo icon nhỏ từ emoji
+- GetWeatherIconFromEmoji(string iconPath, int size) - Dòng 1454-1500: Tạo icon với kích thước tùy chỉnh
+- HienThiIconVaNen(int ma, string iconCode) - Dòng 2007-2052: Hiển thị icon và nền
+- TaoFileIconThuc() - Dòng 2195-2250: Tạo file icon thực
+
+7.2. Form1.cs - Background
+- SetBackground(string weatherMain, int weatherId) - Dòng 245-376: Set background theo thời tiết
+- TaoNenToanCuc(Image? nenHinh) - Dòng 2053-2194: Tạo nền toàn cục
+- ForceSetBackgroundInLoad() - Dòng 111-195: Force set background khi load
+- SetDefaultBackgroundOnStartup() - Dòng 196-244: Set background mặc định khi khởi động
+
+7.3. Form1.Designer.cs - Controls icon và background
+- anhIconThoiTiet (PictureBox) - Dòng 300-320: PictureBox hiển thị icon thời tiết
+
+8. TẠO GIAO DIỆN
+========================================
+
+8.1. Form1.Designer.cs (Dòng 1-608) - Thiết kế giao diện chính
+- Form1 class - Dòng 20-608: Form chính
+- InitializeComponent() - Dòng 30-100: Khởi tạo các control
+- Control declarations - Dòng 100-200: Khai báo các control
+- Control initialization - Dòng 200-400: Khởi tạo các control
+- Control configuration - Dòng 400-608: Cấu hình các control
+
+8.2. Form1.cs - Tạo giao diện động
+- ApDungStyleGlassmorphism() - Dòng 793-900: Áp dụng style glassmorphism
+- TaoNoiDungPanelChiTiet() - Dòng 2404-2422: Tạo nội dung panel chi tiết
+- TaoPanelChiTiet(Panel panel, string icon, string title, string value) - Dòng 2424-2486: Tạo panel chi tiết
+- TaoNutDongForm() - Dòng 1199-1237: Tạo nút đóng form
+
+9. CÁC HÀM VÀ CHỨC NĂNG CHÍNH TRONG DỰ ÁN
+========================================
+
+9.1. Form1.cs - Hàm chính (Dòng 1-3886)
+- Constructor và Form Events (Dòng 49-296)
+- Background và UI Setup (Dòng 297-560)
+- UI Updates và Styling (Dòng 561-728)
+- Weather API và Data Loading (Dòng 729-1010)
+- Location Management (Dòng 1011-1200)
+- Event Handlers (Dòng 1201-1400)
+- Forecast và UI Components (Dòng 1401-3600)
+- Utility Methods (Dòng 3601-3886)
+
+9.2. DichVuThoiTiet.cs - Dịch vụ API (Dòng 1-353)
+- Tìm kiếm địa điểm
+- Lấy dữ liệu thời tiết
+- Xử lý API calls
+
+9.3. WeatherApiClasses.cs - Classes API (Dòng 1-475)
+- Cấu hình API
+- Dịch vụ gọi API
+- Data classes
+
+9.4. Controls/UnitToggle.cs - Control chuyển đổi (Dòng 1-118)
+- Toggle Celsius/Fahrenheit
+- Giao diện chuyển đổi
+
+9.5. Program.cs - Entry point (Dòng 1-12)
+- Main method
+- Khởi động ứng dụng
+
+9.6. Form1.Designer.cs - Thiết kế giao diện (Dòng 1-608)
+- Layout controls
+- Cấu hình giao diện
+
+========================================
+TỔNG KẾT
+========================================
+- Tổng số file: 6 files chính
+- Tổng số dòng code: ~5,000+ dòng
+- Chức năng chính: Ứng dụng thời tiết WinForms với API OpenWeather
+- Kiến trúc: Model-View-Controller pattern
+- Công nghệ: C# WinForms, .NET, OpenWeather API, WebView2
