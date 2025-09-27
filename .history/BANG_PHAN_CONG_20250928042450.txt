@@ -1,0 +1,59 @@
+========================================
+BẢNG PHÂN CÔNG CÔNG VIỆC DỰ ÁN THỜI TIẾT
+========================================
+
+| Thành viên | Nhiệm vụ | Nhiệm vụ chung |
+|------------|----------|----------------|
+| **1. Phùng Văn Duy** | • Gọi API và xử lý dữ liệu<br>• Xử lý bản đồ Windy<br>• Biểu đồ nhiệt độ | |
+| **2. Tòng Văn Ái** | • Nút chuyển đổi độ C/F<br>• Nhiệt độ 24h và nhiệt độ 5 ngày | Thiết kế giao diện, lên ý tưởng |
+| **3. Nguyễn Minh Dũng** | • Xử lý nhập địa điểm, lưu địa điểm, chuyển đổi địa điểm, tự động lưu vị trí theo IP khi khởi động app<br>• Dữ liệu chính (Địa điểm, nhiệt độ thời gian thực, mô tả thông tin), thông tin chi tiết (tốc độ gió, cảm giác như, áp suất khí quyển, tầm nhìn xa, độ ẩm)<br>• Background, icon thay đổi theo thời tiết | |
+
+========================================
+CHI TIẾT FILES PHỤ TRÁCH
+========================================
+
+**PHÙNG VĂN DUY:**
+• WeatherApiClasses.cs (499 dòng)
+• DichVuThoiTiet.cs (353 dòng)  
+• WindyMapForm.cs (210 dòng)
+• Phần API và biểu đồ trong Form1.cs
+
+**TÒNG VĂN ÁI:**
+• Controls/UnitToggle.cs (118 dòng)
+• Form1.Designer.cs (608 dòng)
+• Phần UI và forecast trong Form1.cs
+
+**NGUYỄN MINH DŨNG:**
+• Phần location management trong Form1.cs
+• Phần data display trong Form1.cs
+• Phần background & icon trong Form1.cs
+• Program.cs (12 dòng)
+
+========================================
+KPI ĐO LƯỜNG
+========================================
+
+**PHÙNG VĂN DUY:**
+• API response time < 2 giây
+• Bản đồ load < 3 giây
+• Biểu đồ render < 1 giây
+
+**TÒNG VĂN ÁI:**
+• Giao diện load < 1 giây
+• Responsive design 100%
+• User-friendly interface
+
+**NGUYỄN MINH DŨNG:**
+• Tìm kiếm địa điểm < 1 giây
+• Hiển thị dữ liệu < 0.5 giây
+• Smooth background transitions
+
+========================================
+LIÊN HỆ
+========================================
+
+• **Phùng Văn Duy**: [duy@example.com]
+• **Tòng Văn Ái**: [ai@example.com]  
+• **Nguyễn Minh Dũng**: [dung@example.com]
+
+========================================

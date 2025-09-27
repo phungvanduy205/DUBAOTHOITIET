@@ -26,7 +26,6 @@ D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\bin\Debug\net8.0-windows\Microsoft.Web.WebVie
 D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\bin\Debug\net8.0-windows\Microsoft.Web.WebView2.Core.xml
 D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\bin\Debug\net8.0-windows\Microsoft.Web.WebView2.WinForms.xml
 D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\bin\Debug\net8.0-windows\Microsoft.Web.WebView2.Wpf.xml
-D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\obj\Debug\net8.0-windows\THOITIET.Properties.Resources.resources
 D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\obj\Debug\net8.0-windows\THOITIET.GeneratedMSBuildEditorConfig.editorconfig
 D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\obj\Debug\net8.0-windows\THOITIET.AssemblyInfoInputs.cache
 D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\obj\Debug\net8.0-windows\THOITIET.AssemblyInfo.cs
