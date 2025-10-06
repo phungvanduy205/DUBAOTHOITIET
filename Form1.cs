@@ -895,7 +895,7 @@ namespace THOITIET
 
                 bool CoordinatesEqual(double aLat, double aLon, double bLat, double bLon)
                 {
-                    const double epsilon = 0.2; // ~20km để gom city/province gần nhau
+                    const double epsilon = 0.1; // ~10km để gom city/province gần nhau
                     return Math.Abs(aLat - bLat) <= epsilon && Math.Abs(aLon - bLon) <= epsilon;
                 }
                 var cleanedName = locationName.Replace(" ,", ",").Trim().Trim(',').Trim();
@@ -2435,63 +2435,6 @@ namespace THOITIET
         }
         #endregion
         #region Forecast và UI Components
-        /// Tạo panel cho dự báo một ngày
-        private Panel TaoPanelDuBaoNgay(string ngay, string nhietDo, string trangThai, string icon)
-        {
-            var panel = new Panel
-            {
-                BackColor = Color.FromArgb(120, 255, 255, 255),
-                Size = new Size(400, 60),
-                Margin = new Padding(5),
-                Padding = new Padding(10)
-            };
-            // Label ngày
-            var ngayLabel = new Label
-            {
-                Text = ngay,
-                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
-                ForeColor = Color.White,
-                BackColor = Color.Transparent,
-                Location = new Point(10, 5),
-                Size = new Size(100, 25)
-            };
-            // Label icon
-            var iconLabel = new Label
-            {
-                Text = icon,
-                Font = new Font("Segoe UI", 20F),
-                ForeColor = Color.White,
-                BackColor = Color.Transparent,
-                Location = new Point(120, 5),
-                Size = new Size(30, 30)
-            };
-            // Label nhiệt độ
-            var nhietDoLabel = new Label
-            {
-                Text = nhietDo,
-                Font = new Font("Segoe UI", 14F, FontStyle.Bold),
-                ForeColor = Color.White,
-                BackColor = Color.Transparent,
-                Location = new Point(160, 5),
-                Size = new Size(60, 25)
-            };
-            // Label trạng thái
-            var trangThaiLabel = new Label
-            {
-                Text = trangThai,
-                Font = new Font("Segoe UI", 10F),
-                ForeColor = Color.White,
-                BackColor = Color.Transparent,
-                Location = new Point(10, 35),
-                Size = new Size(200, 20)
-            };
-            panel.Controls.Add(ngayLabel);
-            panel.Controls.Add(iconLabel);
-            panel.Controls.Add(nhietDoLabel);
-            panel.Controls.Add(trangThaiLabel);
-
-            return panel;
-        }
         /// Tạo card dự báo giờ với layout chuẩn
         private Panel TaoCardGio(HourlyWeather hour, string kyHieu)
         {

@@ -1,2 +1,5 @@
 Thai Nguyen City, Thai Nguyen province, Vietnam|21.5941|105.8432
 Hà Nội|21.0294498|105.8544441
+Ho Chi Minh City, Vietnam|10.8231|106.63
+Hà Nội, Vietnam|21.262|105.801
+Bắc Ninh, Bac Ninh province, Vietnam|21.1858|106.0746

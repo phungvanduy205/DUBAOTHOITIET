@@ -36,3 +36,4 @@ D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\obj\Debug\net8.0-windows\refint\THOITIET.dll
 D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\obj\Debug\net8.0-windows\THOITIET.pdb
 D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\obj\Debug\net8.0-windows\THOITIET.genruntimeconfig.cache
 D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\obj\Debug\net8.0-windows\ref\THOITIET.dll
+D:\CNTT\NĂM 3 Kì I\.NET\THOITIET\obj\Debug\net8.0-windows\THOITIET.WindyMapForm.resources

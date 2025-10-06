@@ -3,6 +3,22 @@
   "WorkspaceRootPath": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{4E242DD0-B1F7-4BBA-978F-250D8B5DD86D}|THOITIET.csproj|d:\\cntt\\n\u0103m 3 k\u00EC i\\.net\\thoitiet\\weatherapiclasses.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4E242DD0-B1F7-4BBA-978F-250D8B5DD86D}|THOITIET.csproj|solutionrelative:weatherapiclasses.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4E242DD0-B1F7-4BBA-978F-250D8B5DD86D}|THOITIET.csproj|d:\\cntt\\n\u0103m 3 k\u00EC i\\.net\\thoitiet\\windymapform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4E242DD0-B1F7-4BBA-978F-250D8B5DD86D}|THOITIET.csproj|solutionrelative:windymapform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4E242DD0-B1F7-4BBA-978F-250D8B5DD86D}|THOITIET.csproj|d:\\cntt\\n\u0103m 3 k\u00EC i\\.net\\thoitiet\\windymapform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{4E242DD0-B1F7-4BBA-978F-250D8B5DD86D}|THOITIET.csproj|solutionrelative:windymapform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4E242DD0-B1F7-4BBA-978F-250D8B5DD86D}|THOITIET.csproj|d:\\cntt\\n\u0103m 3 k\u00EC i\\.net\\thoitiet\\windymapform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4E242DD0-B1F7-4BBA-978F-250D8B5DD86D}|THOITIET.csproj|solutionrelative:windymapform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{4E242DD0-B1F7-4BBA-978F-250D8B5DD86D}|THOITIET.csproj|d:\\cntt\\n\u0103m 3 k\u00EC i\\.net\\thoitiet\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4E242DD0-B1F7-4BBA-978F-250D8B5DD86D}|THOITIET.csproj|solutionrelative:form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -23,19 +39,70 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "WeatherApiClasses.cs",
+              "DocumentMoniker": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\WeatherApiClasses.cs",
+              "RelativeDocumentMoniker": "WeatherApiClasses.cs",
+              "ToolTip": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\WeatherApiClasses.cs",
+              "RelativeToolTip": "WeatherApiClasses.cs",
+              "ViewState": "AgIAAE4AAAAAAAAAAAA0wBoAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T07:03:54.428Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "WindyMapForm.cs [Design]",
+              "DocumentMoniker": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\WindyMapForm.cs",
+              "RelativeDocumentMoniker": "WindyMapForm.cs",
+              "ToolTip": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\WindyMapForm.cs [Design]",
+              "RelativeToolTip": "WindyMapForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T07:03:27.654Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "WindyMapForm.Designer.cs",
+              "DocumentMoniker": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\WindyMapForm.Designer.cs",
+              "RelativeDocumentMoniker": "WindyMapForm.Designer.cs",
+              "ToolTip": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\WindyMapForm.Designer.cs",
+              "RelativeToolTip": "WindyMapForm.Designer.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAQwBYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T07:01:29.918Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "WindyMapForm.cs",
+              "DocumentMoniker": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\WindyMapForm.cs",
+              "RelativeDocumentMoniker": "WindyMapForm.cs",
+              "ToolTip": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\WindyMapForm.cs",
+              "RelativeToolTip": "WindyMapForm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T06:43:56.524Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "Form1.cs",
               "DocumentMoniker": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\Form1.cs",
               "RelativeDocumentMoniker": "Form1.cs",
               "ToolTip": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\Form1.cs",
               "RelativeToolTip": "Form1.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGkJAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJcDAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-26T21:47:27.172Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "Form1.cs [Design]",
               "DocumentMoniker": "D:\\CNTT\\N\u0102M 3 K\u00EC I\\.NET\\THOITIET\\Form1.cs",
               "RelativeDocumentMoniker": "Form1.cs",

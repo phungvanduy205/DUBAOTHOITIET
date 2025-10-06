@@ -24,4 +24,11 @@
     </Content>
   </ItemGroup>
 
+  <!-- Không copy file .env sang thư mục output khi build -->
+  <ItemGroup>
+    <None Update=".env">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
