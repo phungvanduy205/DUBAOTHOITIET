@@ -6,8 +6,7 @@
 ### Yêu cầu
 - .NET SDK 8.0+
 - Windows 10/11
-- API keys: OpenWeather (bắt buộc), Geocoding/GEOAPIFY (tùy chọn), Windy (tùy chọn)
-
+- API keys: OpenWeather (bắt buộc), Geocoding/GEOAPIFY, Windy
 ### Cấu hình API keys
 1) Sao chép file `env.example` thành `.env` ở thư mục gốc dự án.
 2) Điền API keys của bạn vào `.env`:
